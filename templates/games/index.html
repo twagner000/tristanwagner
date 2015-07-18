@@ -1,0 +1,50 @@
+{% extends "tristanwagner/base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <p>All information is pulled from my <a href="https://boardgamegeek.com/user/{{bgg_user}}">profile</a> on the excellent site <a href="http://www.boardgamegeek.com">boardgamegeek.com</a>.</p>
+    <div class="row">
+        <div class="col-sm-4 col-sm-push-8 col-xs-12">
+            <h3>Recent Plays</h3>&nbsp;
+            <ul class="list-group">
+            {% regroup plays by date as date_list %}
+            {% for date in date_list %}
+                <li class="list-group-item">
+                    <p><b>{{date.grouper|date:"D, M j"}}</b></p>
+                {% for play in date.list %}
+                    <p><a href="https://boardgamegeek.com/boardgame/{{play.game_id}}">{{play.name}}</a> {% if play.quantity > 1 %}<span class="label label-info">x{{play.quantity}}</span>{% endif %}</p>
+                {% endfor %}
+                </li>
+                
+            {% endfor %}
+                <li class="list-group-item">
+                    ...see my <a href="https://boardgamegeek.com/user/{{bgg_user}}">BGG profile</a> for more.
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-8 col-sm-pull-4 col-xs-12">
+            <h3>Favorites</h3>&nbsp;
+            <div class="row">
+            {% for game in favs %}
+                <div class="col-lg-4 text-center">
+                    <a href="https://boardgamegeek.com/boardgame/{{game.id}}">
+                        <img class="img-circle" src="{{game.thumbnail}}" style="width: 140px; height: 140px;">
+                        <h4>{{game.name}}</h4>
+                    </a>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Quick stats">
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Players"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{game.minplayers}}{% if game.minplayers != game.maxplayers %}-{{game.maxplayers}}{% endif %}</button>
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Play time (minutes)"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> {{game.minplaytime}}{% if game.minplaytime != game.maxplaytime %}-{{game.maxplaytime}}{% endif %}</button>
+                        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Logged plays"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> {{game.numplays}}</button>
+                    </div>
+                    <p class="text-left" style="margin-top: 1em;">{{game.description|safe|truncatewords:35}}</p>
+                    <div style="height: 3em;">&nbsp;</div>
+                </div>
+                {% if forloop.counter|divisibleby:3 %}
+                <div class="clearfix visible-lg-block"></div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

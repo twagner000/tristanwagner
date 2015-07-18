@@ -8,5 +8,5 @@ urlpatterns = patterns('',
     url(r'^accounts/login/$', 'django.contrib.auth.views.login', name='login'),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page':'home'}, name='logout'),
     url(r'^checklist/', include('checklist.urls', namespace='checklist')),
-    #url(r'^games/', include('bgg_data.urls', namespace='bgg_data')),
+    url(r'^games/', include('games.urls', namespace='games')),
 )
