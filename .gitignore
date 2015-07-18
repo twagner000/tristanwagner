@@ -22,7 +22,7 @@ var/
 .installed.cfg
 *.egg
 local_settings.py
-.sqlite3
+*.sqlite3
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
