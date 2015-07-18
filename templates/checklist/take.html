@@ -1,0 +1,50 @@
+{% extends "tristanwagner/base.html" %}
+
+{% block content %}
+
+<ol class="breadcrumb">
+  <li><a href="{% url 'checklist:index' %}">Checklist</a></li>
+  <li>{{checklist.name}}</li>
+  <li>Take</li>
+</ol>
+
+{% if error_message %}
+    <div class="alert alert-danger">{{ error_message }}</div>
+{% elif not user.is_authenticated %}
+    <div class="alert alert-warning">You must be logged in to submit quizzes.</div>
+{% endif %}
+
+<p>Higher scores are better.</p>
+
+    <form role="form" action="{% url 'checklist:submit' checklist.id %}" method="post">
+    {% csrf_token %}
+    {% for group in checklist.questiongroup_set.all %}
+    <h3 class="well well-sm">{{group.name}}</h3>
+    <div class="row">
+        {% for question in group.question_set.all %}
+        <div class="col-6 col-sm-6 col-lg-4">
+            <h4>{{question.question}}</h4>
+            <div class="form-group">
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-default"><input type="radio" name="q{{question.id}}" value="1">1</label>
+                    <label class="btn btn-default"><input type="radio" name="q{{question.id}}" value="2">2</label>
+                    <label class="btn btn-default"><input type="radio" name="q{{question.id}}" value="3">3</label>
+                    <label class="btn btn-default"><input type="radio" name="q{{question.id}}" value="4">4</label>
+                    <label class="btn btn-default"><input type="radio" name="q{{question.id}}" value="5">5</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="qc{{question.id}}" placeholder="Comments">
+            </div>
+            <p class="help-block">{{question.help}}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% if user.is_authenticated %}
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+{% endif %}
+    </form>
+{% endblock %}

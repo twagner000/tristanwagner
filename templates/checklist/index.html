@@ -1,0 +1,27 @@
+{% extends "tristanwagner/base.html" %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-6 col-sm-6">
+            <h3>What is a Scored Checklist?</h3>
+            <p>A Scored Checklist is a tool for broadly measuring progress against multiple criteria.</p>
+            <p>It is a checklist where items are scored on a scale from 1-5 instead of yes/no.</p>
+        </div>
+        <div class="col-6 col-sm-6">
+            <h3>Available Scored Checklists</h3>
+            {% if checklist_list %}
+                <table class="table">
+                {% for checklist in checklist_list %}
+                <tr>
+                    <td><a href="{% url 'checklist:take' checklist.id %}">{{ checklist.name }}</a></td>
+                    <td><a href="{% url 'checklist:history' checklist.id %}" data-toggle="tooltip" title="View history"><span class="glyphicon glyphicon-stats"></span></a></td>
+                </tr>
+                {% endfor %}
+                </table>
+            {% else %}
+                <p>None available.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "tristanwagner/base.html" %}
+
+{% block content %}
+{% if not user.is_authenticated %}
+<p>You must be logged in to see checklist results.</p>
+{% else %}
+    <ol class="breadcrumb">
+      <li><a href="{% url 'checklist:index' %}">Checklist</a></li>
+      <li><a href="{% url 'checklist:history' ans_checklist.checklist.id %}">{{ans_checklist.checklist.name}}</a></li>
+      <li class="active">{{ans_checklist.ans_date}}</li>
+    </ol>
+
+    <div class="alert alert-info">You scored {{ans_checklist.score.actual}}/{{ans_checklist.score.max}} or {{ans_checklist.score.pct}}% on this checklist.</div>
+
+    <table class="table">
+        <tr><th>Group</th><th>Question</th><th>Score</th><th>Comment</th></tr>
+        {% for aqu in ans_checklist.answeredquestion_set.all %}
+        <tr>
+            <td>{% ifchanged aqu.question.question_group.name %}{{aqu.question.question_group.name}}{% endifchanged %}</td>
+            <td>{{aqu.question}}</td>
+            <td>{{aqu.score}}</td>
+            <td>{{aqu.comment}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% endblock %}

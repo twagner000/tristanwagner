@@ -1,0 +1,57 @@
+{% extends "tristanwagner/base.html" %}
+
+{% block content %}
+
+<ol class="breadcrumb">
+  <li><a href="{% url 'checklist:index' %}">Checklist</a></li>
+  <li>{{checklist.name}}</li>
+  <li>History</li>
+</ol>
+
+{% if not user.is_authenticated %}
+<p>You must be logged in to see quiz results.</p>
+{% else %}
+
+    {% if ans_checklist_list %}
+    <p>You have <a href="{% url 'checklist:take' checklist.id %}">taken</a> this quiz {{ans_checklist_list.count}} times.</p>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date'{% for group in ans_checklist_list.0.score.groups %},'{{group.name}}'{% endfor %}]
+        {% for ans_checklist in ans_checklist_list reversed %}
+          ,['{{ans_checklist.for_date|date:"n/j/y G:i"}}'{% for group in ans_checklist.score.groups %},{{group.score}}{% endfor %}]
+        {% endfor %}
+        ]);
+
+        var options = {
+          vAxis: {title: 'Score'},
+          isStacked: true,
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.SteppedAreaChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+
+    <div id="chart_div" style="height: 30em;"></div>&nbsp;
+
+    <table class="table">
+        <tr><th>Date Taken</th><th>Group</th><th>Score</th><th>Possible</th><th>Percent</th></tr>
+        {% for ans_checklist in ans_checklist_list %}
+        <tr class="active"><td><a href="{% url 'checklist:results' ans_checklist.id %}">{{ ans_checklist.for_date|date:"n/j/y G:i" }}</a></td><td></td><td>{{ans_checklist.score.actual}}</td><td>{{ans_checklist.score.max}}</td><td>{{ans_checklist.score.pct}}%</td></tr>
+            {% for group in ans_checklist.score.groups %}
+            <tr><td></td><td>{{group.name}}</td><td>{{group.score}}</td><td>{{group.maxposs}}</td><td></td></tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+    {% else %}
+            <p>You haven't taken this quiz yet.</p>
+    {% endif %}
+{% endif %}
+
+{% endblock %}
