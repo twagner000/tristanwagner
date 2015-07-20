@@ -9,7 +9,7 @@ class Checklist(models.Model):
     public = models.BooleanField(default=False)
     owner = models.ForeignKey(User, blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class QuestionGroup(models.Model):
@@ -21,7 +21,7 @@ class QuestionGroup(models.Model):
     class Meta:
         ordering = ['checklist','sequence']
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.checklist,self.name)
         
 class Question(models.Model):
@@ -34,7 +34,7 @@ class Question(models.Model):
     class Meta:
         ordering = ['question_group','sequence']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.question
 
 class AnsweredChecklist(models.Model):
@@ -43,7 +43,7 @@ class AnsweredChecklist(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
     ans_by = models.ForeignKey(User)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.checklist, self.ans_by)
 
     def score(self):
@@ -66,7 +66,7 @@ class AnsweredQuestion(models.Model):
     modified_date = models.DateTimeField(auto_now=True)
     comment = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%d)" % (self.question, self.score)
 
     def has_comment(self):
