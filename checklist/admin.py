@@ -9,7 +9,7 @@ class QuestionGroupAdmin(admin.ModelAdmin):
     model = QuestionGroup
     extra = 3
     inlines = [QuestionInline]
-    list_display = ('__unicode__', 'checklist', 'sequence')
+    list_display = ('__str__', 'checklist', 'sequence')
     list_filter = ['checklist']
 
 class ChecklistAdmin(admin.ModelAdmin):
