@@ -14,11 +14,25 @@ def index(request):
     plays = []
     for p in root.iter('play'):
         play = {}
+        item = p.find('item')
         play['date'] = datetime.datetime.strptime(p.attrib['date'], '%Y-%m-%d').date()
         play['quantity'] = int(p.attrib['quantity'])
-        play['name'] = p.find('item').attrib['name']
-        play['game_id'] = p.find('item').attrib['objectid']
+        play['name'] = item.attrib['name']
+        play['game_id'] = item.attrib['objectid']
+        play['expansions'] = []
+        for s in item.find('subtypes').iter('subtype'):
+            if s.attrib['value'] == 'boardgameexpansion':
+                play['expansion_yes'] = True
+                break
         plays.append(play)
+    for p in plays:
+        if 'expansion_yes' in p:
+            b,sep,e = p['name'].partition(':')
+            for p2 in plays:
+                if p2['name'] == b.strip() and p2['date'] == p['date']:
+                    p2['expansions'].append({'name':e.strip(), 'game_id':p['game_id']})
+                    plays = [p3 for p3 in plays if p3['name'] != p['name']]
+                    break
         
     #top 10 data
     favs = []

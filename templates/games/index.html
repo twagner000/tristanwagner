@@ -12,7 +12,11 @@
                 <li class="list-group-item">
                     <p><b>{{date.grouper|date:"D, M j"}}</b></p>
                 {% for play in date.list %}
-                    <p><a href="https://boardgamegeek.com/boardgame/{{play.game_id}}">{{play.name}}</a> {% if play.quantity > 1 %}<span class="label label-info">x{{play.quantity}}</span>{% endif %}</p>
+                    <p>
+                        <a href="https://boardgamegeek.com/boardgame/{{play.game_id}}">{{play.name}}</a>
+                        {% if play.quantity > 1 %}<span class="label label-info">x{{play.quantity}}</span>{% endif %}
+                        {% for expansion in play.expansions %}<br/><small><small><span class="small glyphicon glyphicon-plus" aria-hidden="true"></span></small> <a href="https://boardgamegeek.com/boardgame/{{expansion.game_id}}">{{ expansion.name }}</a></small>{% endfor %}
+                    </p>
                 {% endfor %}
                 </li>
                 
