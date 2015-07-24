@@ -1,6 +1,11 @@
 from django.shortcuts import render
 from collections import defaultdict
 from django.contrib.auth.decorators import login_required
+import math
+
+def hapw(hap):
+	hapa = [3,2.4,1.9,1.6,1.4,1.2,1,1.05,1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.5,1.6,1.7,1.85,2]
+	return hapa[int(hap/5)]
 
 @login_required
 def index(request):
@@ -15,6 +20,10 @@ def index(request):
     crop_list = ['corn','cocoa']
     int_rate = {'p':8.75, 's':7.15} #pintrate, sintrate
     svcmax = {'health':450000, 'education':400000, 'security':900000}
+    mpop = 4950000 #MassesPopulation
+    epop = 50000 #ElitePopulation
+    genhapw = {'l':{'lfood':.2,'llux':.15,'ltax':.16,'health':.14,'education':.14,'security':.14,'env':.07},
+                    'u':{'ufood':0.06,'ulux':.25,'utax':.22,'health':.1,'education':.1,'security':.24,'env':.03}}
 	
     #load data for game instance
     genfund = 20000
@@ -28,7 +37,7 @@ def index(request):
     crops['unplanted'] = crops['land']-crops['corn']['planted']-crops['cocoa']['planted']
     for c in crop_list:
         crops[c]['yield'] = pest_data[crops['pesticides']][c]['yield']*crops['landprod']/100 #cny, ccy
-        crops[c]['price'] = prices[c][min([turn,len(prices[c])])-1]
+        crops[c]['price'] = prices[c][min([turn,len(prices[c])])-1] #cnprc, ccprc
         crops[c]['inc'] = crops[c]['planted']*crops[c]['yield']*crops[c]['price'] #cninc, ccinc
         crops[c]['exp'] = crops[c]['planted']*(pest_data[crops['pesticides']][c]['cost']+sum(crop_cost[c].values())) #cngc, ccgc
         crops[c]['net'] = crops[c]['inc']*(.85-tax_rate[c]/100 if c=='cocoa' else 1)-crops[c]['exp'] #cnginc, ccginc
@@ -59,4 +68,23 @@ def index(request):
     budget = {'tax_rate':tax_rate, 'inc':inc, 'svc_rate':svc_rate, 'exp':exp, 'genfund':genfund, 'net':inc['total']+exp['total']}
     budget['genfund_next'] = budget['genfund']+budget['net']
     
-    return render(request, 'deveconsim/index.html', {'turn':turn, 'budget':budget, 'crops':crops, 'debt':debt})
+    lbatinc = max(0,lbinc*(1-tax_rate['lower']/100-0.1)/mpop)
+    ubatinc = max(0,ubinc*(1-tax_rate['upper']/100-0.05)/epop)
+    cntobuy = min(int(lbatinc**.5/2)-7,68)*100 if lbatinc >= 400 else min(200,int(lbatinc/crops['corn']['price']))
+    ecntobuy = min(int(ubatinc**.5/2)-7,68)*100 if ubatinc >= 400 else min(200,int(ubatinc/crops['corn']['price']))
+    
+    hap = {}
+    hap['lfood'] = max(0,1.75*1.017**cntobuy if cntobuy < 190 else 12.5*math.log(cntobuy)-22.5)
+    hap['ufood'] = max(0,1.75*1.017**ecntobuy if ecntobuy < 190 else 12.5*math.log(ecntobuy)-22.5)
+    hap['llux'] = max(0,12.5*math.log(max(1,lbatinc-cntobuy*crops['corn']['price']))-57.5)
+    hap['ulux'] = max(0,13.5*math.log(max(1,ubatinc-ecntobuy*crops['corn']['price']))-60)
+    hap['ltax'] = max(0,90-tax_rate['lower']*1.8) if tax_rate['lower'] else 100
+    hap['utax'] = max(0,90-tax_rate['upper']*2.4) if tax_rate['upper'] else 100
+    hap['health'] = svc_rate['health']
+    hap['education'] = svc_rate['education']
+    hap['security'] = svc_rate['security']
+    hap['env'] = max(0,90-2*pest_data[crops['pesticides']]['unhappiness'])
+    hap['lgen'] = sum(hap[k]*hapw(hap[k])*v for k,v in genhapw['l'].items())/sum(hapw(hap[k]) for k in genhapw['l'].keys())*7
+    hap['ugen'] = sum(hap[k]*hapw(hap[k])*v for k,v in genhapw['u'].items())/sum(hapw(hap[k]) for k in genhapw['u'].keys())*7
+    
+    return render(request, 'deveconsim/index.html', {'turn':turn, 'budget':budget, 'crops':crops, 'debt':debt, 'hap':hap})

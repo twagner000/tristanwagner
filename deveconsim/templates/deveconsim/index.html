@@ -216,23 +216,21 @@
                     <h4><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Happiness</h4>
                     <div class="panel panel-default">
                         <table class="table">
-                            <tr><td colspan="2">Category</td><td colspan="2">Hapiness Rating</td></tr>
-                            <tr><td colspan="2">Health</td><td colspan="2">formatn(healthhap/2)%</td></tr>
-                            <tr><td colspan="2">Education</td><td colspan="2">formatn(eduhap/2)%</td></tr>
-                            <tr><td colspan="2">Security</td><td colspan="2">formatn(securityhap/2)%</td></tr>
-                            <tr><td colspan="2">Environment</td><td colspan="2">formatn(envhap/2)%</td></tr>
-                            <tr><td colspan="4">&quot;The Masses&quot; (Lower and Middle Classes)</td></tr>
-                            <tr><td colspan="2">Category</td><td colspan="2">Hapiness Rating</td></tr>
-                            <tr><td colspan="2">Food</td><td colspan="2">formatn(foodhap/2)%</td></tr>
-                            <tr><td colspan="2">Luxuries</td><td colspan="2">formatn(luxhap/2)%</td></tr>
-                            <tr><td colspan="2">Taxes</td><td colspan="2">formatn(taxhap/2)%</td></tr>
-                            <tr><td colspan="2"><b>Overall</b></td><td colspan="2"><b>formatn(genhap/2)%</b></td></tr>
-                            <tr><td colspan="4">&quot;The Elite&quot; (Upper Class)</td></tr>
-                            <tr><td colspan="2">Category</td><td colspan="2">Hapiness Rating</td></tr>
-                            <tr><td colspan="2">Food</td><td colspan="2">formatn(efoodhap/2)%</td></tr>
-                            <tr><td colspan="2">Luxuries</td><td colspan="2">formatn(eluxhap/2)%</td></tr>
-                            <tr><td colspan="2">Taxes</td><td colspan="2">formatn(etaxhap/2)%</td></tr>
-                            <tr><td colspan="2"><b>Overall</b></td><td colspan="2"><b>formatn(egenhap/2)%</b></td></tr>
+                            <tr><th>Category</th><th class="text-right">Rating</th></tr>
+                            <tr><td>Health</td><td class="text-right">{{hap.health|floatformat:0}}%</td></tr>
+                            <tr><td>Education</td><td class="text-right">{{hap.education|floatformat:0}}%</td></tr>
+                            <tr><td>Security</td><td class="text-right">{{hap.security|floatformat:0}}%</td></tr>
+                            <tr><td>Environment</td><td class="text-right">{{hap.env|floatformat:0}}%</td></tr>
+                            <tr><td colspan="2"><strong>The Masses</strong> <small>(Lower / Middle Classes)</small></td></tr>
+                            <tr><td>Food</td><td class="text-right">{{hap.lfood|floatformat:0}}%</td></tr>
+                            <tr><td>Luxuries</td><td class="text-right">{{hap.llux|floatformat:0}}%</td></tr>
+                            <tr><td>Taxes</td><td class="text-right">{{hap.ltax|floatformat:0}}%</td></tr>
+                            <tr><td>Overall</td><td class="text-right">{{hap.lgen|floatformat:0}}%</td></tr>
+                            <tr><td colspan="2"><strong>The Elite</strong> <small>(Upper Class)</small></td></tr>
+                            <tr><td>Food</td><td class="text-right">{{hap.ufood|floatformat:0}}%</td></tr>
+                            <tr><td>Luxuries</td><td class="text-right">{{hap.ulux|floatformat:0}}%</td></tr>
+                            <tr><td>Taxes</td><td class="text-right">{{hap.utax|floatformat:0}}%</td></tr>
+                            <tr><td>Overall</td><td class="text-right">{{hap.ugen|floatformat:0}}%</td></tr>
                         </table>
                     </div>
                 </div>
