@@ -22,7 +22,7 @@ class Game(models.Model):
     HAPPINESS_WEIGHTS = [3,2.4,1.9,1.6,1.4,1.2,1,1.05,1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.5,1.6,1.7,1.85,2]
                   
     def __str__(self):
-        return 'Game started by {1} on {0:%m}/{0:%d}/{0:%y}'.format(self.started_date, self.user if self.user else '"{0}"'.format(self.name))
+        return 'Game "{2}" started {1} on {0:%m}/{0:%d}/{0:%y} at {0:%H}:{0:%M}'.format(self.started_date, 'by {0}'.format(self.user) if self.user else 'anonymously', self.name)
         
     def hapw(self,h):
         return self.HAPPINESS_WEIGHTS[int(h*len(self.HAPPINESS_WEIGHTS))]
