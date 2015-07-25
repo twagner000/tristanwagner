@@ -25,18 +25,12 @@ def index(request):
     g = turn.game #shortcut
     calc = turn.calc()
     
-    crops = {'corn':{}, 'cocoa':{}}
-    for c in g.CROPS.keys():
-        crops[c]['yield'] = g.CROPS[c]['pesticides'][turn.pesticides]['yield']*turn.landprod #cny, ccy
-        crops[c]['inc'] = getattr(turn,c)*crops[c]['yield']*calc[c+'_price'] #cninc, ccinc
-        crops[c]['exp'] = getattr(turn,c)*(g.CROPS[c]['pesticides'][turn.pesticides]['cost']+g.CROPS[c]['labor_cost']+g.CROPS[c]['other_cost']) #cngc, ccgc
-        crops[c]['net'] = crops[c]['inc']*(.85-turn.tax_cocoa/100 if c=='cocoa' else 1)-crops[c]['exp'] #cnginc, ccginc
     
     lbinc = sum(getattr(turn,c)*g.CROPS[c]['labor_cost'] for c in g.CROPS.keys())
-    ubinc = sum(crops[c]['net'] for c in g.CROPS.keys())
+    ubinc = sum(calc[c]['net'] for c in g.CROPS.keys())
     
     inc = {}
-    inc['cocoa'] = max(0,crops['cocoa']['inc']*turn.tax_cocoa/100) #cctinc
+    inc['cocoa'] = max(0,calc['cocoa']['inc']*turn.tax_cocoa/100) #cctinc
     inc['lower'] = max(0,lbinc*turn.tax_lower/100) #lbitinc
     inc['upper'] = max(0,ubinc*turn.tax_upper/100) #ubitinc
     inc['total'] = sum(inc.values())
@@ -58,14 +52,14 @@ def index(request):
     
     lbatinc = max(0,lbinc*(1-turn.tax_lower/100-0.1)/g.POP['l'])
     ubatinc = max(0,ubinc*(1-turn.tax_upper/100-0.05)/g.POP['u'])
-    cntobuy = min(int(lbatinc**.5/2)-7,68)*100 if lbatinc >= 400 else min(200,int(lbatinc/calc['corn_price']))
-    ecntobuy = min(int(ubatinc**.5/2)-7,68)*100 if ubatinc >= 400 else min(200,int(ubatinc/calc['corn_price']))
+    cntobuy = min(int(lbatinc**.5/2)-7,68)*100 if lbatinc >= 400 else min(200,int(lbatinc/calc['corn']['price']))
+    ecntobuy = min(int(ubatinc**.5/2)-7,68)*100 if ubatinc >= 400 else min(200,int(ubatinc/calc['corn']['price']))
     
     hap = {}
     hap['lfood'] = max(0,1.75*1.017**cntobuy if cntobuy < 190 else 12.5*math.log(cntobuy)-22.5)/100
     hap['ufood'] = max(0,1.75*1.017**ecntobuy if ecntobuy < 190 else 12.5*math.log(ecntobuy)-22.5)/100
-    hap['llux'] = max(0,12.5*math.log(max(1,lbatinc-cntobuy*calc['corn_price']))-57.5)/100
-    hap['ulux'] = max(0,13.5*math.log(max(1,ubatinc-ecntobuy*calc['corn_price']))-60)/100
+    hap['llux'] = max(0,12.5*math.log(max(1,lbatinc-cntobuy*calc['corn']['price']))-57.5)/100
+    hap['ulux'] = max(0,13.5*math.log(max(1,ubatinc-ecntobuy*calc['corn']['price']))-60)/100
     hap['ltax'] = max(0,.9-turn.tax_lower*.018) if turn.tax_lower else 1
     hap['utax'] = max(0,.9-turn.tax_upper*.024) if turn.tax_upper else 1
     hap['health'] = turn.svc_health/100
@@ -76,5 +70,4 @@ def index(request):
     hap['ugen'] = sum(hap[k]*hapw(hap[k])*v for k,v in g.HAPPINESS['u'].items())/sum(hapw(hap[k]) for k in g.HAPPINESS['u'].keys())*7
     
 
-    
-    return render(request, 'deveconsim/index.html', {'turn':turn, 'calc':calc, 'budget':budget, 'crops':crops, 'debt':debt, 'hap':hap})
+    return render(request, 'deveconsim/index.html', {'turn':turn, 'calc':calc, 'budget':budget, 'debt':debt, 'hap':hap})

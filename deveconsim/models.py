@@ -54,8 +54,15 @@ class Turn(models.Model):
         return 'Turn {0} ({1})'.format(self.turn, self.game)
     
     def calc(self):
-        r = {}
+        g = self.game #shortcut
+        r = {} #results
         r['unplanted'] = self.land-self.corn-self.cocoa
-        r['corn_price'] = self.game.CROPS['corn']['prices'][min(self.turn,len(self.game.CROPS['corn']['prices']))-1]
-        r['cocoa_price'] = self.game.CROPS['cocoa']['prices'][min(self.turn,len(self.game.CROPS['cocoa']['prices']))-1]
+        for c in g.CROPS.keys():
+            r[c] = {}
+            r[c]['price'] = g.CROPS[c]['prices'][min(self.turn,len(g.CROPS[c]['prices']))-1]
+            r[c]['yield'] = g.CROPS[c]['pesticides'][self.pesticides]['yield']*self.landprod #cny, ccy
+            r[c]['inc'] = getattr(self,c)*r[c]['yield']*r[c]['price'] #cninc, ccinc
+            r[c]['exp'] = getattr(self,c)*(g.CROPS[c]['pesticides'][self.pesticides]['cost']+g.CROPS[c]['labor_cost']+g.CROPS[c]['other_cost']) #cngc, ccgc
+            r[c]['net'] = r[c]['inc']*(.85-self.tax_cocoa/100 if c=='cocoa' else 1)-r[c]['exp'] #cnginc, ccginc
+        
         return r

@@ -191,8 +191,8 @@
                             <tr><td>Land Productivity</td><td class="text-right">{{turn.landprod|percent}}</td><td colspan="2"></td></tr>
                             <tr><td>Pesticide Use</td><td class="text-right"><a href="#">{{turn.get_pesticides_display}}</a></td><td colspan="2"></td></tr>
                             <tr><th>Crop</th><th class="text-right">Area Planted</th><th class="text-right">Expected Yield</th><th class="text-right">Current Price</th></tr>
-                            <tr><td>Corn</td><td class="text-right"><a href="#">{{turn.corn|intcomma}} Ha</a></td><td class="text-right">{{crops.corn.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.corn_price|floatformat:3|intcomma}}/kg</a></td></tr>
-                            <tr><td>Cocoa</td><td class="text-right"><a href="#">{{turn.cocoa|intcomma}} Ha</a></td><td class="text-right">{{crops.cocoa.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.cocoa_price|floatformat:3|intcomma}}/kg</a></td></tr>
+                            <tr><td>Corn</td><td class="text-right"><a href="#">{{turn.corn|intcomma}} Ha</a></td><td class="text-right">{{calc.corn.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.corn.price|floatformat:3|intcomma}}/kg</a></td></tr>
+                            <tr><td>Cocoa</td><td class="text-right"><a href="#">{{turn.cocoa|intcomma}} Ha</a></td><td class="text-right">{{calc.cocoa.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.cocoa.price|floatformat:3|intcomma}}/kg</a></td></tr>
                             <tr><td>Not Planted</td><td class="text-right">{{calc.unplanted|intcomma}} Ha</td><td class="text-right"></td><td class="text-right"></td></tr>
                         </table>
                     </div>
@@ -203,7 +203,7 @@
                             <tr><th>Creditor</th><th class="text-right">Balance Owed</th><th class="text-right">Interest Rate</th><th class="text-right">Annual Interest</th></tr>
                             <tr><td>Private Banks</td><td class="text-right"><a href="#">${{turn.debt_private|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.private|percent:"1,2"}}</td><td class="text-right">${{debt.int.private|floatformat:0|intcomma}}</td></tr>
                             <tr><td>World Bank</td><td class="text-right"><a href="#">${{turn.debt_wb|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wb|percent:"1,2"}}</td><td class="text-right">${{debt.int.wb|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>World Bank with <abbr data-toggle="popover" data-placement="bottom" title="Structural Adjustment Program" data-content="Limits Health spending to 15%, limits Security spending to 20%, and requires 750,000 Ha of cocoa be planted until loan is paid off.">SAP</abbr></td><td class="text-right"><a href="#">${{turn.debt_wbsap|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wbsap|percent:"1,2"}}</td><td class="text-right">${{debt.int.wbsap|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>World Bank with <abbr data-toggle="popover" data-placement="bottom" title="Structural Adjustment Program" data-content="Limits Health spending to 15% and Security spending to 20% until loan is repaid. Requires planting 750,000 Ha of cocoa.">SAP</abbr></td><td class="text-right"><a href="#">${{turn.debt_wbsap|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wbsap|percent:"1,2"}}</td><td class="text-right">${{debt.int.wbsap|floatformat:0|intcomma}}</td></tr>
                             <tr><td>Total</td><td class="text-right">${{debt.total|floatformat:0|intcomma}}</td><td class="text-right"></td><td class="text-right">${{debt.int.total|floatformat:0|intcomma}}</td></tr>
                         </table>
                     </div>
