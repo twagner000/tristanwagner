@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import math
 
 class Game(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -18,9 +19,13 @@ class Game(models.Model):
     PESTICIDES = [{'unhappiness':0, 'prod_loss':0},
                   {'unhappiness':20, 'prod_loss':.04},
                   {'unhappiness':5, 'prod_loss':.02}]
+    HAPPINESS_WEIGHTS = [3,2.4,1.9,1.6,1.4,1.2,1,1.05,1.1,1.15,1.2,1.25,1.3,1.35,1.4,1.5,1.6,1.7,1.85,2]
                   
     def __str__(self):
         return 'Game started by {1} on {0:%m}/{0:%d}/{0:%y}'.format(self.started_date, self.user if self.user else '"{0}"'.format(self.name))
+        
+    def hapw(self,h):
+        return self.HAPPINESS_WEIGHTS[int(h*len(self.HAPPINESS_WEIGHTS))]
 
 class Turn(models.Model):
     game = models.ForeignKey(Game)
@@ -56,13 +61,53 @@ class Turn(models.Model):
     def calc(self):
         g = self.game #shortcut
         r = {} #results
+        
+        #crop calculations
         r['unplanted'] = self.land-self.corn-self.cocoa
         for c in g.CROPS.keys():
             r[c] = {}
             r[c]['price'] = g.CROPS[c]['prices'][min(self.turn,len(g.CROPS[c]['prices']))-1]
             r[c]['yield'] = g.CROPS[c]['pesticides'][self.pesticides]['yield']*self.landprod #cny, ccy
             r[c]['inc'] = getattr(self,c)*r[c]['yield']*r[c]['price'] #cninc, ccinc
-            r[c]['exp'] = getattr(self,c)*(g.CROPS[c]['pesticides'][self.pesticides]['cost']+g.CROPS[c]['labor_cost']+g.CROPS[c]['other_cost']) #cngc, ccgc
-            r[c]['net'] = r[c]['inc']*(.85-self.tax_cocoa/100 if c=='cocoa' else 1)-r[c]['exp'] #cnginc, ccginc
+            r[c]['exp'] = -getattr(self,c)*(g.CROPS[c]['pesticides'][self.pesticides]['cost']+g.CROPS[c]['labor_cost']+g.CROPS[c]['other_cost']) #cngc, ccgc
+            r[c]['net'] = r[c]['inc']*(.85-self.tax_cocoa/100 if c=='cocoa' else 1)+r[c]['exp'] #cnginc, ccginc
+        
+        #debt calculations
+        for k,v in g.INT_RATE.items():
+            r['debt_{0}_int'.format(k)] = getattr(self,'debt_'+k)*v/100
+        r['debt_total'] = self.debt_private+self.debt_wb+self.debt_wbsap
+        r['debt_total_int'] = r['debt_private_int']+r['debt_wb_int']+r['debt_wbsap_int']
+        
+        #budget calculations
+        lbinc = sum(getattr(self,c)*g.CROPS[c]['labor_cost'] for c in g.CROPS.keys())
+        ubinc = sum(r[c]['net'] for c in g.CROPS.keys())
+        r['inc_cocoa'] = max(0,r['cocoa']['inc']*self.tax_cocoa/100) #cctinc
+        r['inc_lower'] = max(0,lbinc*self.tax_lower/100) #lbitinc
+        r['inc_upper'] = max(0,ubinc*self.tax_upper/100) #ubitinc
+        r['inc_total'] = r['inc_cocoa']+r['inc_lower']+r['inc_upper']
+        for k,v in g.SVC_MAX.items():
+            r['exp_{0}'.format(k)] = -v*getattr(self,'svc_'+k)/100
+        r['exp_debt_int'] = -r['debt_total_int']
+        r['exp_total'] = r['exp_health']+r['exp_education']+r['exp_security']+r['exp_debt_int']
+        r['net'] = r['inc_total']+r['exp_total']
+        r['new_genfund'] = self.genfund+r['net']
+        
+        #happiness calculations
+        lbatinc = max(0,lbinc*(1-self.tax_lower/100-0.1)/g.POP['l'])
+        ubatinc = max(0,ubinc*(1-self.tax_upper/100-0.05)/g.POP['u'])
+        lcntobuy = min(int(lbatinc**.5/2)-7,68)*100 if lbatinc >= 400 else min(200,int(lbatinc/r['corn']['price']))
+        ucntobuy = min(int(ubatinc**.5/2)-7,68)*100 if ubatinc >= 400 else min(200,int(ubatinc/r['corn']['price']))
+        r['hap_lfood'] = max(0,.0175*1.017**lcntobuy if lcntobuy < 190 else .125*math.log(lcntobuy)-.225)
+        r['hap_ufood'] = max(0,.0175*1.017**ucntobuy if ucntobuy < 190 else .125*math.log(ucntobuy)-.225)
+        r['hap_llux'] = max(0,.125*math.log(max(1,lbatinc-lcntobuy*r['corn']['price']))-.575)
+        r['hap_ulux'] = max(0,.135*math.log(max(1,ubatinc-ucntobuy*r['corn']['price']))-.6)
+        r['hap_ltax'] = max(0,.9-self.tax_lower*.018) if self.tax_lower else 1
+        r['hap_utax'] = max(0,.9-self.tax_upper*.024) if self.tax_upper else 1
+        r['hap_health'] = self.svc_health/100
+        r['hap_education'] = self.svc_education/100
+        r['hap_security'] = self.svc_security/100
+        r['hap_env'] = max(0,.9-.02*g.PESTICIDES[self.pesticides]['unhappiness'])
+        r['hap_lgen'] = sum(r['hap_'+k]*g.hapw(r['hap_'+k])*v for k,v in g.HAPPINESS['l'].items())/sum(g.hapw(r['hap_'+k]) for k in g.HAPPINESS['l'].keys())*7
+        r['hap_ugen'] = sum(r['hap_'+k]*g.hapw(r['hap_'+k])*v for k,v in g.HAPPINESS['u'].items())/sum(g.hapw(r['hap_'+k]) for k in g.HAPPINESS['u'].keys())*7
         
         return r

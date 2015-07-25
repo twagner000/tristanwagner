@@ -4,7 +4,7 @@
 {% load deveconsim_extras %}
 
 {% block content %}
-    {% if user.is_authenticated %}
+    {% if turn %}
         <div>            
             <nav class="navbar navbar-inverse">
                 <div class="container-fluid">
@@ -98,7 +98,6 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
             </div><!-- /.modal -->
-                
         {% elif turn.turn == 2 %}
             <div class="alert alert-info" role="alert">
                 <h4>Tutorial: Part II</h4>
@@ -144,12 +143,12 @@
                 <div class="col-sm-12 col-md-4">
                     <div class="panel panel-default">
                         <table class="table">
-                            <tr><th colspan="4">Summary</th></tr>
-                            <tr><td colspan="2">Total Income</td><td colspan="2" class="text-right">${{budget.inc.total|floatformat:0|intcomma}}</td></tr>
-                            <tr><td colspan="2">Total Expenses</td><td colspan="2" class="text-right">${{budget.exp.total|floatformat:0|intcomma}}</td></tr>
-                            <tr><td colspan="2">Net Income</td><td colspan="2" class="text-right">${{budget.net|floatformat:0|intcomma}}</td></tr>
-                            <tr><td colspan="2">Current General Fund</td><td class="text-right" colspan="2">${{turn.genfund|floatformat:0|intcomma}}</td></tr>
-                            <tr class="active"><td colspan="2">Forecasted General Fund</td><td colspan="2" class="text-right">${{budget.genfund_next|floatformat:0|intcomma}}</td></tr>
+                            <tr><th colspan="2">Summary</th></tr>
+                            <tr><td>Total Income</td><td class="text-right">${{calc.inc_total|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Total Expenses</td><td class="text-right">${{calc.exp_total|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Net Income</td><td class="text-right">${{calc.net|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Current General Fund</td><td class="text-right">${{turn.genfund|floatformat:0|intcomma}}</td></tr>
+                            <tr class="active"><td>Forecasted General Fund</td><td class="text-right">${{calc.new_genfund|floatformat:0|intcomma}}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -157,12 +156,12 @@
                 <div class="col-sm-12 col-md-4">
                     <div class="panel panel-default">
                         <table class="table">
-                            <tr><th colspan="4">Income</th></tr>
-                            <tr><td>Cocoa Export Tax</td><td class="text-right"><a href="#">{{turn.tax_cocoa|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{budget.inc.cocoa|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Income Tax - Lower Bracket</td><td class="text-right"><a href="#">{{turn.tax_lower|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{budget.inc.lower|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Income Tax - Upper Bracket</td><td class="text-right"><a href="#">{{turn.tax_upper|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{budget.inc.upper|floatformat:0|intcomma}}</td></tr>
+                            <tr><th colspan="3">Income</th></tr>
+                            <tr><td>Cocoa Export Tax</td><td class="text-right"><a href="#">{{turn.tax_cocoa|percent:"1,0"}}</a></td><td class="text-right">${{calc.inc_cocoa|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Income Tax - Lower Bracket</td><td class="text-right"><a href="#">{{turn.tax_lower|percent:"1,0"}}</a></td><td class="text-right">${{calc.inc_lower|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Income Tax - Upper Bracket</td><td class="text-right"><a href="#">{{turn.tax_upper|percent:"1,0"}}</a></td><td class="text-right">${{calc.inc_upper|floatformat:0|intcomma}}</td></tr>
                             <tr><td colspan="4">&nbsp;</td></tr>
-                            <tr><td colspan="2">Total</td><td colspan="2" class="text-right">${{budget.inc.total|floatformat:0|intcomma}}</td></tr>
+                            <tr><td colspan="2">Total</td><td class="text-right">${{calc.inc_total|floatformat:0|intcomma}}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -171,11 +170,11 @@
                     <div class="panel panel-default">
                         <table class="table">
                             <tr><th colspan="4">Expenses</th></tr>
-                            <tr><td>Health Care</td><td class="text-right"><a href="#">{{turn.svc_health|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{budget.exp.health|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Education</td><td class="text-right"><a href="#">{{turn.svc_education|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{budget.exp.education|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Security</td><td class="text-right"><a href="#">{{turn.svc_security|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{budget.exp.security|floatformat:0|intcomma}}</td></tr>
-                            <tr><td colspan="2">Debt Interest</td><td colspan="2" class="text-right">${{budget.debt_int|floatformat:0|intcomma}}</td></tr>
-                            <tr><td colspan="2">Total</td><td colspan="2" class="text-right">${{budget.exp.total|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Health Care</td><td class="text-right"><a href="#">{{turn.svc_health|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{calc.exp_health|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Education</td><td class="text-right"><a href="#">{{turn.svc_education|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{calc.exp_education|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Security</td><td class="text-right"><a href="#">{{turn.svc_security|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{calc.exp_security|floatformat:0|intcomma}}</td></tr>
+                            <tr><td colspan="2">Debt Interest</td><td colspan="2" class="text-right">${{calc.exp_debt_int|floatformat:0|intcomma}}</td></tr>
+                            <tr><td colspan="2">Total</td><td colspan="2" class="text-right">${{calc.exp_total|floatformat:0|intcomma}}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -187,9 +186,9 @@
                     <h4><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</h4>
                     <div class="panel panel-default">
                         <table class="table">
-                            <tr><td>Plantable Area</td><td class="text-right">{{turn.land|intcomma}} Ha</td><td colspan="2"></td></tr>
-                            <tr><td>Land Productivity</td><td class="text-right">{{turn.landprod|percent}}</td><td colspan="2"></td></tr>
-                            <tr><td>Pesticide Use</td><td class="text-right"><a href="#">{{turn.get_pesticides_display}}</a></td><td colspan="2"></td></tr>
+                            <tr><td colspan="3">Plantable Area</td><td class="text-right">{{turn.land|intcomma}} Ha</td></tr>
+                            <tr><td colspan="3">Land Productivity</td><td class="text-right">{{turn.landprod|percent}}</td></tr>
+                            <tr><td colspan="3">Pesticide Use</td><td class="text-right"><a href="#">{{turn.get_pesticides_display}}</a></td></tr>
                             <tr><th>Crop</th><th class="text-right">Area Planted</th><th class="text-right">Expected Yield</th><th class="text-right">Current Price</th></tr>
                             <tr><td>Corn</td><td class="text-right"><a href="#">{{turn.corn|intcomma}} Ha</a></td><td class="text-right">{{calc.corn.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.corn.price|floatformat:3|intcomma}}/kg</a></td></tr>
                             <tr><td>Cocoa</td><td class="text-right"><a href="#">{{turn.cocoa|intcomma}} Ha</a></td><td class="text-right">{{calc.cocoa.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.cocoa.price|floatformat:3|intcomma}}/kg</a></td></tr>
@@ -201,10 +200,10 @@
                     <div class="panel panel-default">
                         <table class="table">
                             <tr><th>Creditor</th><th class="text-right">Balance Owed</th><th class="text-right">Interest Rate</th><th class="text-right">Annual Interest</th></tr>
-                            <tr><td>Private Banks</td><td class="text-right"><a href="#">${{turn.debt_private|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.private|percent:"1,2"}}</td><td class="text-right">${{debt.int.private|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>World Bank</td><td class="text-right"><a href="#">${{turn.debt_wb|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wb|percent:"1,2"}}</td><td class="text-right">${{debt.int.wb|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>World Bank with <abbr data-toggle="popover" data-placement="bottom" title="Structural Adjustment Program" data-content="Limits Health spending to 15% and Security spending to 20% until loan is repaid. Requires planting 750,000 Ha of cocoa.">SAP</abbr></td><td class="text-right"><a href="#">${{turn.debt_wbsap|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wbsap|percent:"1,2"}}</td><td class="text-right">${{debt.int.wbsap|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Total</td><td class="text-right">${{debt.total|floatformat:0|intcomma}}</td><td class="text-right"></td><td class="text-right">${{debt.int.total|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Private Banks</td><td class="text-right"><a href="#">${{turn.debt_private|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.private|percent:"1,2"}}</td><td class="text-right">${{calc.debt_private_int|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>World Bank</td><td class="text-right"><a href="#">${{turn.debt_wb|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wb|percent:"1,2"}}</td><td class="text-right">${{calc.debt_wb_int|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>World Bank with <abbr data-toggle="popover" data-placement="bottom" title="Structural Adjustment Program" data-content="Limits Health spending to 15% and Security spending to 20% until loan is repaid. Requires planting 750,000 Ha of cocoa.">SAP</abbr></td><td class="text-right"><a href="#">${{turn.debt_wbsap|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wbsap|percent:"1,2"}}</td><td class="text-right">${{calc.debt_wbsap_int|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Total</td><td class="text-right">${{calc.debt_total|floatformat:0|intcomma}}</td><td class="text-right"></td><td class="text-right">${{calc.debt_total_int|floatformat:0|intcomma}}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -213,26 +212,26 @@
                     <div class="panel panel-default">
                         <table class="table">
                             <tr><th>Category</th><th class="text-right">Rating</th></tr>
-                            <tr><td>Health</td><td class="text-right">{{hap.health|percent}}</td></tr>
-                            <tr><td>Education</td><td class="text-right">{{hap.education|percent}}</td></tr>
-                            <tr><td>Security</td><td class="text-right">{{hap.security|percent}}</td></tr>
-                            <tr><td>Environment</td><td class="text-right">{{hap.env|percent}}</td></tr>
+                            <tr><td>Health</td><td class="text-right">{{calc.hap_health|percent}}</td></tr>
+                            <tr><td>Education</td><td class="text-right">{{calc.hap_education|percent}}</td></tr>
+                            <tr><td>Security</td><td class="text-right">{{calc.hap_security|percent}}</td></tr>
+                            <tr><td>Environment</td><td class="text-right">{{calc.hap_env|percent}}</td></tr>
                             <tr><td colspan="2"><strong>The Masses</strong> <small>(Lower / Middle Classes)</small></td></tr>
-                            <tr><td>Food</td><td class="text-right">{{hap.lfood|percent}}</td></tr>
-                            <tr><td>Luxuries</td><td class="text-right">{{hap.llux|percent}}</td></tr>
-                            <tr><td>Taxes</td><td class="text-right">{{hap.ltax|percent}}</td></tr>
-                            <tr><td>Overall</td><td class="text-right">{{hap.lgen|percent}}</td></tr>
+                            <tr><td>Food</td><td class="text-right">{{calc.hap_lfood|percent}}</td></tr>
+                            <tr><td>Luxuries</td><td class="text-right">{{calc.hap_llux|percent}}</td></tr>
+                            <tr><td>Taxes</td><td class="text-right">{{calc.hap_ltax|percent}}</td></tr>
+                            <tr><td>Overall</td><td class="text-right">{{calc.hap_lgen|percent}}</td></tr>
                             <tr><td colspan="2"><strong>The Elite</strong> <small>(Upper Class)</small></td></tr>
-                            <tr><td>Food</td><td class="text-right">{{hap.ufood|percent}}</td></tr>
-                            <tr><td>Luxuries</td><td class="text-right">{{hap.ulux|percent}}</td></tr>
-                            <tr><td>Taxes</td><td class="text-right">{{hap.utax|percent}}</td></tr>
-                            <tr><td>Overall</td><td class="text-right">{{hap.ugen|percent}}</td></tr>
+                            <tr><td>Food</td><td class="text-right">{{calc.hap_ufood|percent}}</td></tr>
+                            <tr><td>Luxuries</td><td class="text-right">{{calc.hap_ulux|percent}}</td></tr>
+                            <tr><td>Taxes</td><td class="text-right">{{calc.hap_utax|percent}}</td></tr>
+                            <tr><td>Overall</td><td class="text-right">{{calc.hap_ugen|percent}}</td></tr>
                         </table>
                     </div>
                 </div>
         </div>
 
     {% else %}
-        <div class="alert alert-warning">You must be logged in to play the game.</div>
+        <div class="alert alert-warning">Unable to find an active game instance.</div>
     {% endif %}
 {% endblock %}
