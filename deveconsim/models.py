@@ -9,7 +9,7 @@ class Game(models.Model):
     completed_date = models.DateTimeField(blank=True,null=True)
     
     #game constants
-    INT_RATE = {'private':8.75, 'wb':7.15, 'wbsap':7.15}
+    INT_RATE = {'private':.0875, 'wb':.0715, 'wbsap':.0715}
     POP = {'l':4950000, 'u':50000}
     SVC_MAX = {'health':450*10**6, 'education':400*10**6, 'security':900*10**6}
     HAPPINESS = {'l':{'lfood':.20,'llux':.15,'ltax':.16,'health':.14,'education':.14,'security':.14,'env':.07}, #weightings
@@ -74,7 +74,7 @@ class Turn(models.Model):
         
         #debt calculations
         for k,v in g.INT_RATE.items():
-            r['debt_{0}_int'.format(k)] = getattr(self,'debt_'+k)*v/100
+            r['debt_{0}_int'.format(k)] = getattr(self,'debt_'+k)*v
         r['debt_total'] = self.debt_private+self.debt_wb+self.debt_wbsap
         r['debt_total_int'] = r['debt_private_int']+r['debt_wb_int']+r['debt_wbsap_int']
         

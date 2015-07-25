@@ -144,11 +144,11 @@
                     <div class="panel panel-default">
                         <table class="table">
                             <tr><th colspan="2">Summary</th></tr>
-                            <tr><td>Total Income</td><td class="text-right">${{calc.inc_total|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Total Expenses</td><td class="text-right">${{calc.exp_total|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Net Income</td><td class="text-right">${{calc.net|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Current General Fund</td><td class="text-right">${{turn.genfund|floatformat:0|intcomma}}</td></tr>
-                            <tr class="active"><td>Forecasted General Fund</td><td class="text-right">${{calc.new_genfund|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Total Income</td><td class="text-right">{{calc.inc_total|currency:"1,M"}}</td></tr>
+                            <tr><td>Total Expenses</td><td class="text-right">{{calc.exp_total|currency:"1,M"}}</td></tr>
+                            <tr><td>Net Income</td><td class="text-right">{{calc.net|currency:"1,M"}}</td></tr>
+                            <tr><td>Current General Fund</td><td class="text-right">{{turn.genfund|currency:"1,M"}}</td></tr>
+                            <tr class="active"><td>Forecasted General Fund</td><td class="text-right">{{calc.new_genfund|currency:"1,M"}}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -157,11 +157,11 @@
                     <div class="panel panel-default">
                         <table class="table">
                             <tr><th colspan="3">Income</th></tr>
-                            <tr><td>Cocoa Export Tax</td><td class="text-right"><a href="#">{{turn.tax_cocoa|percent:"1,0"}}</a></td><td class="text-right">${{calc.inc_cocoa|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Income Tax - Lower Bracket</td><td class="text-right"><a href="#">{{turn.tax_lower|percent:"1,0"}}</a></td><td class="text-right">${{calc.inc_lower|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Income Tax - Upper Bracket</td><td class="text-right"><a href="#">{{turn.tax_upper|percent:"1,0"}}</a></td><td class="text-right">${{calc.inc_upper|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Cocoa Export Tax</td><td class="text-right"><a href="#">{{turn.tax_cocoa|percentint}}</a></td><td class="text-right">{{calc.inc_cocoa|currency:"1,M"}}</td></tr>
+                            <tr><td>Income Tax - Lower Bracket</td><td class="text-right"><a href="#">{{turn.tax_lower|percentint}}</a></td><td class="text-right">{{calc.inc_lower|currency:"1,M"}}</td></tr>
+                            <tr><td>Income Tax - Upper Bracket</td><td class="text-right"><a href="#">{{turn.tax_upper|percentint}}</a></td><td class="text-right">{{calc.inc_upper|currency:"1,M"}}</td></tr>
                             <tr><td colspan="4">&nbsp;</td></tr>
-                            <tr><td colspan="2">Total</td><td class="text-right">${{calc.inc_total|floatformat:0|intcomma}}</td></tr>
+                            <tr><td colspan="2">Total</td><td class="text-right">{{calc.inc_total|currency:"1,M"}}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -170,11 +170,11 @@
                     <div class="panel panel-default">
                         <table class="table">
                             <tr><th colspan="4">Expenses</th></tr>
-                            <tr><td>Health Care</td><td class="text-right"><a href="#">{{turn.svc_health|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{calc.exp_health|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Education</td><td class="text-right"><a href="#">{{turn.svc_education|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{calc.exp_education|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Security</td><td class="text-right"><a href="#">{{turn.svc_security|percent:"1,0"}}</a></td><td colspan="2" class="text-right">${{calc.exp_security|floatformat:0|intcomma}}</td></tr>
-                            <tr><td colspan="2">Debt Interest</td><td colspan="2" class="text-right">${{calc.exp_debt_int|floatformat:0|intcomma}}</td></tr>
-                            <tr><td colspan="2">Total</td><td colspan="2" class="text-right">${{calc.exp_total|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Health Care</td><td class="text-right"><a href="#">{{turn.svc_health|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_health|currency:"1,M"}}</td></tr>
+                            <tr><td>Education</td><td class="text-right"><a href="#">{{turn.svc_education|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_education|currency:"1,M"}}</td></tr>
+                            <tr><td>Security</td><td class="text-right"><a href="#">{{turn.svc_security|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_security|currency:"1,M"}}</td></tr>
+                            <tr><td colspan="2">Debt Interest</td><td colspan="2" class="text-right">{{calc.exp_debt_int|currency:"1,M"}}</td></tr>
+                            <tr><td colspan="2">Total</td><td colspan="2" class="text-right">{{calc.exp_total|currency:"1,M"}}</td></tr>
                         </table>
                     </div>
                 </div>
@@ -186,13 +186,13 @@
                     <h4><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</h4>
                     <div class="panel panel-default">
                         <table class="table">
-                            <tr><td colspan="3">Plantable Area</td><td class="text-right">{{turn.land|intcomma}} Ha</td></tr>
-                            <tr><td colspan="3">Land Productivity</td><td class="text-right">{{turn.landprod|percent}}</td></tr>
-                            <tr><td colspan="3">Pesticide Use</td><td class="text-right"><a href="#">{{turn.get_pesticides_display}}</a></td></tr>
+                            <tr><td colspan="2">Plantable Area</td><td colspan="2" class="text-right">{{turn.land|intcomma}} ha</td></tr>
+                            <tr><td colspan="2">Land Productivity</td><td colspan="2" class="text-right">{{turn.landprod|percent}}</td></tr>
+                            <tr><td colspan="2">Pesticide Use</td><td colspan="2" class="text-right"><a href="#">{{turn.get_pesticides_display}}</a></td></tr>
                             <tr><th>Crop</th><th class="text-right">Area Planted</th><th class="text-right">Expected Yield</th><th class="text-right">Current Price</th></tr>
-                            <tr><td>Corn</td><td class="text-right"><a href="#">{{turn.corn|intcomma}} Ha</a></td><td class="text-right">{{calc.corn.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.corn.price|floatformat:3|intcomma}}/kg</a></td></tr>
-                            <tr><td>Cocoa</td><td class="text-right"><a href="#">{{turn.cocoa|intcomma}} Ha</a></td><td class="text-right">{{calc.cocoa.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">${{calc.cocoa.price|floatformat:3|intcomma}}/kg</a></td></tr>
-                            <tr><td>Not Planted</td><td class="text-right">{{calc.unplanted|intcomma}} Ha</td><td class="text-right"></td><td class="text-right"></td></tr>
+                            <tr><td>Corn</td><td class="text-right"><a href="#">{{turn.corn|intcomma}} ha</a></td><td class="text-right">{{calc.corn.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">{{calc.corn.price|currency:"3"}}/kg</a></td></tr>
+                            <tr><td>Cocoa</td><td class="text-right"><a href="#">{{turn.cocoa|intcomma}} ha</a></td><td class="text-right">{{calc.cocoa.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="#">{{calc.cocoa.price|currency:"3"}}/kg</a></td></tr>
+                            <tr><td>Unplanted</td><td class="text-right">{{calc.unplanted|intcomma}} ha</td><td class="text-right"></td><td class="text-right"></td></tr>
                         </table>
                     </div>
                     
@@ -200,10 +200,10 @@
                     <div class="panel panel-default">
                         <table class="table">
                             <tr><th>Creditor</th><th class="text-right">Balance Owed</th><th class="text-right">Interest Rate</th><th class="text-right">Annual Interest</th></tr>
-                            <tr><td>Private Banks</td><td class="text-right"><a href="#">${{turn.debt_private|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.private|percent:"1,2"}}</td><td class="text-right">${{calc.debt_private_int|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>World Bank</td><td class="text-right"><a href="#">${{turn.debt_wb|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wb|percent:"1,2"}}</td><td class="text-right">${{calc.debt_wb_int|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>World Bank with <abbr data-toggle="popover" data-placement="bottom" title="Structural Adjustment Program" data-content="Limits Health spending to 15% and Security spending to 20% until loan is repaid. Requires planting 750,000 Ha of cocoa.">SAP</abbr></td><td class="text-right"><a href="#">${{turn.debt_wbsap|floatformat:0|intcomma}}</a></td><td class="text-right">{{turn.game.INT_RATE.wbsap|percent:"1,2"}}</td><td class="text-right">${{calc.debt_wbsap_int|floatformat:0|intcomma}}</td></tr>
-                            <tr><td>Total</td><td class="text-right">${{calc.debt_total|floatformat:0|intcomma}}</td><td class="text-right"></td><td class="text-right">${{calc.debt_total_int|floatformat:0|intcomma}}</td></tr>
+                            <tr><td>Private Banks</td><td class="text-right"><a href="#">{{turn.debt_private|currency:"1,M"}}</a></td><td class="text-right">{{turn.game.INT_RATE.private|percent:2}}</td><td class="text-right">{{calc.debt_private_int|currency:"1,M"}}</td></tr>
+                            <tr><td>World Bank</td><td class="text-right"><a href="#">{{turn.debt_wb|currency:"1,M"}}</a></td><td class="text-right">{{turn.game.INT_RATE.wb|percent:2}}</td><td class="text-right">{{calc.debt_wb_int|currency:"1,M"}}</td></tr>
+                            <tr><td>World Bank with <abbr data-toggle="popover" data-placement="bottom" title="Structural Adjustment Program" data-content="Limits Health spending to 15% and Security spending to 20% until loan is repaid. Requires planting 750,000 Ha of cocoa.">SAP</abbr></td><td class="text-right"><a href="#">{{turn.debt_wbsap|currency:"1,M"}}</a></td><td class="text-right">{{turn.game.INT_RATE.wbsap|percent:2}}</td><td class="text-right">{{calc.debt_wbsap_int|currency:"1,M"}}</td></tr>
+                            <tr><td>Total</td><td class="text-right">{{calc.debt_total|currency:"1,M"}}</td><td class="text-right"></td><td class="text-right">{{calc.debt_total_int|currency:"1,M"}}</td></tr>
                         </table>
                     </div>
                 </div>
