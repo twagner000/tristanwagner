@@ -57,6 +57,6 @@ def index(request):
     root = ET.fromstring(xml.text.encode('utf8'))
     for g in favs:
         item = root.find("item[@objectid='%s']" % g['id'])
-        g['numplays'] = item.find('numplays').text
+        g['numplays'] = item.find('numplays').text if item else ''
 
     return render(request, 'games/index.html', {'plays':plays, 'favs':favs, 'bgg_user':settings.BGG_USER})
