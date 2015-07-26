@@ -1,18 +1,25 @@
-.neg-currency {
-    color: #f00;
+html, body {
+    height: 100%;
 }
 
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
+#navbar-main {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
-.navbar {
-  margin-bottom: 20px;
+#game-nav .navbar-nav {
+    padding: 8px 3px;
+    width: 100%;
+    margin: 0;
 }
 
 footer {
   padding-top: 20px;
+  padding-bottom: 80px;
+}
+
+.neg-currency {
+    color: #f00;
 }
 
 /* CUSTOMIZE THE CAROUSEL

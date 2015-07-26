@@ -1,69 +1,9 @@
-{% extends "tristanwagner/base.html" %}
+{% extends "deveconsim/base.html" %}
 {% load staticfiles %}
 {% load humanize %}
 {% load deveconsim_extras %}
 
 {% block content %}
-    <div>            
-        <nav class="navbar navbar-inverse">
-            <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
-                <div class="navbar-header">
-                  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#game-navbar-collapse" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                  </button>
-                  <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Globalization Game</a>
-                </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="game-navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="#tutorial" aria-controls="tutorial" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Tutorial</a></li>
-                        <li><a href="#budget" aria-controls="budget" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Budget</a></li>
-                        <li><a href="#crops" aria-controls="crops" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a></li>
-                        <li><a href="#debt" aria-controls="debt" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt</a></li>
-                        <li><a href="#people" aria-controls="people" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> People</a></li>
-                    </ul>
-                    <div class="navbar-right navbar-form form-inline">
-                        <div class="btn-group" role="group">
-                            <a href="#" class="btn btn-default">End Turn {{turn.turn}}</a>
-                            <a href="{% url 'deveconsim:start' %}" class="btn btn-default" title="Restart game"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-        
-        <!--div class="navbar navbar-fixed-top">
-            <div class="navbar-header pull-left">
-              <a class="navbar-brand" href="#">Title Here</a>
-            </div>
-            <div class="navbar-header pull-right">
-              <button type="button" class="btn btn-default navbar-btn">Button 1</button>
-              <button type="button" class="btn btn-default navbar-btn">Button 2</button>
-            </div>
-        </div-->
-        
-        
-        <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="tutorial">
-               
-            </div>
-            
-            <div role="tabpanel" class="tab-pane" id="budget">
-
-            </div>
-            
-            <div role="tabpanel" class="tab-pane" id="crops"><h4>Crops</h4></div>
-            <div role="tabpanel" class="tab-pane" id="debt"><h4>Debt</h4></div>
-            <div role="tabpanel" class="tab-pane" id="people"><h4>People</h4></div>
-        </div>
-    </div>
-    
-    <div>
     {% if turn.turn == 1 %}
         <div class="alert alert-info" role="alert">
             <h4>Tutorial: Part I</h4>
