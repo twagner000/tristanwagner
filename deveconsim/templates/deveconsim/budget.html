@@ -1,0 +1,101 @@
+{% extends "deveconsim/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load deveconsim_extras %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <h4 class="row">
+                <div class="col-xs-10"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Budget</div>
+                <div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></div>
+            </h4>
+            <p>The budget is where you set taxes (income) and spending levels (expenses) for your country.
+                When you end a turn, your income minus expenses will be added to the <b>General Fund</b>, which may never drop below zero.</p>
+            {% if turn.debt_wbsap %}<div class="alert alert-warning">*Due to a Structural Adjustment Program (SAP) to which you agreed as part of a World Bank loan, your health spending is limited to 15% and your security spending is limited to 20%. These restrictions will be lifted once your loan is repaid.</div>{% endif %}
+            <form role="form" class="form-horizontal" method="post">
+            {% csrf_token %}
+            {% for field in budget_form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
+                        {{ field.label }}{% if turn.debt_wbsap %}{% if field.name = 'svc_health' or field.name = 'svc_security' %}*{% endif %}{% endif %}
+                    </label>
+                    <div class="col-sm-5">
+                        {% if field.errors %}<div class='alert alert-danger'>{% endif %}
+                        {{ field.errors }}
+                        {{ field }}
+                        {% if field.errors %}</div>{% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+                <div class="form-group">
+                    <div class="col-sm-5 col-sm-offset-5 col-xs-12">
+                        <button type="submit" class="btn btn-primary btn-block">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <br/>
+    {% include "deveconsim/budget_table.html" %}
+{% endblock %}
+
+{% block script %}{{ block.super }}
+    <script>
+        $(".touchspin-pct").each(function(index) {
+            $(this).TouchSpin({
+                min: 0,
+                max: 100,
+                step: 1,
+                decimals: 0,
+                boostat: 5,
+                maxboostedstep: 10,
+                postfix: '%'
+            });
+        });
+        
+    {% if turn.debt_wbsap %}
+        $("input[name='svc_health']").trigger("touchspin.updatesettings", {max: 15});
+        $("input[name='svc_security']").trigger("touchspin.updatesettings", {max: 20});
+    {% endif %}
+    </script>
+{% endblock %}
+
+{% block moreinfotitle %}More about the Budget{% endblock %}
+
+{% block moreinfo %}
+    <p>The budget is where you set taxes (income) and spending levels (expenses) for your country.
+        When you end a turn, your income minus expenses will be added to the <b>General Fund</b>, which may never drop below zero.</p>
+    <p>There are two types of taxes for raising income: <b>Cocoa Export Taxes</b> and income taxes.
+        Cocoa export taxes require growers to pay tax on every ton of cocoa they sell before taking any profit.
+        If this tax is too high, it may cause growers to lose money, making some of your wealthier citizens unhappy.</p>
+    <p>You may also impose <b>Income Taxes</b> on your country's citizens.
+        There are two tax brackets &dash; one for your country's poor and middle classes (the lower bracket), and one for your country's wealthier citizens (the upper bracket).
+        Too high of income taxes will make people unhappy.</p>
+    <p>Income may be spent on <b>Healthcare</b>, <b>Education</b>, and <b>Security</b> (police/military) for your citizens.
+        Each service has a funding level that is a percentage of the maximum level for that service.
+        This is <em>not</em> a percentage of your total budget; they do <em>not</em> need to add up to 100%.
+        Funding government services makes your citizens happier, but different groups of citizens have different priorities.
+        If you have accepted a structural adjustment program (SAP) from the World Bank, your spending on certain services will be limited.</p>
+    <div class="alert alert-info">
+        <div class="media">
+            <div class="media-left">
+                <img class="media-object img-rounded" src="{% static 'deveconsim/img/business.gif' %}" alt="Business consultant" style="background: #05a;">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">Business Consultant</h4>
+                &quot;People like to spend their own money; high taxes make people very unhappy. Cocoa taxes will cause growers to make less money. If I were you, I would be careful not spend too much money on services-- the money could be better spent building your economy so that you can afford services later.&quot;
+            </div>
+        </div>
+        <div class="media">
+            <div class="media-left">
+                <img class="media-object img-rounded" src="{% static 'deveconsim/img/activist.gif' %}" alt="Social activist" style="background: #05a;">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">Social Activist</h4>
+                &quot;You should tax your people so that you may at least afford the most basic of services. Health Care and Education are important to your people and will make them happy. How will your people have a chance at success if they don't have an education?&quot;
+            </div>
+        </div>
+    </div>
+{% endblock %}

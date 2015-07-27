@@ -1,0 +1,42 @@
+{% load deveconsim_extras %}
+
+        <div class="row">
+            <div class="col-sm-12 col-md-4">
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tr><th colspan="2">Summary</th></tr>
+                        <tr><td>General Fund</td><td class="text-right">{{turn.genfund|currency:"1,M"}}</td></tr>
+                        <tr><td>Total Income</td><td class="text-right">{{calc.inc_total|currency:"1,M"}}</td></tr>
+                        <tr><td>Total Expenses</td><td class="text-right">{{calc.exp_total|currency:"1,M"}}</td></tr>
+                        <tr><td>Net Income</td><td class="text-right">{{calc.net|currency:"1,M"}}</td></tr>
+                        <tr class="active"><td>Forecasted General Fund</td><td class="text-right">{{calc.new_genfund|currency:"1,M"}}</td></tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-sm-12 col-md-4">
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tr><th colspan="3"><a name="income"></a>Income</th></tr>
+                        <tr><td>Cocoa Export Tax</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.tax_cocoa|percentint}}</a></td><td class="text-right">{{calc.inc_cocoa|currency:"1,M"}}</td></tr>
+                        <tr><td>Income Tax - Lower Bracket</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.tax_lower|percentint}}</a></td><td class="text-right">{{calc.inc_lower|currency:"1,M"}}</td></tr>
+                        <tr><td>Income Tax - Upper Bracket</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.tax_upper|percentint}}</a></td><td class="text-right">{{calc.inc_upper|currency:"1,M"}}</td></tr>
+                        <tr><td colspan="4">&nbsp;</td></tr>
+                        <tr><td colspan="2">Total</td><td class="text-right">{{calc.inc_total|currency:"1,M"}}</td></tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="col-sm-12 col-md-4">
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tr><th colspan="4"><a name="expenses"></a>Expenses</th></tr>
+                        <tr><td>Healthcare</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.svc_health|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_health|currency:"1,M"}}</td></tr>
+                        <tr><td>Education</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.svc_education|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_education|currency:"1,M"}}</td></tr>
+                        <tr><td>Security</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.svc_security|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_security|currency:"1,M"}}</td></tr>
+                        <tr><td colspan="2">Debt Interest</td><td colspan="2" class="text-right">{{calc.exp_debt_int|currency:"1,M"}}</td></tr>
+                        <tr><td colspan="2">Total</td><td colspan="2" class="text-right">{{calc.exp_total|currency:"1,M"}}</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>

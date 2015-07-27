@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.views.generic import View
 from .models import Game, Turn
-from .forms import GameForm
+from .forms import GameForm, BudgetForm
 
 def votedout():
     #set voted out flag to true
@@ -23,9 +23,7 @@ def open_games(request):
 
 class TurnView(View):
     template = None
-    def get_actions(self, request, context):
-        return context
-    def get(self, request):
+    def turn(self, request, post=False):
         og = open_games(request)
         if len(og) > 1:
             return redirect(reverse('deveconsim:choose_open'))
@@ -33,13 +31,37 @@ class TurnView(View):
             return redirect(reverse('deveconsim:start'))
         else:
             turn = og[0].turn_set.order_by('-turn')[0]
-            return render(request, self.template, self.get_actions(request, {'turn':turn}))
+            return render(request, self.template, self.post_actions(request, {'turn':turn}) if post else self.get_actions(request, {'turn':turn}))
+    def get_actions(self, request, context):
+        return context
+    def post_actions(self, request, context):
+        return context
+    def get(self, request):
+        return self.turn(request)
+    def post(self, request):
+        return self.turn(request, True)
 
 class IndexView(TurnView):
     template = 'deveconsim/index.html'
+    
     def get_actions(self, request, context):
         context['calc'] = context['turn'].calc()
-        return context        
+        return context
+
+class BudgetView(TurnView):
+    template = 'deveconsim/budget.html'
+    
+    def get_actions(self, request, context):
+        context['calc'] = context['turn'].calc()
+        context['budget_form'] = BudgetForm(instance=context['turn'])
+        return context
+    
+    def post_actions(self, request, context):
+        form = BudgetForm(request.POST, instance=context['turn'])
+        if form.is_valid():
+            turn = form.save(commit=False)
+            turn.save()
+        return self.get_actions(request, context)
 
 def start(request):
     if request.method == "POST":
