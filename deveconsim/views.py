@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.views.generic import View
 from .models import Game, Turn
-from .forms import GameForm, BudgetForm
+from .forms import GameForm, CropsForm, BudgetForm
 
 def votedout():
     #set voted out flag to true
@@ -31,11 +31,11 @@ class TurnView(View):
             return redirect(reverse('deveconsim:start'))
         else:
             turn = og[0].turn_set.order_by('-turn')[0]
-            return render(request, self.template, self.post_actions(request, {'turn':turn}) if post else self.get_actions(request, {'turn':turn}))
+            return self.post_actions(request, {'turn':turn}) if post else self.get_actions(request, {'turn':turn})
     def get_actions(self, request, context):
-        return context
+        return render(request, self.template, context)
     def post_actions(self, request, context):
-        return context
+        return render(request, self.template, context)
     def get(self, request):
         return self.turn(request)
     def post(self, request):
@@ -46,21 +46,45 @@ class IndexView(TurnView):
     
     def get_actions(self, request, context):
         context['calc'] = context['turn'].calc()
-        return context
+        return render(request, self.template, context)
 
+class CropsView(TurnView):
+    template = 'deveconsim/crops.html'
+    
+    def get_actions(self, request, context):
+        context['calc'] = context['turn'].calc()
+        context['crops_form'] = CropsForm(instance=context['turn'])
+        return render(request, self.template, context)
+    
+    def post_actions(self, request, context):
+        form = CropsForm(request.POST, instance=context['turn'])
+        if form.is_valid():
+            #You must plant at least 10,000 ha.
+            #You only have ??? ha of non-[crop] land to plant; you can't plant more than that.
+            #You only have turn.genfund in your country's General Fund right now -- you need $??? to plant ??? new ha of [crop].
+            #You cannot take loans of less than $0 or of more than the total cost of planting the cocoa!
+            #The World Bank only offers loans for planting Cocoa.
+            #In order to plant ??? ha of [crop], you will need to remove ??? ha of [othercrop].
+            #Planting ??? ha of [crop] will cost $???. Your country currently has $??? in its General Fund. You will need to take a $??? loan from the World Bank in order to have enough money to plant all of this cocoa. If you wish, you may take a bigger loan (up to 100% of the amount needed).
+            turn = form.save(commit=False)
+            turn.save()
+            return redirect(reverse('deveconsim:index'))
+        return self.get_actions(request, context)
+        
 class BudgetView(TurnView):
     template = 'deveconsim/budget.html'
     
     def get_actions(self, request, context):
         context['calc'] = context['turn'].calc()
         context['budget_form'] = BudgetForm(instance=context['turn'])
-        return context
+        return render(request, self.template, context)
     
     def post_actions(self, request, context):
         form = BudgetForm(request.POST, instance=context['turn'])
         if form.is_valid():
             turn = form.save(commit=False)
             turn.save()
+            return redirect(reverse('deveconsim:index'))
         return self.get_actions(request, context)
 
 def start(request):

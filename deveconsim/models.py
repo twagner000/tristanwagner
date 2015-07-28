@@ -25,7 +25,7 @@ class Game(models.Model):
         return 'Game "{2}" started {1} on {0:%m}/{0:%d}/{0:%y} at {0:%H}:{0:%M}'.format(self.started_date, 'by {0}'.format(self.user) if self.user else 'anonymously', self.name)
         
     def hapw(self,h):
-        return self.HAPPINESS_WEIGHTS[int(h*len(self.HAPPINESS_WEIGHTS))]
+        return self.HAPPINESS_WEIGHTS[int(h*(len(self.HAPPINESS_WEIGHTS)-1))]
 
 class Turn(models.Model):
     game = models.ForeignKey(Game)

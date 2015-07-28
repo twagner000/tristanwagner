@@ -24,3 +24,13 @@ class BudgetForm(forms.ModelForm):
                    'svc_education':forms.TextInput(attrs={'class':'form-control touchspin-pct'}),
                    'svc_security':forms.TextInput(attrs={'class':'form-control touchspin-pct'}),}
         
+class CropsForm(forms.ModelForm):
+    class Meta:
+        model = models.Turn
+        fields = ('pesticides', 'corn', 'cocoa',)
+        labels = {'pesticides':'Pesticide Use',
+                  'corn':'Area Planted with Corn',
+                  'cocoa':'Area Planted with Cocoa',}
+        widgets = {'pesticides':forms.Select(attrs={'class':'form-control'}),
+                   'corn':forms.TextInput(attrs={'class':'form-control touchspin-ha'}),
+                   'cocoa':forms.TextInput(attrs={'class':'form-control touchspin-ha'}),}

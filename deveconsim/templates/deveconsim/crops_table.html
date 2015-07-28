@@ -1,0 +1,14 @@
+{% load deveconsim_extras %}
+{% load humanize %}
+
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tr><td colspan="2">Plantable Area</td><td colspan="2" class="text-right">{{turn.land|intcomma}} ha</td></tr>
+                        <tr><td colspan="2">Land Productivity</td><td colspan="2" class="text-right">{{turn.landprod|percent}}</td></tr>
+                        <tr><td colspan="2">Pesticide Use</td><td colspan="2" class="text-right"><a href="{% url 'deveconsim:crops' %}">{{turn.get_pesticides_display}}</a></td></tr>
+                        <tr><th>Crop</th><th class="text-right">Area Planted</th><th class="text-right">Expected Yield</th><th class="text-right">Current Price</th></tr>
+                        <tr><td>Corn</td><td class="text-right"><a href="#">{{turn.corn|intcomma}} ha</a></td><td class="text-right">{{calc.corn.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="{% url 'deveconsim:crops' %}">{{calc.corn.price|currency:"3"}}/kg</a></td></tr>
+                        <tr><td>Cocoa</td><td class="text-right"><a href="#">{{turn.cocoa|intcomma}} ha</a></td><td class="text-right">{{calc.cocoa.yield|floatformat:0|intcomma}} kg/ha</td><td class="text-right"><a href="{% url 'deveconsim:crops' %}">{{calc.cocoa.price|currency:"3"}}/kg</a></td></tr>
+                        <tr><td>Unplanted</td><td class="text-right">{{calc.unplanted|intcomma}} ha</td><td class="text-right"></td><td class="text-right"></td></tr>
+                    </table>
+                </div>
