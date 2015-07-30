@@ -39,8 +39,8 @@ class Turn(models.Model):
     #defaults are for turn 1
     genfund = models.PositiveIntegerField(default=20*10**6)
     debt_private = models.PositiveIntegerField(default=250*10**6)
-    debt_wb = models.PositiveIntegerField(default=500*10**6)
-    debt_wbsap = models.PositiveIntegerField(default=250*10**6)
+    debt_wb = models.PositiveIntegerField(default=750*10**6)
+    debt_wbsap = models.PositiveIntegerField(default=0)
     tax_cocoa = models.PositiveSmallIntegerField(default=10, validators=[MaxValueValidator(30)])
     tax_lower = models.PositiveSmallIntegerField(default=20, validators=[MaxValueValidator(70)])
     tax_upper = models.PositiveSmallIntegerField(default=30, validators=[MaxValueValidator(70)])
