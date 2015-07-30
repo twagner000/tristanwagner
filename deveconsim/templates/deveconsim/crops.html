@@ -14,11 +14,10 @@
             <p>Your country's economy depends upon agriculture. This page allows you to change what type of pesticides are used in your country and how your crop land is allocated between corn and cocoa.</p>
             <form role="form" class="form-horizontal" method="post">
             {% csrf_token %}
-            {% if form.errors.insufficient_land %}<div class="alert alert-danger">{{form.errors.insufficient_land}}</div>{% endif %}
             {% for field in form %}
                 {% if field.name == 'corn' %}
                 <div class="form-group">
-                    <label for="plantable_area" class="col-sm-5 control-label">
+                    <label for="plantable_area" class="col-sm-4 control-label">
                         Total Plantable Area
                     </label>
                     <div class="col-sm-5">
@@ -27,12 +26,12 @@
                 </div>
                 {% endif %}
                 <div class="form-group">
-                    <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
+                    <label for="{{ field.id_for_label }}" class="col-sm-4 control-label">
                         {{ field.label }}
                     </label>
                     <div class="col-sm-5">
                         {% if field.errors %}<div class='alert alert-danger'>{% endif %}
-                        {{ field.errors }}
+                        {% for error in field.errors %}{{ error }}<br/>{% endfor %}
                         {% if field.name == 'corn' or field.name == 'cocoa' %}
                             {{ field|add_class:"form-control touchspin-kha" }}
                         {% else %}
@@ -40,10 +39,13 @@
                         {% endif %}
                         {% if field.errors %}</div>{% endif %}
                     </div>
+                    {% if field.name == "corn" %}<div class="col-sm-3"><p class="form-control-static text-muted">(was {{turn.start_corn|intcomma}} kha)</p></div>{% endif %}
+                    {% if field.name == "cocoa" %}<div class="col-sm-3"><p class="form-control-static text-muted">(was {{turn.start_cocoa|intcomma}} kha)</p></div>{% endif %}
                 </div>
             {% endfor %}
+            {% if form.errors.insufficient_land %}<div class="alert alert-danger">{{form.errors.insufficient_land}}</div>{% endif %}
                 <div class="form-group">
-                    <div class="col-sm-5 col-sm-offset-5 col-xs-12">
+                    <div class="col-sm-5 col-sm-offset-4 col-xs-12">
                         <button type="submit" class="btn btn-primary btn-block">Update</button>
                     </div>
                 </div>

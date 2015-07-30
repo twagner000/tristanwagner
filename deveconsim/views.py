@@ -72,7 +72,7 @@ class BudgetView(TurnView):
     
     def get_actions(self, request, context):
         context['calc'] = context['turn'].calc()
-        context['budget_form'] = BudgetForm(instance=context['turn'])
+        context['form'] = BudgetForm(instance=context['turn'])
         return render(request, self.template, context)
     
     def post_actions(self, request, context):
@@ -81,7 +81,10 @@ class BudgetView(TurnView):
             turn = form.save(commit=False)
             turn.save()
             return redirect(reverse('deveconsim:index'))
-        return self.get_actions(request, context)
+        else:
+            context['calc'] = context['turn'].calc()
+            context['form'] = form
+            return render(request, self.template, context)
 
 def start(request):
     if request.method == "POST":

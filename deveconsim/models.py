@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import math
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Game(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -25,7 +26,7 @@ class Game(models.Model):
         return 'Game "{2}" started {1} on {0:%m}/{0:%d}/{0:%y} at {0:%H}:{0:%M}'.format(self.started_date, 'by {0}'.format(self.user) if self.user else 'anonymously', self.name)
         
     def hapw(self,h):
-        return self.HAPPINESS_WEIGHTS[int(h*(len(self.HAPPINESS_WEIGHTS)-1))]
+        return self.HAPPINESS_WEIGHTS[int(min(1,h)*(len(self.HAPPINESS_WEIGHTS)-1))]
 
 class Turn(models.Model):
     game = models.ForeignKey(Game)
@@ -40,18 +41,18 @@ class Turn(models.Model):
     debt_private = models.PositiveIntegerField(default=250*10**6)
     debt_wb = models.PositiveIntegerField(default=500*10**6)
     debt_wbsap = models.PositiveIntegerField(default=250*10**6)
-    tax_cocoa = models.PositiveSmallIntegerField(default=10)
-    tax_lower = models.PositiveSmallIntegerField(default=20)
-    tax_upper = models.PositiveSmallIntegerField(default=30)
-    svc_health = models.PositiveSmallIntegerField(default=25)
-    svc_education = models.PositiveSmallIntegerField(default=25)
-    svc_security = models.PositiveSmallIntegerField(default=35)
+    tax_cocoa = models.PositiveSmallIntegerField(default=10, validators=[MaxValueValidator(30)])
+    tax_lower = models.PositiveSmallIntegerField(default=20, validators=[MaxValueValidator(70)])
+    tax_upper = models.PositiveSmallIntegerField(default=30, validators=[MaxValueValidator(70)])
+    svc_health = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100)])
+    svc_education = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100)])
+    svc_security = models.PositiveSmallIntegerField(default=35, validators=[MaxValueValidator(100)])
     land = models.PositiveIntegerField(default=10**3)
     corn = models.PositiveIntegerField(default=900)
     start_corn = models.PositiveIntegerField(default=900)
     cocoa = models.PositiveIntegerField(default=100)
     start_cocoa = models.PositiveIntegerField(default=100)
-    landprod = models.FloatField(default=1.)
+    landprod = models.FloatField(default=1., validators=[MaxValueValidator(0), MaxValueValidator(1)])
     pesticides = models.PositiveSmallIntegerField(choices=PESTICIDE_CHOICES, default=0)
     
     class Meta:

@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% load humanize %}
 {% load deveconsim_extras %}
+{% load widget_tweaks %}
 
 {% block content %}
     <div class="row">
@@ -12,18 +13,32 @@
             </h4>
             <p>The budget is where you set taxes (income) and spending levels (expenses) for your country.
                 When you end a turn, your income minus expenses will be added to the <b>General Fund</b>, which may never drop below zero.</p>
-            {% if turn.debt_wbsap %}<div class="alert alert-warning">*Due to a Structural Adjustment Program (SAP) to which you agreed as part of a World Bank loan, your health spending is limited to 15% and your security spending is limited to 20%. These restrictions will be lifted once your loan is repaid.</div>{% endif %}
             <form role="form" class="form-horizontal" method="post">
             {% csrf_token %}
-            {% for field in budget_form %}
+            {% if form.errors.sap_limit %}<div class="alert alert-danger">{{form.errors.sap_limit}}</div>{% endif %}
+            {% for field in form %}
                 <div class="form-group">
                     <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
                         {{ field.label }}{% if turn.debt_wbsap %}{% if field.name = 'svc_health' or field.name = 'svc_security' %}*{% endif %}{% endif %}
                     </label>
                     <div class="col-sm-5">
                         {% if field.errors %}<div class='alert alert-danger'>{% endif %}
-                        {{ field.errors }}
-                        {{ field }}
+                        {% for error in field.errors %}{{ error }}<br/>{% endfor %}
+                        {% if field.name == 'tax_cocoa' %}
+                            {{ field|add_class:"form-control touchspin-pct-30" }}
+                        {% elif field.name == 'tax_lower' or field.name == 'tax_upper' %}
+                            {{ field|add_class:"form-control touchspin-pct-70" }}
+                        {% elif field.name == 'svc_health' or field.name == 'svc_education' or field.name == 'svc_security' %}
+                            {% if field.name == 'svc_health' and turn.debt_wbsap %}
+                                {{ field|add_class:"form-control touchspin-pct-15" }}
+                            {% elif field.name == 'svc_security' and turn.debt_wbsap %}
+                                {{ field|add_class:"form-control touchspin-pct-20" }}
+                            {% else %}
+                                {{ field|add_class:"form-control touchspin-pct" }}
+                            {% endif %}
+                        {% else %}
+                            {{ field|add_class:"form-control" }}
+                        {% endif %}
                         {% if field.errors %}</div>{% endif %}
                     </div>
                 </div>
@@ -39,7 +54,43 @@
 {% endblock %}
 
 {% block script %}{{ block.super }}
-    <script>
+    <!--script>
+        $(".touchspin-pct").each(function(index) {
+            $(this).TouchSpin({
+                min: 0,
+                max: 100,
+                step: 5,
+                decimals: 0,
+                boostat: 5,
+                maxboostedstep: 10,
+                postfix: '%'
+            });
+        });
+        
+        $(".touchspin-pct-15").each(function(index) {
+            $(this).TouchSpin({
+                min: 0,
+                max: 15,
+                step: 5,
+                decimals: 0,
+                boostat: 5,
+                maxboostedstep: 10,
+                postfix: '%'
+            });
+        });
+        
+        $(".touchspin-pct-20").each(function(index) {
+            $(this).TouchSpin({
+                min: 0,
+                max: 20,
+                step: 5,
+                decimals: 0,
+                boostat: 5,
+                maxboostedstep: 10,
+                postfix: '%'
+            });
+        });
+        
         $(".touchspin-pct-30").each(function(index) {
             $(this).TouchSpin({
                 min: 0,
@@ -64,23 +115,8 @@
             });
         });
         
-        $(".touchspin-pct").each(function(index) {
-            $(this).TouchSpin({
-                min: 0,
-                max: 100,
-                step: 5,
-                decimals: 0,
-                boostat: 5,
-                maxboostedstep: 10,
-                postfix: '%'
-            });
-        });
         
-    {% if turn.debt_wbsap %}
-        $("input[name='svc_health']").trigger("touchspin.updatesettings", {max: 15});
-        $("input[name='svc_security']").trigger("touchspin.updatesettings", {max: 20});
-    {% endif %}
-    </script>
+    </script-->
 {% endblock %}
 
 {% block moreinfotitle %}More about the Budget{% endblock %}
