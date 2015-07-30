@@ -53,23 +53,19 @@ class CropsView(TurnView):
     
     def get_actions(self, request, context):
         context['calc'] = context['turn'].calc()
-        context['crops_form'] = CropsForm(instance=context['turn'])
+        context['form'] = CropsForm(instance=context['turn'])
         return render(request, self.template, context)
     
     def post_actions(self, request, context):
         form = CropsForm(request.POST, instance=context['turn'])
         if form.is_valid():
-            #You must plant at least 10,000 ha.
-            #You only have ??? ha of non-[crop] land to plant; you can't plant more than that.
-            #You only have turn.genfund in your country's General Fund right now -- you need $??? to plant ??? new ha of [crop].
-            #You cannot take loans of less than $0 or of more than the total cost of planting the cocoa!
-            #The World Bank only offers loans for planting Cocoa.
-            #In order to plant ??? ha of [crop], you will need to remove ??? ha of [othercrop].
-            #Planting ??? ha of [crop] will cost $???. Your country currently has $??? in its General Fund. You will need to take a $??? loan from the World Bank in order to have enough money to plant all of this cocoa. If you wish, you may take a bigger loan (up to 100% of the amount needed).
             turn = form.save(commit=False)
             turn.save()
             return redirect(reverse('deveconsim:index'))
-        return self.get_actions(request, context)
+        else:
+            context['calc'] = context['turn'].calc()
+            context['form'] = form
+            return render(request, self.template, context)
         
 class BudgetView(TurnView):
     template = 'deveconsim/budget.html'

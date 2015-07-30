@@ -46,9 +46,11 @@ class Turn(models.Model):
     svc_health = models.PositiveSmallIntegerField(default=25)
     svc_education = models.PositiveSmallIntegerField(default=25)
     svc_security = models.PositiveSmallIntegerField(default=35)
-    land = models.PositiveIntegerField(default=10**6)
-    corn = models.PositiveIntegerField(default=900*10**3)
-    cocoa = models.PositiveIntegerField(default=100*10**3)
+    land = models.PositiveIntegerField(default=10**3)
+    corn = models.PositiveIntegerField(default=900)
+    start_corn = models.PositiveIntegerField(default=900)
+    cocoa = models.PositiveIntegerField(default=100)
+    start_cocoa = models.PositiveIntegerField(default=100)
     landprod = models.FloatField(default=1.)
     pesticides = models.PositiveSmallIntegerField(choices=PESTICIDE_CHOICES, default=0)
     
@@ -63,13 +65,14 @@ class Turn(models.Model):
         r = {} #results
         
         #crop calculations
+        r['start_unplanted'] = self.land-self.start_corn-self.start_cocoa
         r['unplanted'] = self.land-self.corn-self.cocoa
         for c in g.CROPS.keys():
             r[c] = {}
             r[c]['price'] = g.CROPS[c]['prices'][min(self.turn,len(g.CROPS[c]['prices']))-1]
             r[c]['yield'] = g.CROPS[c]['pesticides'][self.pesticides]['yield']*self.landprod #cny, ccy
-            r[c]['inc'] = getattr(self,c)*r[c]['yield']*r[c]['price'] #cninc, ccinc
-            r[c]['exp'] = -getattr(self,c)*(g.CROPS[c]['pesticides'][self.pesticides]['cost']+g.CROPS[c]['labor_cost']+g.CROPS[c]['other_cost']) #cngc, ccgc
+            r[c]['inc'] = getattr(self,c)*1000*r[c]['yield']*r[c]['price'] #cninc, ccinc
+            r[c]['exp'] = -getattr(self,c)*1000*(g.CROPS[c]['pesticides'][self.pesticides]['cost']+g.CROPS[c]['labor_cost']+g.CROPS[c]['other_cost']) #cngc, ccgc
             r[c]['net'] = r[c]['inc']*(.85-self.tax_cocoa/100 if c=='cocoa' else 1)+r[c]['exp'] #cnginc, ccginc
         
         #debt calculations
@@ -79,7 +82,7 @@ class Turn(models.Model):
         r['debt_total_int'] = r['debt_private_int']+r['debt_wb_int']+r['debt_wbsap_int']
         
         #budget calculations
-        lbinc = sum(getattr(self,c)*g.CROPS[c]['labor_cost'] for c in g.CROPS.keys())
+        lbinc = sum(getattr(self,c)*1000*g.CROPS[c]['labor_cost'] for c in g.CROPS.keys())
         ubinc = sum(r[c]['net'] for c in g.CROPS.keys())
         r['inc_cocoa'] = max(0,r['cocoa']['inc']*self.tax_cocoa/100) #cctinc
         r['inc_lower'] = max(0,lbinc*self.tax_lower/100) #lbitinc
@@ -88,7 +91,8 @@ class Turn(models.Model):
         for k,v in g.SVC_MAX.items():
             r['exp_{0}'.format(k)] = -v*getattr(self,'svc_'+k)/100
         r['exp_debt_int'] = -r['debt_total_int']
-        r['exp_total'] = r['exp_health']+r['exp_education']+r['exp_security']+r['exp_debt_int']
+        r['exp_plant_crops'] = -sum(max(0,getattr(self,c)-getattr(self,'start_'+c))*1000*g.CROPS[c]['planting_cost'] for c in g.CROPS.keys())
+        r['exp_total'] = r['exp_health']+r['exp_education']+r['exp_security']+r['exp_debt_int']+r['exp_plant_crops']
         r['net'] = r['inc_total']+r['exp_total']
         r['new_genfund'] = self.genfund+r['net']
         

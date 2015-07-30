@@ -2,6 +2,7 @@
 {% load staticfiles %}
 {% load humanize %}
 {% load deveconsim_extras %}
+{% load widget_tweaks %}
 
 {% block content %}
     <div class="row">
@@ -13,14 +14,15 @@
             <p>Your country's economy depends upon agriculture. This page allows you to change what type of pesticides are used in your country and how your crop land is allocated between corn and cocoa.</p>
             <form role="form" class="form-horizontal" method="post">
             {% csrf_token %}
-            {% for field in crops_form %}
+            {% if form.errors.insufficient_land %}<div class="alert alert-danger">{{form.errors.insufficient_land}}</div>{% endif %}
+            {% for field in form %}
                 {% if field.name == 'corn' %}
                 <div class="form-group">
                     <label for="plantable_area" class="col-sm-5 control-label">
                         Total Plantable Area
                     </label>
                     <div class="col-sm-5">
-                        <p class="form-control-static" id="plantable_area">{{turn.land|intcomma}} ha</p>
+                        <p class="form-control-static" id="plantable_area">{{turn.land|intcomma}} kha</p>
                     </div>
                 </div>
                 {% endif %}
@@ -31,7 +33,11 @@
                     <div class="col-sm-5">
                         {% if field.errors %}<div class='alert alert-danger'>{% endif %}
                         {{ field.errors }}
-                        {{ field }}
+                        {% if field.name == 'corn' or field.name == 'cocoa' %}
+                            {{ field|add_class:"form-control touchspin-kha" }}
+                        {% else %}
+                            {{ field|add_class:"form-control" }}
+                        {% endif %}
                         {% if field.errors %}</div>{% endif %}
                     </div>
                 </div>
@@ -48,15 +54,15 @@
 
 {% block script %}{{ block.super }}
     <script>
-        $(".touchspin-ha").each(function(index) {
+        $(".touchspin-kha").each(function(index) {
             $(this).TouchSpin({
                 min: 0,
                 max: {{turn.land}},
-                step: 10000,
+                step: 10,
                 decimals: 0,
-                boostat: 50000,
-                maxboostedstep: 100000,
-                postfix: 'ha'
+                boostat: 50,
+                maxboostedstep: 100,
+                postfix: 'kha'
             });
         });
     </script>

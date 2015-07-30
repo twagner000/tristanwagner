@@ -35,6 +35,7 @@
                         <tr><td>Education</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.svc_education|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_education|currency:"1,M"}}</td></tr>
                         <tr><td>Security</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.svc_security|percentint}}</a></td><td colspan="2" class="text-right">{{calc.exp_security|currency:"1,M"}}</td></tr>
                         <tr><td colspan="2">Debt Interest</td><td colspan="2" class="text-right">{{calc.exp_debt_int|currency:"1,M"}}</td></tr>
+                        <tr><td colspan="2"><a href="{% url 'deveconsim:crops' %}">Planting Crops</a></td><td colspan="2" class="text-right">{{calc.exp_plant_crops|currency:"1,M"}}</td></tr>
                         <tr><td colspan="2">Total</td><td colspan="2" class="text-right">{{calc.exp_total|currency:"1,M"}}</td></tr>
                     </table>
                 </div>

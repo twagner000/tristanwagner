@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'checklist',
     'games',
     'deveconsim',
+    'widget_tweaks',
 )
 
 MIDDLEWARE_CLASSES = (

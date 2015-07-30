@@ -25,12 +25,16 @@ class BudgetForm(forms.ModelForm):
                    'svc_security':forms.TextInput(attrs={'class':'form-control touchspin-pct'}),}
         
 class CropsForm(forms.ModelForm):
+    def is_valid(self):
+        valid = super(CropsForm, self).is_valid()
+        if self.cleaned_data.get("corn")+self.cleaned_data.get("cocoa") > self.instance.land:
+            self._errors['insufficient_land'] = 'Total planted area cannot exceed {0} kha.'.format(self.instance.land)
+            valid = False
+        return valid
+    
     class Meta:
         model = models.Turn
         fields = ('pesticides', 'corn', 'cocoa',)
         labels = {'pesticides':'Pesticide Use',
                   'corn':'Area Planted with Corn',
                   'cocoa':'Area Planted with Cocoa',}
-        widgets = {'pesticides':forms.Select(attrs={'class':'form-control'}),
-                   'corn':forms.TextInput(attrs={'class':'form-control touchspin-ha'}),
-                   'cocoa':forms.TextInput(attrs={'class':'form-control touchspin-ha'}),}
