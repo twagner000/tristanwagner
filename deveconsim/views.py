@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.views.generic import View
 from .models import Game, Turn
-from .forms import GameForm, CropsForm, BudgetForm, DebtForm
+from .forms import GameForm, CropsForm, BudgetForm, DebtForm, EndTurnForm
 
 def votedout():
     #set voted out flag to true
@@ -100,6 +100,53 @@ class DebtView(TurnView):
             turn = form.save(commit=False)
             turn.save()
             return redirect(reverse('deveconsim:index'))
+        else:
+            context['calc'] = context['turn'].calc()
+            context['form'] = form
+            return render(request, self.template, context)
+            
+class EndTurnView(TurnView):
+    template = 'deveconsim/endturn.html'
+    
+    def get_actions(self, request, context):
+        context['calc'] = context['turn'].calc()
+        context['form'] = EndTurnForm(instance=context['turn'])
+        return render(request, self.template, context)
+    
+    def post_actions(self, request, context):
+        form = EndTurnForm(request.POST, instance=context['turn'])
+        if form.is_valid():
+            pass
+            """if yearend:
+        #check for ongoing SAP requirements
+        if debt['wbsap']:
+            if svc_rate['health'] > 15:
+                update_svc_rate('health',15)
+            if svc_rate['security'] > 20:
+                update_svc_rate('security',20)
+        #check that general fund balances (World Bank interest is the exception)
+        if budget['genfund_next']+debt['int']['wb']+debt['int']['wbsap'] > 0:
+            if budget['genfund_next'] > 0 or accept_sap:
+                #check for getting voted out or decapitalization
+                if hap['lgen'] <= 15 and math.random() <= 1.1559*math.exp(-0.0741*hap['lgen']) and turn > 4:
+                    votedout()
+                elif hap['ugen'] <= 15 and math.random() <= 1.1559*exp(-0.0741*hap['ugen']) and turn > 4 and crops['land'] >= 100000:
+                    decapitalize()
+                if accept_sap:
+                    #fulfill SAP requirements and take out loan
+                    if svc_rate['health'] > 15:
+                        update_svc_rate('health',15)
+                    if svc_rate['security'] > 20:
+                        update_svc_rate('security',20)
+                    if crops['cocoa']['planted'] < 750000:
+                        newloan = plant('cocoa',min(750000,crops['land'])-crops['cocoa']['planted'])
+                    newloan -= budget['genfund_next']
+                    budget['genfund_next'] = 0
+            turn += 1
+            nlandprod = landprod*(1-ped)"""
+            #turn = form.save(commit=False)
+            #turn.save()
+            #return redirect(reverse('deveconsim:index'))
         else:
             context['calc'] = context['turn'].calc()
             context['form'] = form

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 import math
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 
 class Game(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -66,6 +67,23 @@ class Turn(models.Model):
         
     def __str__(self):
         return 'Turn {0} ({1})'.format(self.turn, self.game)
+        
+    def clean(self):
+        errs = {}
+        if self.corn + self.cocoa > self.land:
+            errs['insufficient_land'] = 'Total planted area cannot exceed {0} kha.'.format(self.land)
+        if self.debt_wbsap and self.svc_health > 15:
+            errs['svc_health'] = 'Exceeds 15% World Bank SAP limit.'
+        if self.debt_wbsap and self.svc_security > 20:
+            errs['svc_security'] = 'Exceeds 20% World Bank SAP limit.'
+        if self.debt_repay_private > self.debt_private:
+            errs['debt_repay_private'] = 'Cannot repay more debt than you owe.'
+        if self.debt_repay_wb > self.debt_wb:
+            errs['debt_repay_wb'] = 'Cannot repay more debt than you owe.'
+        if self.debt_repay_wbsap > self.debt_wbsap:
+            errs['debt_repay_wbsap'] = 'Cannot repay more debt than you owe.'
+        if errs:
+            raise ValidationError(errs)
     
     def calc(self):
         g = self.game #shortcut

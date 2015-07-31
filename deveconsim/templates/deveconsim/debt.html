@@ -31,9 +31,9 @@
                             </div>
                             <div class="col-sm-5">
                                 <p class="form-control-static text-muted">
-                                {% if field.name == 'debt_repay_private' %}(of {{turn.debt_private|currency:"0,M"}}){% endif %}
-                                {% if field.name == 'debt_repay_wb' %}(of {{turn.debt_wb|currency:"0,M"}}){% endif %}
-                                {% if field.name == 'debt_repay_wbsap' %}(of {{turn.debt_wbsap|currency:"0,M"}}){% endif %}
+                                {% if field.name == 'debt_repay_private' %}(owe {{turn.debt_private|currency:"0,M"}}){% endif %}
+                                {% if field.name == 'debt_repay_wb' %}(owe {{turn.debt_wb|currency:"0,M"}}){% endif %}
+                                {% if field.name == 'debt_repay_wbsap' %}(owe {{turn.debt_wbsap|currency:"0,M"}}){% endif %}
                                 </p>
                             </div>
                         </div>

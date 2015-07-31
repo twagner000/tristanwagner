@@ -15,11 +15,11 @@
                 When you end a turn, your income minus expenses will be added to the <b>General Fund</b>, which may never drop below zero.</p>
             <form role="form" class="form-horizontal" method="post">
             {% csrf_token %}
-            {% if turn.debt_wbsap %}<div class="alert alert-warning">*Due to a Structural Adjustment Program (SAP) to which you agreed as part of a World Bank loan, your health spending is limited to 15% and your security spending is limited to 20%. These restrictions will be lifted once your loan is repaid.</div>{% endif %}
+            {% if turn.debt_wbsap %}<div class="alert alert-warning">Due to a Structural Adjustment Program (SAP) to which you agreed as part of a World Bank loan, your health spending is limited to 15% and your security spending is limited to 20%. These restrictions will be lifted once your loan is repaid.</div>{% endif %}
             {% for field in form %}
                 <div class="form-group">
                     <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
-                        {{ field.label }}{% if turn.debt_wbsap %}{% if field.name = 'svc_health' or field.name = 'svc_security' %}*{% endif %}{% endif %}
+                        {{ field.label }}
                     </label>
                     <div class="col-sm-7">
                         <div class='row{% if field.errors %} alert alert-danger{% endif %}'>
@@ -40,6 +40,7 @@
                     </div>
                 </div>
             {% endfor %}
+            {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<p>{{error}}</p>{% endfor %}</div>{% endif %}
                 <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-5 col-xs-12">
                         <button type="submit" class="btn btn-primary btn-block">Update</button>

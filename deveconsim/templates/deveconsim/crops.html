@@ -16,16 +16,6 @@
             <form role="form" class="form-horizontal" method="post">
             {% csrf_token %}
             {% for field in form %}
-                {% if field.name == 'corn' %}
-                <div class="form-group">
-                    <label for="plantable_area" class="col-sm-5 control-label">
-                        Total Plantable Area
-                    </label>
-                    <div class="col-sm-5">
-                        <p class="form-control-static" id="plantable_area">{{turn.land|intcomma}} kha</p>
-                    </div>
-                </div>
-                {% endif %}
                 <div class="form-group">
                     <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
                         {{ field.label }}
@@ -47,13 +37,18 @@
                                 </p>
                             </div>
                             {% else %}
-                            <div class="col-sm-7">{{ field|add_class:"form-control" }}</div>
+                            <div class="col-sm-7">
+                                {{ field|add_class:"form-control" }}
+                                {% if field.name == "land" %}
+                                    <p class="form-control-static" id="plantable_area">{{turn.land|intcomma}} kha</p>
+                                {% endif %}
+                            </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             {% endfor %}
-            {% if form.errors.insufficient_land %}<div class="alert alert-danger">{{form.errors.insufficient_land}}</div>{% endif %}
+            {% if form.non_field_errors %}<div class="alert alert-danger">{% for error in form.non_field_errors %}<p>{{error}}</p>{% endfor %}</div>{% endif %}
                 <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-5 col-xs-12">
                         <button type="submit" class="btn btn-primary btn-block">Update</button>

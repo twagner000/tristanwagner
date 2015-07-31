@@ -1,0 +1,57 @@
+{% extends "deveconsim/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+{% load deveconsim_extras %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <h4 class="row">
+                <div class="col-xs-10"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span> End Turn</div>
+            </h4>
+            <p>INFO</p>
+            <form role="form" class="form-horizontal" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
+                        {{ field.label }}
+                    </label>
+                    <div class="col-sm-7">
+                        <div class='row{% if field.errors %} alert alert-danger{% endif %}'>
+                            {% if field.errors %}<div class="col-sm-12">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
+                            <div class="col-sm-7">
+                                <div class="input-group">
+                                    <span class="input-group-addon">$</span>
+                                    {{ field|add_class:"form-control" }}
+                                    <span class="input-group-addon">M</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <p class="form-control-static text-muted">
+                                {% if field.name == 'debt_new_wbsap' %}(of {{turn.debt_private|currency:"0,M"}}){% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if form.errors.insufficient_land %}<div class="alert alert-danger">{{form.errors.insufficient_land}}</div>{% endif %}
+                <div class="form-group">
+                    <div class="col-sm-4 col-sm-offset-5 col-xs-12">
+                        <button type="submit" class="btn btn-primary btn-block">End Turn</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+<p><em>Decapitalization!</em> Many of your country's wealthier citizens are unhappy and have decided to take their money and capital out of the country. They have refused to operate 100 kha of farm land!</p>
+<p>Under your country's current budget, there is not enough income to cover expenses. Part of your expenses are interest payments on World Bank loans, however, and the World Bank is willing to extend a new loan to you to cover these payments under the condition that you accept their structural adjustment program (SAP).</p>
+<p>The World Bank's structural adjustment program will require you to keep healthcare funding levels at 15% or lower and military/police (security) funding levels at 20% or lower. You must also make sure you have at least 750,000 Ha of cocoa planted; if you do not, the World Bank will give you a loan for the planting costs and have it planted for you.</p>
+<p>Do you wish to accept the World Bank's offer?</p>
+<p>You may not continue until your budget is balanced -- that is, the general fund has to retain a positive balance at all times. If your country's budget's "Income Minus Expenses" is negative and larger than the current size of your general fund (and is so because of a reason other than World Bank interest payments), you may not continue.</p>
+
+{% endblock %}
+
