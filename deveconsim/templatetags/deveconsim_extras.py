@@ -24,3 +24,6 @@ def currency(v,arg=None): #couldn't figure out how to adjust decimals for locale
         return mark_safe(s)
     return None
     
+@register.filter 
+def multiply(v, arg):
+    return v*arg

@@ -9,6 +9,7 @@
                         <tr><td>Total Income</td><td class="text-right">{{calc.inc_total|currency:"1,M"}}</td></tr>
                         <tr><td>Total Expenses</td><td class="text-right">{{calc.exp_total|currency:"1,M"}}</td></tr>
                         <tr><td>Net Income</td><td class="text-right">{{calc.net|currency:"1,M"}}</td></tr>
+                        <tr><td>Debt Repayment</td><td class="text-right">{{calc.debt_total_repay|multiply:-1|currency:"1,M"}}</td></tr>
                         <tr class="active"><td>Forecasted General Fund</td><td class="text-right">{{calc.new_genfund|currency:"1,M"}}</td></tr>
                     </table>
                 </div>

@@ -45,18 +45,18 @@ class Turn(models.Model):
     debt_repay_wb = models.PositiveIntegerField(default=0)
     debt_repay_wbsap = models.PositiveIntegerField(default=0)
     debt_new_wbsap = models.PositiveIntegerField(default=0)
-    tax_cocoa = models.PositiveSmallIntegerField(default=10, validators=[MaxValueValidator(30)])
-    tax_lower = models.PositiveSmallIntegerField(default=20, validators=[MaxValueValidator(70)])
-    tax_upper = models.PositiveSmallIntegerField(default=30, validators=[MaxValueValidator(70)])
-    svc_health = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100)])
-    svc_education = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100)])
-    svc_security = models.PositiveSmallIntegerField(default=35, validators=[MaxValueValidator(100)])
+    tax_cocoa = models.PositiveSmallIntegerField(default=10, validators=[MaxValueValidator(30, message='Maximum is 30%%.')])
+    tax_lower = models.PositiveSmallIntegerField(default=20, validators=[MaxValueValidator(70, message='Maximum is 70%%.')])
+    tax_upper = models.PositiveSmallIntegerField(default=30, validators=[MaxValueValidator(70, message='Maximum is 70%%.')])
+    svc_health = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
+    svc_education = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
+    svc_security = models.PositiveSmallIntegerField(default=35, validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
     land = models.PositiveIntegerField(default=10**3)
     start_corn = models.PositiveIntegerField(default=900)
     start_cocoa = models.PositiveIntegerField(default=100)
     corn = models.PositiveIntegerField(default=900)
     cocoa = models.PositiveIntegerField(default=100)
-    landprod = models.FloatField(default=1., validators=[MaxValueValidator(0), MaxValueValidator(1)])
+    landprod = models.FloatField(default=1., validators=[MinValueValidator(0), MaxValueValidator(1)])
     pesticides = models.PositiveSmallIntegerField(choices=PESTICIDE_CHOICES, default=0)
     voted_out = models.BooleanField(default=False)
     decapitalized = models.BooleanField(default=False)
@@ -87,6 +87,7 @@ class Turn(models.Model):
             r['debt_{0}_int'.format(k)] = getattr(self,'debt_'+k)*v
         r['debt_total'] = self.debt_private+self.debt_wb+self.debt_wbsap
         r['debt_total_int'] = r['debt_private_int']+r['debt_wb_int']+r['debt_wbsap_int']
+        r['debt_total_repay'] = self.debt_repay_private+self.debt_repay_wb+self.debt_repay_wbsap
         
         #budget calculations
         lbinc = sum(getattr(self,c)*1000*g.CROPS[c]['labor_cost'] for c in g.CROPS.keys())
@@ -101,7 +102,7 @@ class Turn(models.Model):
         r['exp_plant_crops'] = -sum(max(0,getattr(self,c)-getattr(self,'start_'+c))*1000*g.CROPS[c]['planting_cost'] for c in g.CROPS.keys())
         r['exp_total'] = r['exp_health']+r['exp_education']+r['exp_security']+r['exp_debt_int']+r['exp_plant_crops']
         r['net'] = r['inc_total']+r['exp_total']
-        r['new_genfund'] = self.genfund+r['net']
+        r['new_genfund'] = self.genfund+r['net']-r['debt_total_repay']
         
         #happiness calculations
         lbatinc = max(0,lbinc*(1-self.tax_lower/100-0.1)/g.POP['l'])

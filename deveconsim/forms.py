@@ -8,12 +8,17 @@ class GameForm(forms.ModelForm):
         widgets = {'name':forms.TextInput(attrs={'class':'form-control', 'placeholder':"Name this game"})}
         
 class BudgetForm(forms.ModelForm):
-    def is_valid(self):
-        valid = super(BudgetForm, self).is_valid()
-        if self.instance.debt_wbsap and (self.cleaned_data.get("svc_health",100)>15 or self.cleaned_data.get("svc_security",100)>20):
-            self._errors['sap_limit'] = "*Due to a Structural Adjustment Program (SAP) to which you agreed as part of a World Bank loan, your health spending is limited to 15% and your security spending is limited to 20%. These restrictions will be lifted once your loan is repaid."
-            valid = False
-        return valid
+    def clean_svc_health(self):
+        data = self.cleaned_data['svc_health']
+        if self.instance.debt_wbsap and data > 15:
+            raise forms.ValidationError('SAP limits health spending to 15%.')
+        return data
+    
+    def clean_svc_security(self):
+        data = self.cleaned_data['svc_security']
+        if self.instance.debt_wbsap and data > 20:
+            raise forms.ValidationError('SAP limits security spending to 15%.')
+        return data
         
     class Meta:
         model = models.Turn
@@ -36,4 +41,40 @@ class CropsForm(forms.ModelForm):
     class Meta:
         model = models.Turn
         fields = ('pesticides', 'corn', 'cocoa',)
+        
+class DebtForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        initial = kwargs.get('initial', {})
+        instance = kwargs.get('instance', {})
+        if instance:
+            initial['debt_repay_private'] = int(instance.debt_repay_private/10**6)
+            initial['debt_repay_wb'] = int(instance.debt_repay_wb/10**6)
+            initial['debt_repay_wbsap'] = int(instance.debt_repay_wbsap/10**6)
+            kwargs['initial'] = initial
+        super(DebtForm, self).__init__(*args, **kwargs)
+    
+    def clean_debt_repay_private(self):
+        data = self.cleaned_data['debt_repay_private']*10**6
+        if data > self.instance.debt_private:
+            raise forms.ValidationError("You cannot repay more debt than you have.")
+        return data
+        
+    def clean_debt_repay_wb(self):
+        data = self.cleaned_data['debt_repay_wb']*10**6
+        if data > self.instance.debt_wb:
+            raise forms.ValidationError("You cannot repay more debt than you have.")
+        return data
+        
+    def clean_debt_repay_wbsap(self):
+        data = self.cleaned_data['debt_repay_wbsap']*10**6
+        if data > self.instance.debt_wbsap:
+            raise forms.ValidationError("You cannot repay more debt than you have.")
+        return data
+    
+    class Meta:
+        model = models.Turn
+        fields = ('debt_repay_private', 'debt_repay_wb', 'debt_repay_wbsap',)
+        labels = {'debt_repay_private':'Repay Private Debt',
+                  'debt_repay_wb':'Repay World Bank Debt',
+                  'debt_repay_wbsap':'Repay World Bank SAP Debt',}
         

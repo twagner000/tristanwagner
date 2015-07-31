@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.views.generic import View
 from .models import Game, Turn
-from .forms import GameForm, CropsForm, BudgetForm
+from .forms import GameForm, CropsForm, BudgetForm, DebtForm
 
 def votedout():
     #set voted out flag to true
@@ -77,6 +77,25 @@ class BudgetView(TurnView):
     
     def post_actions(self, request, context):
         form = BudgetForm(request.POST, instance=context['turn'])
+        if form.is_valid():
+            turn = form.save(commit=False)
+            turn.save()
+            return redirect(reverse('deveconsim:index'))
+        else:
+            context['calc'] = context['turn'].calc()
+            context['form'] = form
+            return render(request, self.template, context)
+            
+class DebtView(TurnView):
+    template = 'deveconsim/debt.html'
+    
+    def get_actions(self, request, context):
+        context['calc'] = context['turn'].calc()
+        context['form'] = DebtForm(instance=context['turn'])
+        return render(request, self.template, context)
+    
+    def post_actions(self, request, context):
+        form = DebtForm(request.POST, instance=context['turn'])
         if form.is_valid():
             turn = form.save(commit=False)
             turn.save()
