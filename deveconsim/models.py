@@ -39,8 +39,8 @@ class Turn(models.Model):
     #defaults are for turn 1
     genfund = models.PositiveIntegerField(default=20*10**6)
     debt_private = models.PositiveIntegerField(default=250*10**6)
-    debt_wb = models.PositiveIntegerField(default=500*10**6)
-    debt_wbsap = models.PositiveIntegerField(default=250*10**6)
+    debt_wb = models.PositiveIntegerField(default=750*10**6)
+    debt_wbsap = models.PositiveIntegerField(default=0)
     debt_repay_private = models.PositiveIntegerField(default=0)
     debt_repay_wb = models.PositiveIntegerField(default=0)
     debt_repay_wbsap = models.PositiveIntegerField(default=0)
@@ -58,6 +58,8 @@ class Turn(models.Model):
     cocoa = models.PositiveIntegerField(default=100)
     landprod = models.FloatField(default=1., validators=[MaxValueValidator(0), MaxValueValidator(1)])
     pesticides = models.PositiveSmallIntegerField(choices=PESTICIDE_CHOICES, default=0)
+    voted_out = models.BooleanField(default=False)
+    decapitalized = models.BooleanField(default=False)
     
     class Meta:
         unique_together = ('game', 'turn',)
