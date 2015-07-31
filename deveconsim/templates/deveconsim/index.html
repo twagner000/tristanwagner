@@ -7,36 +7,15 @@
     {% if turn.turn == 1 %}
         <div class="alert alert-info" role="alert">
             <h4>Tutorial: Part I</h4>
-            <p>Welcome to the Developing Countries Simulation Game!</p>
-            <p>This game is meant to give you insight into the difficulties of integrating a developing country into the world economy by putting you in charge.</p>
-            <p>Your country does not start out with much industry, so you rely on agriculture for most of your income.
-            Click <b><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</b> from the game menu to learn more.</p>
-            <p><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Continue</button></p>
+            <p>Welcome to the Developing Economy Simulation Game! This game is meant to give you insight into the difficulties of integrating a developing country into the world economy by putting you in charge.</p>
+            <p>Your country does not start out with much industry, so you rely on agriculture for most of your income.</p>
+            <p><ol>
+                <li>Go to the <b><a href="{% url 'deveconsim:crops' %}"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a></b> page and click the <button type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button> button at the top of that page to learn more about managing crops.</li>
+                <li>When you are ready, click the <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button> button in the nav bar below to proceed to the next turn.</li>
+            </ol></p>
+            <p>If your <b>Forecasted General Fund</b> is negative, you may need to make more changes on the <b><a href="{% url 'deveconsim:crops' %}"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a></b> page.
+                If your general fund would be positive except for interest payments to the World Bank, the World Bank will make you a special offer when you end the turn.</p>
         </div>
-
-        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Tutorial: Part I (Continued)</h4>
-                    </div>
-                    <div class="modal-body">
-                        <p>This page allows you to control portions of how crops are grown in your country. You may choose between two crops: corn and cocoa.</p>
-                        <p>Corn represents the many types of basic food crops that are grown in developing countries. Often these crops are grown by small farmers simply for food (rather than to sell). This is called subsistence farming. These crops usually fetch fairly low prices when they are sold as exports.</p>
-                        <p>Cocoa represents cash crops-- crops grown by many countries for the sole purpose of generating income. These crops usually cannot be eaten or are too expensive for the local people to eat in any substantial quantity. However, they often bring badly needed money into the country though their export. Other cash crops include coffee, sugar, tobacco, and many others.</p>
-                        <p>You can find current prices for both corn and cocoa in the table with general information on crops in your country. If you click on the link that is one of the crop prices, you will be taken to a page with a graph of that crop's prices so far.</p>
-                        <p>You can change which crops you have planted in your country by clicking on the link at the bottom of this text where it says &quot;Actions&quot;, or by clicking on one of the links that is either how much corn or cocoa you have planted already. At the bottom of the page that lets you change how your crops are planted you will find a table with more information.</p>
-                        <p>It costs money to change what types of crops you have planted. This price is different for the two crops. The World Bank will give you a loan to cover the cost of planting cocoa (not corn), however, because the World Bank believes increased export of cash crops will help your country's economy.</p>
-                        <p>You may also choose which type of pesticides that farms in your country will use. Pesticides are paid for by the owners of the farms, not the government. Your first option is to use no pesticides, which will result in relatively low crop yields (the amount produced) but will not harm the environment. You can also choose to use either cheap or expensive pesticides. The cheap pesticides in this game have been declared illegal in the U.S.A. due to their negative effects on the environment. They will result in substantial increases in crop yields, but yields will gradually decrease over time due to the environmental damage. The expensive pesticides in this game are more costly than the cheap pesticides, but they do not cause as much environmental damage. They increase yields even slightly more than the cheap pesticides, and yields decrease by a smaller amount than with the cheap pesticides. You can find a detailed table with the effects of all pesticides at the bottom of the page that allows you to change pesticide use (which you can get to from the link at the bottom of this text where it says &quot;Actions&quot;, or by clicking on the link that is your current pesticide use in the table with general crop information).</p>
-                        <p>When you are done reading this information and have made any changes that you wish to make, please return to the main page of the simulation game and click the &quot;End Year&quot; button to continue with the tutorial. You may find that you do not have enough income to cover expenses for your country; if that is the case, you will probably have to return to this page and make more changes. You can check how much income your government is generating on the main page of the simulation game, in the &quot;Budget&quot; table. If you wish, you may end with a negative balance, so long as it doesn't exceed the size of your General Fund. You may only have a negative balance larger than your General Fund if the difference is less than the size of your World Bank interest payment for the year, in which case the World Bank will make you a special offer.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
     {% elif turn.turn == 2 %}
         <div class="alert alert-info" role="alert">
             <h4>Tutorial: Part II</h4>
@@ -79,7 +58,6 @@
         
         <h4><a href="{% url 'deveconsim:budget' %}"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Budget</a></h4>
         {% include "deveconsim/budget_table.html" %}
-            
         
         <div class="row">
             <div class="col-sm-12 col-md-8">
@@ -91,25 +69,7 @@
             </div>
             <div class="col-sm-12 col-md-4">
                 <h4><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Happiness</h4>
-                <div class="panel panel-default">
-                    <table class="table">
-                        <tr><th>Category</th><th class="text-right">Rating</th></tr>
-                        <tr><td>Health</td><td class="text-right">{{calc.hap_health|percent}}</td></tr>
-                        <tr><td>Education</td><td class="text-right">{{calc.hap_education|percent}}</td></tr>
-                        <tr><td>Security</td><td class="text-right">{{calc.hap_security|percent}}</td></tr>
-                        <tr><td>Environment</td><td class="text-right">{{calc.hap_env|percent}}</td></tr>
-                        <tr><td colspan="2"><strong>The Masses</strong> <small>(Lower / Middle Classes)</small></td></tr>
-                        <tr><td>Food</td><td class="text-right">{{calc.hap_lfood|percent}}</td></tr>
-                        <tr><td>Luxuries</td><td class="text-right">{{calc.hap_llux|percent}}</td></tr>
-                        <tr><td>Taxes</td><td class="text-right">{{calc.hap_ltax|percent}}</td></tr>
-                        <tr><td>Overall</td><td class="text-right">{{calc.hap_lgen|percent}}</td></tr>
-                        <tr><td colspan="2"><strong>The Elite</strong> <small>(Upper Class)</small></td></tr>
-                        <tr><td>Food</td><td class="text-right">{{calc.hap_ufood|percent}}</td></tr>
-                        <tr><td>Luxuries</td><td class="text-right">{{calc.hap_ulux|percent}}</td></tr>
-                        <tr><td>Taxes</td><td class="text-right">{{calc.hap_utax|percent}}</td></tr>
-                        <tr><td>Overall</td><td class="text-right">{{calc.hap_ugen|percent}}</td></tr>
-                    </table>
-                </div>
+                {% include "deveconsim/happiness_table.html" %}
             </div>
     </div>
 {% endblock %}

@@ -1,0 +1,21 @@
+{% load deveconsim_extras %}
+
+                <div class="panel panel-default">
+                    <table class="table">
+                        <tr><th>Category</th><th class="text-right">Rating</th></tr>
+                        <tr><td>Health</td><td class="text-right">{{calc.hap_health|percent}}</td></tr>
+                        <tr><td>Education</td><td class="text-right">{{calc.hap_education|percent}}</td></tr>
+                        <tr><td>Security</td><td class="text-right">{{calc.hap_security|percent}}</td></tr>
+                        <tr><td>Environment</td><td class="text-right">{{calc.hap_env|percent}}</td></tr>
+                        <tr><td colspan="2"><strong>The Masses</strong> <small><span class="text-muted">(Lower / Middle Classes)</span></small></td></tr>
+                        <tr><td>Food</td><td class="text-right">{{calc.hap_lfood|percent}}</td></tr>
+                        <tr><td>Luxuries</td><td class="text-right">{{calc.hap_llux|percent}}</td></tr>
+                        <tr><td>Taxes</td><td class="text-right">{{calc.hap_ltax|percent}}</td></tr>
+                        <tr><td>Overall</td><td class="text-right">{{calc.hap_lgen|percent}}</td></tr>
+                        <tr><td colspan="2"><strong>The Elite</strong> <small><span class="text-muted">(Upper Class)</span></small></td></tr>
+                        <tr><td>Food</td><td class="text-right">{{calc.hap_ufood|percent}}</td></tr>
+                        <tr><td>Luxuries</td><td class="text-right">{{calc.hap_ulux|percent}}</td></tr>
+                        <tr><td>Taxes</td><td class="text-right">{{calc.hap_utax|percent}}</td></tr>
+                        <tr><td>Overall</td><td class="text-right">{{calc.hap_ugen|percent}}</td></tr>
+                    </table>
+                </div>

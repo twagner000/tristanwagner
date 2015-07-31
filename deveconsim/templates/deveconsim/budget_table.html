@@ -22,7 +22,6 @@
                         <tr><td>Cocoa Export Tax</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.tax_cocoa|percentint}}</a></td><td class="text-right">{{calc.inc_cocoa|currency:"1,M"}}</td></tr>
                         <tr><td>Income Tax - Lower Bracket</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.tax_lower|percentint}}</a></td><td class="text-right">{{calc.inc_lower|currency:"1,M"}}</td></tr>
                         <tr><td>Income Tax - Upper Bracket</td><td class="text-right"><a href="{% if not budget_form %}{% url 'deveconsim:budget' %}{% endif %}#">{{turn.tax_upper|percentint}}</a></td><td class="text-right">{{calc.inc_upper|currency:"1,M"}}</td></tr>
-                        <tr><td colspan="4">&nbsp;</td></tr>
                         <tr><td colspan="2">Total</td><td class="text-right">{{calc.inc_total|currency:"1,M"}}</td></tr>
                     </table>
                 </div>

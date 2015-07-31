@@ -1,0 +1,35 @@
+{% load staticfiles %}
+
+<p>The <b><a href="{% url 'deveconsim:crops' %}"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a></b> page allows you to choose which type of pesticides are used in your country and how your cropland is allocated between corn and cocoa.</p>
+<ul>
+    <li><b>Corn</b> represents basic food crops that are often grown by small farmers for subsistence. They tend to fetch low prices when exported.</li>
+    <li><b>Cocoa</b> represents cash crops &ndash; crops often grown for the sole purpose of generating income. They usually cannot be eaten or are too expensive for local people to eat in any substantial quantity. However, they often earn badly-needed export income for a country. Other cash crops include coffee, sugar, and tobacco.</li>
+</ul>
+<p>Current corn and cocoa prices are found in the crops table on the <b><a href="{% url 'deveconsim:index' %}"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Overview</a></b> page, and are based on actual historical data. Clicking on the prices will take you to graphs of prices over time.</p>
+<p>It costs money to change what types of crops you have planted. This cost will be added to the expenses table on the overview page and is not final until you end the turn. The World Bank will loan you money to plant cocoa, because the World Bank believes increased exports of cash crops will help your country's economy &ndash; but they will not loan you money to plant corn.</p>
+<p>Pesticides are paid for by farm owners, not the government.</p>
+<ul>
+    <li>Using <b>no</b> pesticides results in low crop yields but will not harm the environment.</li>
+    <li><b>Cheap</b> pesticides have been declared illegal in the U.S.A. due to their negative environmental impact. They will substantially increase crop yields, but yields will gradually decrease over time due to environmental damage.</li>
+    <li><b>Expensive</b> pesticides do not cause as much environmental damage and yields will decrease less over time. However, their use cuts into farm owners' profits.</li>
+</ul>    
+<div class="alert alert-info">
+    <div class="media">
+        <div class="media-left">
+            <img class="media-object img-rounded" src="{% static 'deveconsim/img/business.gif' %}" alt="Business consultant" style="background: #05a;">
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">Business Consultant</h4>
+            &quot;You should grow cocoa for export since it has a much higher price than corn. With all the money you'll make, you can import corn from somewhere else to feed your citizens!&quot;
+        </div>
+    </div>
+    <div class="media">
+        <div class="media-left">
+            <img class="media-object img-rounded" src="{% static 'deveconsim/img/activist.gif' %}" alt="Social activist" style="background: #05a;">
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">Social Activist</h4>
+            &quot;You should grow enough corn to satisfy all local needs before growing any cocoa. It is not safe to depend upon another country for something as important as food. Plus, the indigenous peoples have been farming corn for many generations &ndash; it is part of their culture.&quot;
+        </div>
+    </div>
+</div>
