@@ -27,20 +27,20 @@ class TurnForm(forms.ModelForm):
         super(TurnForm, self).__init__(*args, **kwargs)
         
     def clean_debt_repay(self,type,mult=1): #totally unecessary use of functional programming
-        def fn():
+        def clean_debt_repay_type():
             value = self.cleaned_data['debt_repay_'+type]*mult
             if value > getattr(self.instance,'debt_'+type):
                 raise forms.ValidationError('Cannot repay more debt than you owe.')
             return value
-        return fn
+        return clean_debt_repay_type
         
     def clean_svc_sap(self,type,sap_max):
-        def fn():
+        def clean_svc_type():
             value = self.cleaned_data['svc_'+type]
             if self.instance.debt_wbsap and value > sap_max:
                 raise forms.ValidationError('Exceeds {0}% World Bank SAP limit.'.format(sap_max))
             return value
-        return fn
+        return clean_svc_type
         
     def clean_debt_new_wbsap(self):
         value = self.cleaned_data['debt_new_wbsap']*10**6
