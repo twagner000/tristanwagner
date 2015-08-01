@@ -116,37 +116,40 @@ class EndTurnView(TurnView):
     def post_actions(self, request, context):
         form = EndTurnForm(request.POST, instance=context['turn'])
         if form.is_valid():
-            pass
-            """if yearend:
-        #check for ongoing SAP requirements
-        if debt['wbsap']:
-            if svc_rate['health'] > 15:
-                update_svc_rate('health',15)
-            if svc_rate['security'] > 20:
-                update_svc_rate('security',20)
-        #check that general fund balances (World Bank interest is the exception)
-        if budget['genfund_next']+debt['int']['wb']+debt['int']['wbsap'] > 0:
-            if budget['genfund_next'] > 0 or accept_sap:
-                #check for getting voted out or decapitalization
-                if hap['lgen'] <= 15 and math.random() <= 1.1559*math.exp(-0.0741*hap['lgen']) and turn > 4:
-                    votedout()
-                elif hap['ugen'] <= 15 and math.random() <= 1.1559*exp(-0.0741*hap['ugen']) and turn > 4 and crops['land'] >= 100000:
-                    decapitalize()
-                if accept_sap:
-                    #fulfill SAP requirements and take out loan
-                    if svc_rate['health'] > 15:
-                        update_svc_rate('health',15)
-                    if svc_rate['security'] > 20:
-                        update_svc_rate('security',20)
-                    if crops['cocoa']['planted'] < 750000:
-                        newloan = plant('cocoa',min(750000,crops['land'])-crops['cocoa']['planted'])
-                    newloan -= budget['genfund_next']
-                    budget['genfund_next'] = 0
-            turn += 1
-            nlandprod = landprod*(1-ped)"""
+            """if corn+cocoa > land:
+                #check land constraint
+            if debt_wbsap:
+                #check SAP funding limits
+            if new_genfund-wb_int-wbsap_int > 0:
+                #may not continue until your budget is balanced (with exception of World Bank interest)
+                if turn == 1:
+                    #tutorial: should probably go back to the Crops page and make some more changes
+            else:
+                if new_genfund < 0:
+                    #not enough income to cover expenses
+                    #World Bank will loan with SAP to cover interest payments on World Bank loans
+                else:
+                    if genhap <= 30 and random.random() <= 1.1559*math.exp(-0.0741*genhap) and turn > 3:
+                        votedout()
+                    elif egenhap <= 30 and random.random() <= 1.1559*exp(-0.0741*egenhap) and turn > 3 and land >= 100:
+                        decapitalize()
+                    if wboacc = "Yes"$
+                        #check SAP funding limits
+                        if cocoa < 750:
+                            #plant up to min(750,land) cocoa
+                            #add cost to new WB SAP loan
+                        #new loan = -new_genfund + cocoa planting cost
+                        #new_genfund = 0
+                    #update land productivity for pesticides type
+                    #create new turn
+                    turn.save()
+                    turn.pk = None
+                    turn.turn += 1
+                    turn.save()
             #turn = form.save(commit=False)
             #turn.save()
             #return redirect(reverse('deveconsim:index'))
+            """
         else:
             context['calc'] = context['turn'].calc()
             context['form'] = form

@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 import math
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
 
 class Game(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)
@@ -42,16 +41,16 @@ class Turn(models.Model):
     debt_private = models.PositiveIntegerField(default=250*10**6)
     debt_wb = models.PositiveIntegerField(default=750*10**6)
     debt_wbsap = models.PositiveIntegerField(default=0)
-    debt_repay_private = models.PositiveIntegerField(default=0)
-    debt_repay_wb = models.PositiveIntegerField(default=0)
-    debt_repay_wbsap = models.PositiveIntegerField(default=0)
-    debt_new_wbsap = models.PositiveIntegerField(default=0)
-    tax_cocoa = models.PositiveSmallIntegerField(default=10, validators=[MaxValueValidator(30, message='Maximum is 30%%.')])
-    tax_lower = models.PositiveSmallIntegerField(default=20, validators=[MaxValueValidator(70, message='Maximum is 70%%.')])
-    tax_upper = models.PositiveSmallIntegerField(default=30, validators=[MaxValueValidator(70, message='Maximum is 70%%.')])
-    svc_health = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
-    svc_education = models.PositiveSmallIntegerField(default=25, validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
-    svc_security = models.PositiveSmallIntegerField(default=35, validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
+    debt_repay_private = models.PositiveIntegerField(default=0, verbose_name='Repay Private Debt')
+    debt_repay_wb = models.PositiveIntegerField(default=0, verbose_name='Repay World Bank Debt')
+    debt_repay_wbsap = models.PositiveIntegerField(default=0, verbose_name='Repay World Bank SAP Debt')
+    debt_new_wbsap = models.PositiveIntegerField(default=0, verbose_name='New World Bank SAP Debt')
+    tax_cocoa = models.PositiveSmallIntegerField(default=10, verbose_name='Cocoa Tax', validators=[MaxValueValidator(30, message='Maximum is 30%%.')])
+    tax_lower = models.PositiveSmallIntegerField(default=20, verbose_name='Income Tax - Lower Bracket', validators=[MaxValueValidator(70, message='Maximum is 70%%.')])
+    tax_upper = models.PositiveSmallIntegerField(default=30, verbose_name='Income Tax - Upper Bracket', validators=[MaxValueValidator(70, message='Maximum is 70%%.')])
+    svc_health = models.PositiveSmallIntegerField(default=25, verbose_name='Healthcare Funding', validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
+    svc_education = models.PositiveSmallIntegerField(default=25, verbose_name='Education Funding', validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
+    svc_security = models.PositiveSmallIntegerField(default=35, verbose_name='Security Funding', validators=[MaxValueValidator(100, message='Maximum is 100%%.')])
     land = models.PositiveIntegerField(default=10**3)
     start_corn = models.PositiveIntegerField(default=900)
     start_cocoa = models.PositiveIntegerField(default=100)
@@ -67,23 +66,6 @@ class Turn(models.Model):
         
     def __str__(self):
         return 'Turn {0} ({1})'.format(self.turn, self.game)
-        
-    def clean(self):
-        errs = {}
-        if self.corn + self.cocoa > self.land:
-            errs['insufficient_land'] = 'Total planted area cannot exceed {0} kha.'.format(self.land)
-        if self.debt_wbsap and self.svc_health > 15:
-            errs['svc_health'] = 'Exceeds 15% World Bank SAP limit.'
-        if self.debt_wbsap and self.svc_security > 20:
-            errs['svc_security'] = 'Exceeds 20% World Bank SAP limit.'
-        if self.debt_repay_private > self.debt_private:
-            errs['debt_repay_private'] = 'Cannot repay more debt than you owe.'
-        if self.debt_repay_wb > self.debt_wb:
-            errs['debt_repay_wb'] = 'Cannot repay more debt than you owe.'
-        if self.debt_repay_wbsap > self.debt_wbsap:
-            errs['debt_repay_wbsap'] = 'Cannot repay more debt than you owe.'
-        if errs:
-            raise ValidationError(errs)
     
     def calc(self):
         g = self.game #shortcut
@@ -121,6 +103,8 @@ class Turn(models.Model):
         r['exp_total'] = r['exp_health']+r['exp_education']+r['exp_security']+r['exp_debt_int']+r['exp_plant_crops']
         r['net'] = r['inc_total']+r['exp_total']
         r['new_genfund'] = self.genfund+r['net']-r['debt_total_repay']
+        r['debt_new_wbsap_max'] = math.ceil((r['debt_wb_int']+r['debt_wbsap_int'])/10**6)*10**6 if r['new_genfund']<0 else 0
+        r['debt_new_wbsap_min'] = min(r['debt_new_wbsap_max'],max(0,-r['new_genfund']))
         
         #happiness calculations
         lbatinc = max(0,lbinc*(1-self.tax_lower/100-0.1)/g.POP['l'])
