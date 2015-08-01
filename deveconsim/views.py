@@ -37,7 +37,11 @@ class CurrentTurnMixin(object):
             context['calc'] = context['turn'].calc()
         context['open_games'] = self.open_games()
         return context
-
+    
+    def get(self, request):
+        if not hasattr(self,'object'):
+            return redirect(reverse_lazy('deveconsim:start'))
+        return super(CurrentTurnMixin, self).get(request)
         
 def fbv_open_games(request):
         g = Game.objects.filter(pk=request.session.get('deveconsim_game_pk', None), completed_date__isnull=True)
@@ -88,10 +92,7 @@ def choose_open(request):
             
         
 class TurnDetailView(CurrentTurnMixin, DetailView):
-    def get(self, request):
-        if not hasattr(self,'object'):
-            return redirect(reverse_lazy('deveconsim:start'))
-        return super(TurnDetailView, self).get(request)
+    pass
         
 class CropsUpdateView(CurrentTurnMixin, UpdateView):
     form_class = CropsForm
