@@ -1,6 +1,8 @@
-from django import forms
-from . import models
 import math
+
+from django import forms
+
+from . import models
 
 class GameForm(forms.Form):
     def __init__(self, open_games, *args, **kwargs):

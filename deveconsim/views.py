@@ -1,13 +1,16 @@
+import math
+import random
+
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from django.views.generic import View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, FormView
+
 from .models import Game, Turn
 from .forms import GameForm, CropsForm, BudgetForm, DebtForm, EndTurnForm
-import math
-import random
+from . import constants
 
 class CurrentTurnMixin(object):
     success_url = reverse_lazy('deveconsim:index')
@@ -27,6 +30,7 @@ class CurrentTurnMixin(object):
         context = super(CurrentTurnMixin, self).get_context_data(**kwargs)
         if context.get('turn'):
             context['calc'] = context['turn'].calc()
+        context['constants'] = constants
         context['open_games'] = self.open_games()
         return context
     
