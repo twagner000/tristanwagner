@@ -3,19 +3,9 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils import timezone
 from django.views.generic import View
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, FormView
 from .models import Game, Turn
 from .forms import GameForm, CropsForm, BudgetForm, DebtForm, EndTurnForm
-
-def votedout():
-    #set voted out flag to true
-    pass
-    
-def decapitalize():
-    #reduce turn.land
-    #reallocate crops in same proportions if necessary
-    #set decapitalized flag to true
-    pass
 
 class CurrentTurnMixin(object):
     success_url = reverse_lazy('deveconsim:index')
@@ -39,58 +29,44 @@ class CurrentTurnMixin(object):
         return context
     
     def get(self, request):
-        if not hasattr(self,'object'):
+        self.object = self.get_object()
+        if not self.object and request.path_info != reverse_lazy('deveconsim:start'):
             return redirect(reverse_lazy('deveconsim:start'))
         return super(CurrentTurnMixin, self).get(request)
-        
-def fbv_open_games(request):
-        g = Game.objects.filter(pk=request.session.get('deveconsim_game_pk', None), completed_date__isnull=True)
-        if request.user.is_authenticated():
-            g = g | Game.objects.filter(user=request.user, completed_date__isnull=True)
-        return g
-        
-def start(request):
-    if request.method == "POST":
-        form = GameForm(request.POST)
-        if form.is_valid():
-            for open_game in fbv_open_games(request):
-                open_game.completed_date = timezone.now()
-                open_game.save()
-            game = form.save(commit=False)
-            if request.user.is_authenticated():
-                game.user = request.user
-            game.save()
-            game.turn_set.create()
-            game.save()
-            request.session['deveconsim_game_pk'] = game.pk
-        return redirect(reverse_lazy('deveconsim:index'))
-    else:
-        form = GameForm()
-        return render(request, 'deveconsim/start.html', {'form':form, 'open_games':fbv_open_games(request)})
 
-def choose_open(request):
-    og = fbv_open_games(request)
-    if len(og) <= 1:
-        return redirect(reverse_lazy('deveconsim:index'))
-    else:
-        if request.method == "POST":
-            chosen_game = og.filter(pk=request.POST['game_pk'])
-            if len(chosen_game) == 1:
-                chosen_game = chosen_game[0]
-                for open_game in og:
-                    if open_game != chosen_game:
-                        open_game.completed_date = timezone.now()
-                    if request.user.is_authenticated():
-                        open_game.user = request.user
-                    open_game.save()
-                request.session['deveconsim_game_pk'] = chosen_game.pk
-                return redirect(reverse_lazy('deveconsim:index'))
-            else:
-                return render(request, 'deveconsim/choose_open.html', {'open_games':og.order_by('-started_date')})
-        else:
-            return render(request, 'deveconsim/choose_open.html', {'open_games':og.order_by('-started_date')})
-            
+class GameFormView(CurrentTurnMixin,FormView):
+    template_name = 'deveconsim/game_form.html'
+    form_class = GameForm
+    success_url = reverse_lazy('deveconsim:index')
+    
+    def get_form_kwargs(self):
+        kwargs = super(GameFormView, self).get_form_kwargs()
+        kwargs.update({'open_games' : self.open_games().order_by('-started_date')})
+        return kwargs
         
+    def form_valid(self, form):
+        pk = form['continue_game'].value()
+        pk = pk if pk else None
+        keep = Game.objects.filter(pk=pk, completed_date__isnull=True)
+        if len(keep) == 1:
+            keep = keep[0]
+        else:
+            keep = Game(name=form['name'].value())
+            if self.request.user.is_authenticated():
+                keep.user = self.request.user
+            keep.save()
+            keep.turn_set.create()
+            keep.save()
+        self.request.session['deveconsim_game_pk'] = keep.pk
+        for game in self.open_games():
+            if game != keep:
+                game.completed_date = timezone.now()
+                if self.request.user.is_authenticated():
+                    game.user = self.request.user
+                game.save()
+        return super(GameFormView, self).form_valid(form)
+                
+                
 class TurnDetailView(CurrentTurnMixin, DetailView):
     pass
         
@@ -120,9 +96,11 @@ class EndTurnUpdateView(CurrentTurnMixin, UpdateView):
                 #World Bank will loan with SAP to cover interest payments on World Bank loans
             else:
                 if genhap <= 30 and random.random() <= 1.1559*math.exp(-0.0741*genhap) and turn > 3:
-                    votedout()
+                    #set voted out flag to true
                 elif egenhap <= 30 and random.random() <= 1.1559*exp(-0.0741*egenhap) and turn > 3 and land >= 100:
-                    decapitalize()
+                    #reduce turn.land
+                    #reallocate crops in same proportions if necessary
+                    #set decapitalized flag to true
                 if wboacc = "Yes"$
                     #check SAP funding limits
                     if cocoa < 750:

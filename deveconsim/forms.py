@@ -2,12 +2,15 @@ from django import forms
 from . import models
 import math
 
-class GameForm(forms.ModelForm):
-    class Meta:
-        model = models.Game
-        fields = ('name',)
-        widgets = {'name':forms.TextInput(attrs={'class':'form-control', 'placeholder':"Name this game"})}
-
+class GameForm(forms.Form):
+    def __init__(self, open_games, *args, **kwargs):
+        super(GameForm, self).__init__(*args, **kwargs)
+        if len(open_games) > 1:
+            self.fields['continue_game'] = forms.ChoiceField(required=False, choices=[(None,'Start a new game')]+[(g.pk,'Resume g'+str(g)[1:]) for g in open_games])
+        else:
+            self.fields['continue_game'] = forms.IntegerField(required=False, widget=forms.HiddenInput())
+        self.fields['name'] = forms.CharField(max_length=200, required=False, widget=forms.TextInput(attrs={'placeholder':"Name your new game"}))
+    
 class TurnForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         initial = kwargs.get('initial', {})
@@ -83,6 +86,3 @@ class EndTurnForm(TurnForm):
     class Meta(TurnForm.Meta):
         fields = TurnForm.Meta.fields
         widgets = dict((k,forms.HiddenInput(attrs={'readonly':True})) for k in fields if k != 'debt_new_wbsap')
-                  
-                  
-                  
