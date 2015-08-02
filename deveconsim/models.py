@@ -25,6 +25,9 @@ class Game(models.Model):
     def __str__(self):
         return 'Game "{2}" started {1} on {0:%m}/{0:%d}/{0:%y} at {0:%H}:{0:%M}'.format(self.started_date, 'by {0}'.format(self.user) if self.user else 'anonymously', self.name)
         
+    def last_turn(self):
+        return self.turn_set.order_by('-turn')[0]
+        
     def hapw(self,h):
         return self.HAPPINESS_WEIGHTS[int(min(1,h)*(len(self.HAPPINESS_WEIGHTS)-1))]
 
@@ -56,6 +59,7 @@ class Turn(models.Model):
     start_cocoa = models.PositiveIntegerField(default=100)
     corn = models.PositiveIntegerField(default=900)
     cocoa = models.PositiveIntegerField(default=100)
+    wbsap_cocoa = models.PositiveIntegerField(default=0)
     landprod = models.FloatField(default=1., validators=[MinValueValidator(0), MaxValueValidator(1)])
     pesticides = models.PositiveSmallIntegerField(choices=PESTICIDE_CHOICES, default=0)
     voted_out = models.BooleanField(default=False)
@@ -103,8 +107,11 @@ class Turn(models.Model):
         r['exp_total'] = r['exp_health']+r['exp_education']+r['exp_security']+r['exp_debt_int']+r['exp_plant_crops']
         r['net'] = r['inc_total']+r['exp_total']
         r['new_genfund'] = self.genfund+r['net']-r['debt_total_repay']
-        r['debt_new_wbsap_max'] = math.ceil((r['debt_wb_int']+r['debt_wbsap_int'])/10**6)*10**6 if r['new_genfund']<0 else 0
-        r['debt_new_wbsap_min'] = min(r['debt_new_wbsap_max'],max(0,-r['new_genfund']))
+        r['wbsap_add_cocoa'] = max(0,750-self.cocoa)
+        r['wbsap_add_cocoa_cost'] = r['wbsap_add_cocoa']*1000*g.CROPS['cocoa']['planting_cost']
+        r['debt_new_wbsap_max'] = math.ceil((r['debt_wb_int']+r['debt_wbsap_int']+r['wbsap_add_cocoa_cost'])/10**6)*10**6 if r['new_genfund']<0 else 0
+        r['new_genfund_plus_max_wbsap'] = r['new_genfund']+r['debt_new_wbsap_max']
+        r['debt_new_wbsap_min'] = math.ceil(min(r['debt_new_wbsap_max'],max(0,-r['new_genfund'])+r['wbsap_add_cocoa_cost'])/10**6)*10**6
         
         #happiness calculations
         lbatinc = max(0,lbinc*(1-self.tax_lower/100-0.1)/g.POP['l'])

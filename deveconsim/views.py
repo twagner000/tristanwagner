@@ -6,6 +6,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView, FormView
 from .models import Game, Turn
 from .forms import GameForm, CropsForm, BudgetForm, DebtForm, EndTurnForm
+import math
+import random
 
 class CurrentTurnMixin(object):
     success_url = reverse_lazy('deveconsim:index')
@@ -19,7 +21,7 @@ class CurrentTurnMixin(object):
     def get_object(self):
         g = self.open_games()
         if len(g) == 1:
-            return g[0].turn_set.order_by('-turn')[0]
+            return g[0].last_turn()
     
     def get_context_data(self, **kwargs):
         context = super(CurrentTurnMixin, self).get_context_data(**kwargs)
@@ -66,7 +68,6 @@ class GameFormView(CurrentTurnMixin,FormView):
                 game.save()
         return super(GameFormView, self).form_valid(form)
                 
-                
 class TurnDetailView(CurrentTurnMixin, DetailView):
     pass
         
@@ -86,37 +87,57 @@ class EndTurnUpdateView(CurrentTurnMixin, UpdateView):
     form_class = EndTurnForm
     
     def form_valid(self, form):
-        """if new_genfund-wb_int-wbsap_int > 0:
-            #may not continue until your budget is balanced (with exception of World Bank interest)
-            if turn == 1:
-                #tutorial: should probably go back to the Crops page and make some more changes
+        turn = self.object
+        calc = turn.calc()
+        turn.completed_date = timezone.now()
+        
+        #check for voted out
+        if calc['hap_lgen'] <= .3 and random.random() <= 1.1559*math.exp(-7.41*calc['hap_lgen']) and turn.turn > 3:
+            turn.voted_out = True
+            turn.save()
+            turn.game.completed_date = turn.completed_date
+            turn.game.save()
+            return redirect('deveconsim:voted_out', pk=turn.game.pk)
         else:
-            if new_genfund < 0:
-                #not enough income to cover expenses
-                #World Bank will loan with SAP to cover interest payments on World Bank loans
-            else:
-                if genhap <= 30 and random.random() <= 1.1559*math.exp(-0.0741*genhap) and turn > 3:
-                    #set voted out flag to true
-                elif egenhap <= 30 and random.random() <= 1.1559*exp(-0.0741*egenhap) and turn > 3 and land >= 100:
-                    #reduce turn.land
-                    #reallocate crops in same proportions if necessary
-                    #set decapitalized flag to true
-                if wboacc = "Yes"$
-                    #check SAP funding limits
-                    if cocoa < 750:
-                        #plant up to min(750,land) cocoa
-                        #add cost to new WB SAP loan
-                    #new loan = -new_genfund + cocoa planting cost
-                    #new_genfund = 0
-                #update land productivity for pesticides type
-                #create new turn
-                turn.save()
-                turn.pk = None
-                turn.turn += 1
-                turn.save()
-        #turn = form.save(commit=False)
-        #turn.save()
-        #return redirect(reverse_lazy('deveconsim:index'))
-        """
+            turn.save()
+            turn.pk = None
+            turn.genfund = calc['new_genfund']+turn.debt_new_wbsap-calc['wbsap_add_cocoa_cost']
+            turn.cocoa += turn.wbsap_cocoa
+            turn.wbsap_cocoa = 0
+            turn.start_corn = turn.corn
+            turn.start_cocoa = turn.cocoa
+            if turn.debt_new_wbsap and turn.svc_health > 15:
+                turn.svc_health = 15
+            if turn.debt_new_wbsap and turn.svc_security > 20:
+                turn.svc_security = 20
+            
+            #check for decapitalization AFTER SAP cocoa planted in case auto-readjust crops
+            turn.decapitalized = False
+            if calc['hap_ugen'] <= .3 and random.random() <= 1.1559*math.exp(-7.41*calc['hap_ugen']) and turn.turn > 3 and turn.land >= 100:
+                turn.land -= 100
+                turn.decapitalized = True
+            
+            #update turn AFTER vote/decap tutorial checks
+            turn.turn += 1
+            
+            turn.debt_private -= turn.debt_repay_private
+            turn.debt_wb -= turn.debt_repay_wb
+            turn.debt_wbsap += turn.debt_new_wbsap-turn.debt_repay_wbsap
+            turn.debt_repay_private = 0
+            turn.debt_repay_wb = 0
+            turn.debt_repay_wbsap = 0
+            turn.debt_new_wbsap = 0
+            turn.landprod *= (1-turn.game.PESTICIDES[turn.pesticides]['prod_loss'])
+            turn.save()
         return super(EndTurnUpdateView, self).form_valid(form)
 
+class VotedOutView(DetailView):
+    model = Game
+    template_name = 'deveconsim/game_voted_out.html'
+    
+    def get(self, request, pk):
+        self.object = self.get_object()
+        if self.object.pk != self.request.session.get('deveconsim_game_pk', None):
+            if self.request.user.is_authenticated() and self.object.user != self.request.user:
+                return redirect(reverse_lazy('deveconsim:start'))
+        return super(VotedOutView, self).get(request)

@@ -1,0 +1,47 @@
+{% extends "deveconsim/base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-6 col-md-offset-3">
+            <h4>Voted Out!</h4>
+            {% with turn=game.last_turn %}
+                <p>You did not keep the lower and middle classes happy enough. With so many unhappy citizens, you were easily voted out of office. Better luck next time!</p>
+                <p>You were voted out after {{turn.turn}} turn{{turn.turn|pluralize}}.</p>
+                <p><a href="{% url 'deveconsim:index' %}" class="btn btn-primary btn-block">Try Again</a></p>
+                <p>&nbsp;</p>
+                <div id="happiness_chart" style="height: 400px"></div>
+            {% endwith %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['corechart']}]}"></script>
+
+<script type="text/javascript">
+  google.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Turn','Masses','Elite'],
+      {% for turn in game.turn_set.all %}
+        {% with calc=turn.calc %}
+      [{{turn.turn}},{{calc.hap_lgen}},{{calc.hap_ugen}}],
+        {% endwith %}
+      {% endfor %}
+    ]);
+
+    var options = {
+      title: 'Happiness by Turn',
+      legend: { position: 'bottom' },
+      vAxis: { format: 'percent'}
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('happiness_chart'));
+
+    chart.draw(data, options);
+  }
+</script>
+{% endblock %}

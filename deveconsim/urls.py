@@ -9,4 +9,5 @@ urlpatterns = patterns('',
     url(r'^budget/$', views.BudgetUpdateView.as_view(), name='budget'),
     url(r'^debt/$', views.DebtUpdateView.as_view(), name='debt'),
     url(r'^endturn/$', views.EndTurnUpdateView.as_view(), name='endturn'),
+    url(r'^voted_out/(?P<pk>[0-9]+)/$', views.VotedOutView.as_view(), name='voted_out'),
 )

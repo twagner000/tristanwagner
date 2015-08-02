@@ -55,6 +55,12 @@
             Once you have finished making changes, press the &quot;End Year&quot; button to continue on to the next year.</p>
         </div>
     {% endif %}
+    
+    {% if turn.decapitalized %}
+        <div class="alert alert-danger">
+            <p><b>Decapitalization!</b> Many of your country's wealthier citizens are unhappy and have decided to take their money and capital out of the country. They have refused to operate 100 kha of farm land! Go to the <a href="{% url 'deveconsim:crops' %}"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a> page to readjust.</p>
+        </div>
+    {% endif %}
         
         <h4><a href="{% url 'deveconsim:budget' %}"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Budget</a></h4>
         {% include "deveconsim/table_budget.html" %}
