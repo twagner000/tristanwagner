@@ -131,7 +131,7 @@ class EndTurnUpdateView(CurrentTurnMixin, UpdateView):
             turn.debt_repay_wb = 0
             turn.debt_repay_wbsap = 0
             turn.debt_new_wbsap = 0
-            turn.landprod *= (1-turn.game.PESTICIDES[turn.pesticides]['prod_loss'])
+            turn.landprod *= (1-constants.PESTICIDES[turn.pesticides]['prod_loss'])
             turn.save()
         return super(EndTurnUpdateView, self).form_valid(form)
 
