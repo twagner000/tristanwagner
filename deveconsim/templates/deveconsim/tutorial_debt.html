@@ -1,0 +1,39 @@
+{% load staticfiles %}
+
+<p>
+    Occasionally, your country will take on debt to pay for certain things.
+    For example, you may decide to accept the World Bank's offer to lend you money to plant cocoa.
+    The <a href="{% url 'deveconsim:debt' %}"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt</a> page is where you can come afterwards to pay them off.
+</p>
+<p>
+    You started out the game with $1 billion in loans, left over from your predecessor's attempt to run the country.
+    In this game, you must make annual interest payments on all of your accumulated debt but are not required to pay back any principal.
+</p>
+<p>
+    Because the World Bank's mission is to help developing countries, they will give you a lower interest than private banks
+    &ndash; but they will only offer to fund projects that they believe will help your country.
+</p>
+<p>
+    If you have extra cash, it would be a good idea to pay off some of your country's debt.
+</p>    
+    
+<div class="alert alert-info">
+    <div class="media">
+        <div class="media-left">
+            <img class="media-object img-rounded" src="{% static 'deveconsim/img/business.gif' %}" alt="Business consultant" style="background: #05a;">
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">Business Consultant</h4>
+            &quot;Your country desperately needs to grow its economy &ndash; and a loan can help! As long as your country makes more money than the interest you pay, you'll have gotten a great deal. The World Bank is usually generous, as long as the money goes to a worthy project.&quot;
+        </div>
+    </div>
+    <div class="media">
+        <div class="media-left">
+            <img class="media-object img-rounded" src="{% static 'deveconsim/img/activist.gif' %}" alt="Social activist" style="background: #05a;">
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">Social Activist</h4>
+            &quot;Loans will hurt you in the long run with their heavy interest payments. Do you really trust the World Bank to pick out which projects will help your country?&quot;
+        </div>
+    </div>
+</div>

@@ -13,35 +13,13 @@
                 <div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></div>
             </h4>
             <p>
-                INFO
+                Debt is an important way to gain financing for your country, but too large of interest payments can put a heavy strain on your budget.
             </p>
             {% crispy form %}
         </div>
     </div>
 {% endblock %}
 
-{% block moreinfotitle %}More about Debt{% endblock %}
+{% block moreinfotitle %}More About <span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt{% endblock %}
 
-{% block moreinfo %}
-    <p>More info</p>
-    <div class="alert alert-info">
-        <div class="media">
-            <div class="media-left">
-                <img class="media-object img-rounded" src="{% static 'deveconsim/img/business.gif' %}" alt="Business consultant" style="background: #05a;">
-            </div>
-            <div class="media-body">
-                <h4 class="media-heading">Business Consultant</h4>
-                &quot;You should grow cocoa for export since it has a much higher price than corn. You can import corn from somewhere else to feed your citizens with all the money you'll make!&quot;
-            </div>
-        </div>
-        <div class="media">
-            <div class="media-left">
-                <img class="media-object img-rounded" src="{% static 'deveconsim/img/activist.gif' %}" alt="Social activist" style="background: #05a;">
-            </div>
-            <div class="media-body">
-                <h4 class="media-heading">Social Activist</h4>
-                &quot;You should grow enough corn to satisfy all local needs before growing any cocoa. It is not safe to depend upon another country for something as important as food. Plus, the indigenous peoples have been farming corn for many generations &dash; it is part of their culture.&quot;
-            </div>
-        </div>
-    </div>
-{% endblock %}
+{% block moreinfo %}{% include 'deveconsim/tutorial_debt.html' %}{% endblock %}
