@@ -21,7 +21,7 @@ DJANGO_APPS = (
 )
 THIRD_PARTY_APPS = (
     'widget_tweaks',
-    #'crispy_forms',  # Form layouts
+    'crispy_forms',  # Form layouts
     #'allauth',  # registration
     #'allauth.account',  # registration
     #'allauth.socialaccount',  # registration

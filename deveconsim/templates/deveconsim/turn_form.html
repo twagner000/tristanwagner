@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load deveconsim_extras %}
 {% load widget_tweaks %}
+{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="row">
@@ -10,78 +11,47 @@
             <h4 class="row">
                 <div class="col-xs-10"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span> End Turn</div>
             </h4>
-            {% if form.errors %}
-                <div class="alert alert-danger">
-                    <p><b>The following items must be corrected before continuing to the next turn.</b></p>
-                    <ul>
-                    {% for error in form.non_field_errors %}
-                        <li>{{error}}</li>
-                    {% endfor %}
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>[{{field.label}}]<br/>{{error}}</li>
-                        {% endfor %}
-                    {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
             {% if calc.new_genfund < 0 %}
-                <p>Your current budget doesn't include enough income to cover expenses.
-                {% if calc.new_genfund_plus_max_wbsap > 0 %}Since World Bank interest payments are{% else %}If World Bank interest payments were{% endif %}
-                the deciding factor, the World Bank
-                {% if calc.new_genfund_plus_max_wbsap > 0 %}is{% else %}would be{% endif %}
-                willing to loan you more to cover these payments, under the condition that you accept a structural adjustment program (SAP).</p>
+                <p>
+                    Your current budget doesn't include enough income to cover expenses.
+                    {% if calc.new_genfund_plus_max_wbsap > 0 %}
+                        Since World Bank interest payments are the deciding factor, the World Bank is
+                    {% else %}
+                        If World Bank interest payments were the deciding factor, the World Bank would be
+                    {% endif %}
+                    willing to loan you more to cover these payments, under the condition that you accept a structural adjustment program (SAP).
+                </p>
                 {% if calc.new_genfund_plus_max_wbsap > 0 %}
                     {% if turn.debt_wbsap %}
-                        <p>You already have an active SAP which limits your healthcare funding level to 15% or lower and your security funding level to 20% or lower. Accepting an additional World Bank loan will merely increase the amount you must eventually repay.</p>
+                        <p>
+                            You already have an active SAP which limits your healthcare funding level to 15% or lower and your security funding level to 20% or lower.
+                            Accepting an additional World Bank loan will merely increase the amount you must eventually repay.
+                        </p>
                     {% else %}
                         <ul>
                             <li>Healthcare funding will be limited to ≤15% and security funding to ≤20%.</li>
-                            <li>You will also need at least 750 kha of cocoa planted ({{calc.wbsap_add_cocoa}} kha more than now). The {{calc.wbsap_add_cocoa_cost|currency:"0,M"}} planting cost will be included in the loan.</li>
+                            <li>
+                                You will also need at least 750 kha of cocoa planted ({{calc.wbsap_add_cocoa}} kha more than now).
+                                The {{calc.wbsap_add_cocoa_cost|currency:"0,M"}} planting cost will be included in the loan.
+                            </li>
                         </ul>
-                        <p>You need a loan of at least {{calc.debt_new_wbsap_min|currency:"0,M"}}. Do you wish to accept the World Bank's offer?</p>
                     {% endif %}
+                    <p>You need a loan of at least {{calc.debt_new_wbsap_min|currency:"0,M"}}. Do you wish to accept the World Bank's offer?</p>
                 {% else %}
                     <p><b>However, your budget situation is much worse than that.</b> Go back and try making some more adjustments.</p>
-                    {% if turn.turn == 1 %}<p class="text-primary">You may want to go back to the <a href="{% url 'deveconsim:crops' %}"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a> page and plant additional cocoa.</p>{% endif %}
+                    {% if turn.turn == 1 %}
+                        <p class="text-primary">
+                            You may want to go back to the <a href="{% url 'deveconsim:crops' %}">
+                            <span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a> page and plant additional cocoa.
+                        </p>
+                    {% endif %}
                 {% endif %}
             {% else %}
                 <p>Congratulations, you have balanced your country's budget for this year.</p>
             {% endif %}
+            
             {% if calc.new_genfund_plus_max_wbsap > 0 %}
-                <form role="form" class="form-horizontal" method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                    {% if field.is_hidden%}
-                        {{field}}
-                    {% else %}
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
-                                {{ field.label }}
-                            </label>
-                            <div class="col-sm-7">
-                                <div class="row">
-                                    <div class="col-sm-7">
-                                        <div class="input-group">
-                                            <span class="input-group-addon">$</span>
-                                            {{ field|add_class:"form-control" }}
-                                            <span class="input-group-addon">M</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-5">
-                                        <p class="form-control-static text-muted">
-                                        (up to {{calc.debt_new_wbsap_max|currency:"0,M"}})
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-block">End Turn</button>
-                    </div>
-                </form>
+                {% crispy form %}
             {% endif %}
         </div>
     </div>

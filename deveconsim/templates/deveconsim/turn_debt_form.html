@@ -3,6 +3,7 @@
 {% load humanize %}
 {% load deveconsim_extras %}
 {% load widget_tweaks %}
+{% load crispy_forms_tags %}
 
 {% block content %}
     <div class="row">
@@ -11,42 +12,10 @@
                 <div class="col-xs-10"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt</div>
                 <div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></div>
             </h4>
-            <p>INFO</p>
-            <form role="form" class="form-horizontal" method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}" class="col-sm-5 control-label">
-                        {{ field.label }}
-                    </label>
-                    <div class="col-sm-7">
-                        <div class='row{% if field.errors %} alert alert-danger{% endif %}'>
-                            {% if field.errors %}<div class="col-sm-12">{% for error in field.errors %}<p>{{ error }}</p>{% endfor %}</div>{% endif %}
-                            <div class="col-sm-7">
-                                <div class="input-group">
-                                    <span class="input-group-addon">$</span>
-                                    {{ field|add_class:"form-control" }}
-                                    <span class="input-group-addon">M</span>
-                                </div>
-                            </div>
-                            <div class="col-sm-5">
-                                <p class="form-control-static text-muted">
-                                {% if field.name == 'debt_repay_private' %}(owe {{turn.debt_private|currency:"0,M"}}){% endif %}
-                                {% if field.name == 'debt_repay_wb' %}(owe {{turn.debt_wb|currency:"0,M"}}){% endif %}
-                                {% if field.name == 'debt_repay_wbsap' %}(owe {{turn.debt_wbsap|currency:"0,M"}}){% endif %}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-            {% if form.errors.insufficient_land %}<div class="alert alert-danger">{{form.errors.insufficient_land}}</div>{% endif %}
-                <div class="form-group">
-                    <div class="col-sm-4 col-sm-offset-5 col-xs-12">
-                        <button type="submit" class="btn btn-primary btn-block">Update</button>
-                    </div>
-                </div>
-            </form>
+            <p>
+                INFO
+            </p>
+            {% crispy form %}
         </div>
     </div>
 {% endblock %}

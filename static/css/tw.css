@@ -22,6 +22,15 @@ footer {
     color: #f00;
 }
 
+.form-actions {
+    text-align: right;
+    }
+    
+    
+.form-group .controls .help-block {
+    text-align: right;
+    }
+
 /* CUSTOMIZE THE CAROUSEL
 -------------------------------------------------- */
 
