@@ -14,14 +14,18 @@
         <div class="item active">
           <img src="{% static 'img/alhambra.jpg' %}" alt="Alhambra">
           <div class="container">
-            <div class="carousel-caption">
+            <!--div class="carousel-caption">
               <h1>Alhambra</h1>
               <p>Can I create an AI for this board game?</p>
               <p><a class="btn btn-lg btn-primary" href="#" role="button">Read the blog</a></p>
+            </div-->
+            <div class="carousel-caption">
+              <h1>Board games</h1>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'games:index' %}" role="button">See what I've played recently</a></p>
             </div>
           </div>
         </div>
-        <div class="item">
+        <!--div class="item">
           <img src="{% static 'img/ledbar.jpg' %}" alt="Charlieplexed LEDs">
           <div class="container">
             <div class="carousel-caption">
@@ -40,7 +44,7 @@
               <p><a class="btn btn-lg btn-primary" href="#" role="button">Read the blog</a></p>
             </div>
           </div>
-        </div>
+        </div-->
       </div>
       <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
       <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
