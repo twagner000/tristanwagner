@@ -2,6 +2,26 @@
 {% load staticfiles %}
 
 {% block content %}
-    <h3>Puzzles</h3>
-    <p>I like to solve puzzles (e.g., <a href="http://www.puzzledpint.com/">Puzzled Pint</a>), and I also enjoy occasionally creating puzzles of my own.</p>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Puzzles</h3>
+            <p>I enjoy solving puzzles, and occasionally creating them.</p>
+            <p>I highly recommend <a href="http://www.puzzledpint.com/">Puzzled Pint</a>. Their <a href="http://www.puzzledpint.com/index.php/download_file/view/997/351/">code sheet</a> also frequently comes in useful.</p>
+        </div>
+        <div class="col-md-6">
+            <h3>Isle of Skye</h3>
+            <p>
+                The board game <a href="https://boardgamegeek.com/boardgame/176494/isle-skye-chieftain-king">Isle of Skye</a> is a recent favorite of mine.
+                Solve <a href="{% static 'img/puzzles/Puzzle_Isle_of_Skye.pdf' %}"><b>the puzzle</b></a> to find what I think makes a good addition to this game (6 letters):
+            </p>
+            <form role="form" action="{% url 'puzzles:solved' %}" method="post">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control" name="solution" placeholder="Solution...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">Check</button>
+                    </span>
+                </div>
+            </form>
+        </div>
 {% endblock %}
