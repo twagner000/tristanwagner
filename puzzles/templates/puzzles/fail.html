@@ -3,11 +3,11 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-4 col-md-offset-4">
+        <div class="col-md-6 col-md-offset-3">
             <h3>Keep Trying!</h3>
             <p>That wasn't quite correct.</p>
-            <p>The answer is 6 letters.</p>
-            <form role="form" action="{% url 'puzzles:solved' %}" method="post">
+            {{puzzle.fail_html}}
+            <form role="form" action="{% url 'puzzles:check' puzzle.slug%}" method="post">
                 {% csrf_token %}
                 <div class="input-group">
                     <input type="text" class="form-control" name="solution" placeholder="Solution...">

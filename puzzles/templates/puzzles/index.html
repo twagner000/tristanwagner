@@ -4,24 +4,29 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6">
-            <h3>Puzzles</h3>
+            <h3>Generally Puzzling</h3>
             <p>I enjoy solving puzzles, and occasionally creating them.</p>
             <p>I highly recommend <a href="http://www.puzzledpint.com/">Puzzled Pint</a>. Their <a href="http://www.puzzledpint.com/index.php/download_file/view/997/351/">code sheet</a> also frequently comes in useful.</p>
         </div>
         <div class="col-md-6">
-            <h3>Isle of Skye</h3>
-            <p>
-                The board game <a href="https://boardgamegeek.com/boardgame/176494/isle-skye-chieftain-king">Isle of Skye</a> is a recent favorite of mine.
-                Solve <a href="{% static 'img/puzzles/Puzzle_Isle_of_Skye.pdf' %}"><b>the puzzle</b></a> to find what I think makes a good addition to this game (6 letters):
-            </p>
-            <form role="form" action="{% url 'puzzles:solved' %}" method="post">
-                {% csrf_token %}
-                <div class="input-group">
-                    <input type="text" class="form-control" name="solution" placeholder="Solution...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-primary" type="submit">Check</button>
-                    </span>
-                </div>
-            </form>
+            <h3>Puzzles I've Created</h3>
+            {% if latest_released_puzzle_list %}
+                {% for puzzle in latest_released_puzzle_list %}
+                    <h4>{{puzzle.title}} <small class="pull-right">{{puzzle.release_date|date:"Y-m-d"}}</small></h4>
+                    {{puzzle.puzzle_html}}
+                    <form role="form" action="{% url 'puzzles:check' puzzle.slug%}" method="post">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="solution" placeholder="Solution...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Check</button>
+                            </span>
+                        </div>
+                    </form>&nbsp;
+                {% endfor %}
+                &nbsp;<!--p><a href="" class="btn btn-primary pull-right">All Puzzles</a></p-->
+            {% else %}
+                <p>No puzzles available.</p>
+            {% endif %}
         </div>
 {% endblock %}

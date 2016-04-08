@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h3>{{puzzle.title}}</h3>
+            {{puzzle.puzzle_html}}
+            <form role="form" action="{% url 'puzzles:check' puzzle.slug%}" method="post">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control" name="solution" placeholder="Solution...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" type="submit">Check</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+{% endblock %}
