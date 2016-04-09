@@ -14,15 +14,8 @@
                 {% for puzzle in latest_released_puzzle_list %}
                     <h4>{{puzzle.title}} <small class="pull-right">{{puzzle.release_date|date:"Y-m-d"}}</small></h4>
                     {{puzzle.puzzle_html}}
-                    <form role="form" action="{% url 'puzzles:check' puzzle.slug%}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="solution" placeholder="Solution...">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">Check</button>
-                            </span>
-                        </div>
-                    </form>&nbsp;
+                    {% include "puzzles/puzzle_checkform.html" %}
+                    &nbsp;
                 {% endfor %}
                 &nbsp;<!--p><a href="" class="btn btn-primary pull-right">All Puzzles</a></p-->
             {% else %}

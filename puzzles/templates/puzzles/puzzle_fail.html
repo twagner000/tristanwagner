@@ -4,8 +4,10 @@
 {% block content %}
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <h3>{{puzzle.title}}</h3>
-            {{puzzle.puzzle_html}}
+            <h3>Keep Trying!</h3>
+            <p>That wasn't quite correct.</p>
+            {{puzzle.fail_html}}
             {% include "puzzles/puzzle_checkform.html" %}
         </div>
+    </div>
 {% endblock %}

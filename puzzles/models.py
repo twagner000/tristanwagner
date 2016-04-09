@@ -14,7 +14,8 @@ class Puzzle(models.Model):
     puzzle_template = models.TextField()
     fail_template = models.TextField()
     success_template = models.TextField()
-    puzzle_file = models.FileField(upload_to=puzzle_path)
+    puzzle_file = models.FileField(upload_to=puzzle_path, blank=True)
+    success_image = models.ImageField(upload_to=puzzle_path, blank=True)
     created_date = models.DateTimeField(default=timezone.now)
     release_date = models.DateTimeField(blank=True, null=True)
     
