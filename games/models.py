@@ -1,3 +1,45 @@
 from django.db import models
+from django.utils import timezone
 
-# Create your models here.
+class BGGUserSearch(models.Model):
+    q = models.CharField(max_length=50)
+    users = models.TextField(blank=True)
+    search_date = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return self.q
+        
+    def user_list(self):
+        return self.users.split(',') if self.users else []
+
+class BGGGame(models.Model):
+    objectid = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=250)
+    yearpublished = models.IntegerField(null=True, blank=True)
+    minplayers = models.IntegerField(null=True, blank=True)
+    maxplayers = models.IntegerField(null=True, blank=True)
+    minplaytime = models.IntegerField(null=True, blank=True)
+    maxplaytime = models.IntegerField(null=True, blank=True)
+    playingtime = models.IntegerField(null=True, blank=True)
+    numowned = models.IntegerField(null=True, blank=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    date_updated = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return '%s (%d)' % (self.name,self.objectid)
+    
+class BGGUser(models.Model):
+    user = models.CharField(max_length=250)
+    date_created = models.DateTimeField(default=timezone.now)
+    date_updated = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return self.user
+    
+class BGGUserRating(models.Model):
+    game = models.ForeignKey(BGGGame, on_delete=models.CASCADE)
+    user = models.ForeignKey(BGGUser, on_delete=models.CASCADE)
+    rating = models.FloatField()
+    numplays = models.IntegerField(null=True, blank=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    date_updated = models.DateTimeField(default=timezone.now)

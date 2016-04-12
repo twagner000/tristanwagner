@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <h3>Ratings for {{user}}</h3>
+    <table class="table">
+        <tr><th>Game</th><th>Rating</th><th># Plays</th></tr>
+        {% for rating in ratings %}
+            <tr><td>{{rating.game}}</td><td>{{rating.rating}}</td><td>{{rating.numplays}}</td></tr>
+        {% endfor %}
+    </table>
+{% endblock %}
