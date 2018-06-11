@@ -11,6 +11,10 @@ class Game(models.Model):
     name = models.CharField(blank=True, null=True, max_length=200)
     started_date = models.DateTimeField(auto_now_add=True)
     completed_date = models.DateTimeField(blank=True,null=True)
+    
+    success_url_str = 'deveconsim:index'
+    start_url_str = 'deveconsim:start'
+    session_pk_var = 'deveconsim_game_pk'
                   
     def __str__(self):
         return 'Game "{2}" started {1} on {0:%m}/{0:%d}/{0:%y} at {0:%H}:{0:%M}'.format(self.started_date, 'by {0}'.format(self.user) if self.user else 'anonymously', self.name)

@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^games/', include('games.urls', namespace='games')),
     url(r'^puzzles/', include('puzzles.urls', namespace='puzzles')),
     url(r'^deveconsim/', include('deveconsim.urls', namespace='deveconsim')),
+    url(r'^mpatrol/', include('mpatrol.urls', namespace='mpatrol')),
 ]

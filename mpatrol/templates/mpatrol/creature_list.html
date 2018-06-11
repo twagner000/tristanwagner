@@ -1,0 +1,34 @@
+{% extends "mpatrol/base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+        
+	<h4>Creatures</h4>
+	<table class="table table-striped">
+		<tr>
+			<th>Name</th>
+			<th>Min Leader Level</th>
+			<th>Attack</th>
+			<th>Defense</th>
+			<th>Cost in Creature Points</th>
+			<th>Cost in Gold</th>
+			<th>Gold from Working</th>
+			<th>Experience from Working</th>
+			<th>Overseeing Capability</th>
+		</tr>
+		{% for c in object_list %}
+		<tr>
+			<td>{{c.name}}</td>
+			<td>{{c.min_ll}}</td>
+			<td>{{c.attack}}</td>
+			<td>{{c.defense}}</td>
+			<td>{{c.cost_cp}}</td>
+			<td>{{c.cost_gold}}</td>
+			<td>{{c.work_gold}}</td>
+			<td>{{c.work_exp}}</td>
+			<td>{{c.oversee}}</td>
+		</tr>
+		{% endfor %}
+	</table>
+        
+{% endblock %}

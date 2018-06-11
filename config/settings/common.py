@@ -33,6 +33,7 @@ LOCAL_APPS = (
     'games',
     'deveconsim',
     'puzzles',
+    'mpatrol',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
