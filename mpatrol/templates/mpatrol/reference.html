@@ -2,10 +2,16 @@
 {% load staticfiles %}
 
 {% block content %}
-        
 	<h4><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Reference</h4>
-
-	{% include "mpatrol/creature_table.html" %}
+	<div>
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#creatures" aria-controls="creatures" role="tab" data-toggle="tab">Creatures</a></li>
+			<li role="presentation"><a href="#leaderlevels" aria-controls="leaderlevels" role="tab" data-toggle="tab">Leader Levels</a></li>
+		</ul>
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="creatures">&nbsp;{% include "mpatrol/creature_table.html" %}</div>
+			<div role="tabpanel" class="tab-pane" id="leaderlevels">&nbsp;{% include "mpatrol/leaderlevel_table.html" %}</div>
+		</div>
+	</div>
 	
-	{% include "mpatrol/leaderlevel_table.html" %}
 {% endblock %}
