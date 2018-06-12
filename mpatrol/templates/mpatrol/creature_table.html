@@ -1,0 +1,26 @@
+	<table class="table table-striped">
+		<tr>
+			<th>Creature</th>
+			<th>Min Leader Level</th>
+			<th>Attack</th>
+			<th>Defense</th>
+			<th>Cost in Creature Points</th>
+			<th>Cost in Gold</th>
+			<th>Gold from Working</th>
+			<th>Experience from Working</th>
+			<th>Overseeing Capability</th>
+		</tr>
+		{% for creature in creature_list %}
+		<tr>
+			<td>{{creature.name}}</td>
+			<td>{{creature.min_ll}}</td>
+			<td>{{creature.attack}}</td>
+			<td>{{creature.defense}}</td>
+			<td>{{creature.cost_cp}}</td>
+			<td>{{creature.cost_gold}}</td>
+			<td>{{creature.work_gold}}</td>
+			<td>{{creature.work_exp}}</td>
+			<td>{{creature.oversee}}</td>
+		</tr>
+		{% endfor %}
+	</table>

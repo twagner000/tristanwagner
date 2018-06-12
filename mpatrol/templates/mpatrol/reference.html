@@ -1,0 +1,11 @@
+{% extends "mpatrol/base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+        
+	<h4><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Reference</h4>
+
+	{% include "mpatrol/creature_table.html" %}
+	
+	{% include "mpatrol/leaderlevel_table.html" %}
+{% endblock %}
