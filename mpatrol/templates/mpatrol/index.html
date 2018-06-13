@@ -4,7 +4,8 @@
 {% block content %}
         
 	<h4><span class="glyphicon glyphicon-knight" aria-hidden="true"></span> Mossflower Patrol Game</h4>
-	<div class="alert alert-info">
+	<div class="alert alert-info alert-dismissable">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		<p><b><i>Abstracts from the Records of Davidias the Wise</i></b></p>
 		<p>Hello, fellow Patrollers, and welcome to the Mossflower Patrol game! We are happy to have you here. As official recorder, I will try to put all of the learnings from my many years in the Patrol here an paper for you. Let me split the basics into several main points...</p>
 		<p><ol>
@@ -16,58 +17,81 @@
 		<p>With this basic knowledge, you have the power to suceed in the game. Good luck, Patroller!</p>
 	</div>
 		
-	<p>{{player}}</p>
-	
-	<p>{{calc}}</p>
+	<h5>{{player}}</h5>
 	
 	<p>month, year A.F.</p>
 	<p><a href="#">You have n new message(s).</a></p>
-	<p>You have n creature points free.</p>
-	<table>
+	<table class="table">
 		<tr>
 			<th>Gold</th>
-			<td>n</td>
+			<td>{{player.gold}}</td>
 		</tr>
 		<tr>
 			<th>Experience</th>
-			<td></td>
+			<td>{{player.xp}}</td>
+		</tr>
+		<tr>
+			<th>Available Creature Points</th>
+			<td>{{calc.cp_avail}}</td>
 		</tr>
 		<tr>
 			<th>Attack Rating</th>
-			<td></td>
+			<td>{{calc.attack|floatformat:2}}</td>
 		</tr>
 		<tr>
 			<th>Defense Rating</th>
-			<td></td>
+			<td>{{calc.defense|floatformat:2}}</td>
 		</tr>
 		<tr>
 			<th>Gold per Turn</th>
-			<td></td>
+			<td>{{calc.work_gold}}</td>
 		</tr>
 		<tr>
 			<th>Experience per Turn</th>
-			<td></td>
+			<td>{{calc.work_xp}}</td>
 		</tr>
 		<tr>
 			<th>Total Life</th>
-			<td></td>
+			<td>{{calc.life}}</td>
 		</tr>
 		<tr>
 			<th>Level</th>
-			<td></td>
+			<td>{{player.ll}}</td>
 		</tr>
 		<tr>
 			<th>Battles Fought</th>
-			<td></td>
+			<td>{{player.battles_fought.count}}</td>
 		</tr>
 		<tr>
 			<th>Technologies Researched</th>
-			<td></td>
+			<td>TBD</td>
 		</tr>
 		<tr>
 			<th>Structures Built</th>
-			<td></td>
+			<td>TBD</td>
 		</tr>
+	</table>
+	
+	<h5>Battalions</h5>
+	<table class="table table-striped">
+		<tr>
+			<th>#</th>
+			<th>Creature Type</th>
+			<th>Count</th>
+			<th>Level</th>
+			<th>Weapon Base</th>
+			<th>Weapon Material</th>
+		</tr>
+		{% for b in player.battalion_set.all %}
+			<tr>
+				<td>{{b.battalion_number}}</td>
+				<td>{{b.creature_type}}</td>
+				<td>{{b.count}}</td>
+				<td>{{b.level}}</td>
+				<td>{{b.weapon_base}}</td>
+				<td>{{b.weapon_material}}</td>
+			</tr>
+		{% endfor %}
 	</table>
 
 	<p>BATTALION DATA TABLE</p>

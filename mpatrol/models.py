@@ -21,7 +21,7 @@ class Player(models.Model):
     last_action_date = models.DateTimeField(blank=True, null=True)
     
     ll = models.PositiveSmallIntegerField(default=1, verbose_name='Leader Level')
-    gold = models.PositiveIntegerField(default=0)
+    gold = models.PositiveIntegerField(default=100)
     xp = models.PositiveIntegerField(default=0, verbose_name='Experience')
     
     #Techs
@@ -38,18 +38,21 @@ class Player(models.Model):
         return 'Player {0} in {1}'.format(self.user, self.game)
     
     def calc(self):
-        r = {} #results
+        r = {}
         r['life'] = constants.LEADER_LEVELS[self.ll]['life']
-        r['cp_avail'] = constants.LEADER_LEVELS[self.ll]['cp'] #- sum(creature type*qty)
         battalion_calc = [b.calc() for b in self.battalion_set.all()]
-        r['attack'] = (1+self.ll/10)*sum(b['attack'] for b in battalion_calc)
-        r['defense'] = (1+self.ll/10)*sum(b['defense'] for b in battalion_calc)
-        r['oversee'] = gold_mult*sum(b['oversee'] for b in battalion_calc)
-        r['work_xp'] = gold_mult*sum(b['work_xp'] for b in battalion_calc)
+        r['cp_avail'] = constants.LEADER_LEVELS[self.ll]['cp']-sum(b.get('cost_cp',0) for b in battalion_calc)
+        r['attack'] = (1+self.ll/10)*sum(b.get('attack',0) for b in battalion_calc)
+        r['defense'] = (1+self.ll/10)*sum(b.get('defense',0) for b in battalion_calc)
+        r['oversee'] = sum(b.get('oversee',0) for b in battalion_calc)
+        r['work_xp'] = sum(b.get('work_xp',0) for b in battalion_calc)
         gold_mult = max(1,2-(sum(b['count'] for b in battalion_calc)/r['oversee']) if r['oversee']>0 else 1)
-        r['work_gold'] = gold_mult*sum(b['work_gold'] for b in battalion_calc)        
+        r['work_gold'] = gold_mult*sum(b.get('work_gold',0) for b in battalion_calc)
         #payday variable can also add +100 gold, but doesn't show up anywhere?
         return r
+        
+    def battles_fought(self):
+        return self.attacker_set.all() | self.defender_set.all()
 
         
 class Battalion(models.Model):
@@ -63,6 +66,7 @@ class Battalion(models.Model):
     
     class Meta:
         unique_together = ('player', 'battalion_number',)
+        ordering = ['battalion_number']
         
     def __str__(self):
         return 'Battalion {0}, {1}'.format(self.battalion_number, self.player)
@@ -70,33 +74,48 @@ class Battalion(models.Model):
     def calc(self):
         r = {}
         r['count'] = self.count
-        r['cost_cp'] = self.count*constants.CREATURES[self.creature_type]['cost_cp']
-        r['work_gold'] = self.count*constants.CREATURES[self.creature_type]['work_gold']
-        r['work_xp'] = self.count*constants.CREATURES[self.creature_type]['work_xp']
-        r['oversee'] = self.count*constants.CREATURES[self.creature_type]['oversee']
-        r['attack'] = (1+self.level/10)*self.count*max(1,constants.WEAPON_BASES[self.weapon_base]['attack_mult']*constants.WEAPON_MATERIALS[self.weapon_material]['attack_mult'])*constants.CREATURES[self.creature_type]['attack']
-        r['defense'] = (1+self.level/10)*self.count*constants.WEAPON_MATERIALS[self.weapon_material]['armor']*constants.CREATURES[self.creature_type]['defense']
+        creature = constants.CREATURES.get(self.creature_type)
+        if creature:
+            r['cost_cp'] = self.count*creature['cost_cp']
+            r['work_gold'] = self.count*creature['work_gold']
+            r['work_xp'] = self.count*creature['work_xp']
+            r['oversee'] = self.count*creature['oversee']
+            r['attack'] = (1+self.level/10)*self.count*creature['attack']
+            r['defense'] = (1+self.level/10)*self.count*creature['defense']
+            #apply weapon multipliers
+            weapon_base = constants.WEAPON_BASES.get(self.weapon_base)
+            weapon_material = constants.WEAPON_MATERIALS.get(self.weapon_material)
+            if weapon_base and weapon_material:
+                r['attack'] *= weapon_base['attack_mult']*weapon_material['attack_mult']
+                r['defense'] *= weapon_material['armor']
+            
         return r
     
 
 class Message(models.Model):
     #see messages.e.txt
-    sender = models.ForeignKey(Player,related_name='sender',null=True)
-    recipient = models.ForeignKey(Player,related_name='recipient')
+    sender = models.ForeignKey(Player,related_name='sender_set',null=True)
+    recipient = models.ForeignKey(Player,related_name='recipient_set')
     sent_date = models.DateTimeField(auto_now_add=True)
     subject = models.TextField()
     message = models.TextField(blank=True)
     unread = models.BooleanField(default=True)
+    
+    class Meta:
+        ordering = ['-sent_date']
     
     def __str__(self):
         return 'Message "{0}" from {1} to {2}'.format(self.subject, self.sender, self.recipient)
     
     
 class Battle(models.Model):
-    attacker = models.ForeignKey(Player,related_name='attacker')
-    defender = models.ForeignKey(Player,related_name='defender')
+    attacker = models.ForeignKey(Player,related_name='attacker_set')
+    defender = models.ForeignKey(Player,related_name='defender_set')
     battle_date = models.DateTimeField(auto_now_add=True)
     successful_attack = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-battle_date']
     
     def __str__(self):
         return 'Battle {0} attacked {1} on {2}'.format(self.attacker, self.defender, self.battle_date)
