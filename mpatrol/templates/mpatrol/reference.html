@@ -7,10 +7,18 @@
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation" class="active"><a href="#creatures" aria-controls="creatures" role="tab" data-toggle="tab">Creatures</a></li>
 			<li role="presentation"><a href="#leaderlevels" aria-controls="leaderlevels" role="tab" data-toggle="tab">Leader Levels</a></li>
+			<li role="presentation"><a href="#structures" aria-controls="structures" role="tab" data-toggle="tab">Structures</a></li>
+			<li role="presentation"><a href="#techs" aria-controls="techs" role="tab" data-toggle="tab">Techs</a></li>
+			<li role="presentation"><a href="#bases" aria-controls="bases" role="tab" data-toggle="tab">Weapon Base</a></li>
+			<li role="presentation"><a href="#materials" aria-controls="materials" role="tab" data-toggle="tab">Material</a></li>
 		</ul>
 		<div class="tab-content">
-			<div role="tabpanel" class="tab-pane active" id="creatures">&nbsp;{% include "mpatrol/creature_table.html" %}</div>
-			<div role="tabpanel" class="tab-pane" id="leaderlevels">&nbsp;{% include "mpatrol/leaderlevel_table.html" %}</div>
+			<div role="tabpanel" class="tab-pane active" id="creatures">&nbsp;{% include "mpatrol/ref_table.html" with table=constants.CREATURES name="creature" only %}</div>
+			<div role="tabpanel" class="tab-pane" id="leaderlevels">&nbsp;{% include "mpatrol/ref_table.html" with table=constants.LEADER_LEVELS name="level" only %}</div>
+			<div role="tabpanel" class="tab-pane" id="structures">&nbsp;{% include "mpatrol/ref_table.html" with table=constants.STRUCTURES name="structure" only %}</div>
+			<div role="tabpanel" class="tab-pane" id="techs">&nbsp;{% include "mpatrol/ref_table.html" with table=constants.TECHS name="tech" only %}</div>
+			<div role="tabpanel" class="tab-pane" id="bases">&nbsp;{% include "mpatrol/ref_table.html" with table=constants.WEAPON_BASES name="base" only %}</div>
+			<div role="tabpanel" class="tab-pane" id="materials">&nbsp;{% include "mpatrol/ref_table.html" with table=constants.WEAPON_MATERIALS name="material" only %}</div>
 		</div>
 	</div>
 	
