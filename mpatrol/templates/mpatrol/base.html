@@ -6,15 +6,16 @@
         <div class="container">
             <div class="nav navbar-nav">
                 <span class="btn-group btn-group-sm">
-                    <a href="{% url 'mpatrol:index' %}" class="btn btn-default" title="Overview"><span class="glyphicon glyphicon-knight" aria-hidden="true"></span><span class="hidden-xs"> Overview</span></a>
-                    <a class="btn btn-default" title="Crops"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span><span class="hidden-xs"> Crops</span></a>
-                    <a class="btn btn-default" title="Budget"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span><span class="hidden-xs"> Budget</span></a>
-                    <a href="{% url 'mpatrol:reference' %}" class="btn btn-default" title="Reference"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span><span class="hidden-xs"> Reference</span></a>
+                    <a href="{% url 'mpatrol:index' %}" class="btn btn-default" title="Overview"><span class="glyphicon glyphicon-knight" aria-hidden="true"></span></a>
+                    <a class="btn btn-default" title="Hire"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></a>
+					<a class="btn btn-default" title="Level Up"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></a>
+					<a class="btn btn-default" title="Messages"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></a>
+                    <a href="{% url 'mpatrol:reference' %}" class="btn btn-default" title="Reference"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
                 </span>
                 <span class="btn-group btn-group-sm pull-right">
-                    <a class="btn btn-danger" title="Restart game"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></a>
-                    <a class="btn btn-default" title="Turn {{turn.turn}}"><span class="hidden-xs">Turn </span>{{turn.turn}}{% if not turn.turn %}?{% endif %}</a>
-                    <a class="btn btn-success" title="End turn"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></a>
+                    <a class="btn btn-success" title="Work"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span></a>
+					<a class="btn btn-warning" title="Spy"><span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span></a>
+                    <a class="btn btn-danger" title="Attack"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span></a>
                 </span>
             </nav>
         </div>
