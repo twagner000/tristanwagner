@@ -17,66 +17,85 @@
 		<p>With this basic knowledge, you have the power to suceed in the game. Good luck, Patroller!</p>
 	</div>
 		
-	<h5>{{player}}</h5>
-	
 	<p>month, year A.F.</p>
 	<p><a href="#">You have n new message(s).</a></p>
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table">
+				<tr>
+					<th>Gold</th>
+					<td>{{player.gold}}</td>
+				</tr>
+				<tr>
+					<th>Experience</th>
+					<td>{{player.xp}}</td>
+				</tr>
+				<tr>
+					<th>Leader Level</th>
+					<td>{{player.ll.level}}</td>
+				</tr>
+				<tr>
+					<th>Life</th>
+					<td>{{player.ll.life}}</td>
+				</tr>
+				<tr>
+					<th>Available Creature Points</th>
+					<td>{{calc.cp_avail}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="col-md-6">
+			<table class="table">
+				<tr>
+					<th>Attack Rating</th>
+					<td>{{calc.attack|floatformat:2}}</td>
+				</tr>
+				<tr>
+					<th>Defense Rating</th>
+					<td>{{calc.defense|floatformat:2}}</td>
+				</tr>
+				<tr>
+					<th>Gold per Turn</th>
+					<td>{{calc.work_gold}}</td>
+				</tr>
+				<tr>
+					<th>Experience per Turn</th>
+					<td>{{calc.work_xp}}</td>
+				</tr>
+				<tr>
+					<th>Battles Fought</th>
+					<td>{{player.battles_fought.count}}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
 	<table class="table">
 		<tr>
-			<th>Gold</th>
-			<td>{{player.gold}}</td>
-		</tr>
-		<tr>
-			<th>Experience</th>
-			<td>{{player.xp}}</td>
-		</tr>
-		<tr>
-			<th>Available Creature Points</th>
-			<td>{{calc.cp_avail}}</td>
-		</tr>
-		<tr>
-			<th>Attack Rating</th>
-			<td>{{calc.attack|floatformat:2}}</td>
-		</tr>
-		<tr>
-			<th>Defense Rating</th>
-			<td>{{calc.defense|floatformat:2}}</td>
-		</tr>
-		<tr>
-			<th>Gold per Turn</th>
-			<td>{{calc.work_gold}}</td>
-		</tr>
-		<tr>
-			<th>Experience per Turn</th>
-			<td>{{calc.work_xp}}</td>
-		</tr>
-		<tr>
-			<th>Total Life</th>
-			<td>{{calc.life}}</td>
-		</tr>
-		<tr>
-			<th>Level</th>
-			<td>{{player.ll}}</td>
-		</tr>
-		<tr>
-			<th>Battles Fought</th>
-			<td>{{player.battles_fought.count}}</td>
-		</tr>
-		<tr>
 			<th>Technologies Researched</th>
-			<td>TBD</td>
+			<td>
+			{% for tech in player.technologies.all %}
+				{{tech.name}}{% if not forloop.last %},{% endif %}
+			{% empty %}
+				-
+			{% endfor %}
+			</td>
 		</tr>
 		<tr>
 			<th>Structures Built</th>
-			<td>TBD</td>
+			<td>
+			{% for structure in player.structures.all %}
+				{{structure.name}}{% if not forloop.last %},{% endif %}
+			{% empty %}
+				-
+			{% endfor %}
+			</td>
 		</tr>
 	</table>
 	
-	<h5>Battalions</h5>
-	<table class="table table-striped">
+	<table class="table">
 		<tr>
-			<th>#</th>
-			<th>Creature Type</th>
+			<th>Battalion</th>
+			<th>Creature</th>
 			<th>Count</th>
 			<th>Level</th>
 			<th>Weapon Base</th>
@@ -85,7 +104,7 @@
 		{% for b in player.battalion_set.all %}
 			<tr>
 				<td>{{b.battalion_number}}</td>
-				<td>{{b.creature_type}}</td>
+				<td>{{b.creature}}</td>
 				<td>{{b.count}}</td>
 				<td>{{b.level}}</td>
 				<td>{{b.weapon_base}}</td>
