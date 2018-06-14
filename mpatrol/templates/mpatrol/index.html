@@ -104,11 +104,11 @@
 		{% for b in player.battalion_set.all %}
 			<tr>
 				<td>{{b.battalion_number}}</td>
-				<td>{{b.creature}}</td>
+				<td>{{b.creature|default_if_none:"-"}}</td>
 				<td>{{b.count}}</td>
 				<td>{{b.level}}</td>
-				<td>{{b.weapon_base}}</td>
-				<td>{{b.weapon_material}}</td>
+				<td>{{b.weapon_base|default_if_none:"-"}}</td>
+				<td>{{b.weapon_material|default_if_none:"-"}}</td>
 			</tr>
 		{% endfor %}
 	</table>
