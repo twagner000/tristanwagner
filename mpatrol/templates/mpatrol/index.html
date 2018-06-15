@@ -71,7 +71,11 @@
 	</div>
 	<table class="table">
 		<tr>
-			<th>Technologies Researched</th>
+			<th>
+				<span class="btn-group btn-group-sm">
+					<a href="#" class="btn btn-default" title="Research"><span class="fas fa-plus" aria-hidden="true"></span></a>
+				</span>
+				Technologies Researched</th>
 			<td>
 			{% for tech in player.technologies.all %}
 				{{tech.name}}{% if not forloop.last %},{% endif %}
@@ -81,7 +85,12 @@
 			</td>
 		</tr>
 		<tr>
-			<th>Structures Built</th>
+			<th>
+				<span class="btn-group btn-group-sm">
+					<a href="#" class="btn btn-default" title="Build"><span class="fas fa-plus" aria-hidden="true"></span></a>
+				</span>
+				Structures Built
+			</th>
 			<td>
 			{% for structure in player.structures.all %}
 				{{structure.name}}{% if not forloop.last %},{% endif %}
@@ -94,6 +103,7 @@
 	
 	<table class="table">
 		<tr>
+			<th></th>
 			<th>Battalion</th>
 			<th>Creature</th>
 			<th>Count</th>
@@ -103,6 +113,12 @@
 		</tr>
 		{% for b in player.battalion_set.all %}
 			<tr>
+				<td>
+					<span class="btn-group btn-group-sm">
+						<a href="#" class="btn btn-default" title="Hire"><span class="fas fa-plus" aria-hidden="true"></span></a>
+						<a href="#" class="btn btn-default{% if not b.count %} disabled{% endif %}" title="Fire"><span class="fas fa-minus" aria-hidden="true"></span></a>
+					</span>
+				</td>
 				<td>{{b.battalion_number}}</td>
 				<td>{{b.creature|default_if_none:"-"}}</td>
 				<td>{{b.count}}</td>

@@ -7,7 +7,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from . import constants
 
 class Game(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True)
+    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(blank=True, null=True, max_length=200)
     started_date = models.DateTimeField(auto_now_add=True)
     completed_date = models.DateTimeField(blank=True,null=True)
@@ -23,7 +23,7 @@ class Game(models.Model):
         return self.turn_set.order_by('-turn')[0]
 
 class Turn(models.Model):
-    game = models.ForeignKey(Game)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
     turn = models.PositiveIntegerField(default=1)
     started_date = models.DateTimeField(auto_now_add=True)
     completed_date = models.DateTimeField(blank=True,null=True)

@@ -7,7 +7,7 @@ class Puzzle(models.Model):
         # file will be uploaded to MEDIA_ROOT/puzzles/<slug>/<filename>
         return 'puzzles/{0}/{1}'.format(instance.slug, filename)
         
-    author = models.ForeignKey('auth.User')
+    author = models.ForeignKey('auth.User', models.PROTECT)
     title = models.CharField(max_length=200)
     slug = models.SlugField()
     solution = models.CharField(max_length=50)

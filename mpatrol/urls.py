@@ -1,8 +1,9 @@
-from django.conf.urls import url
+from django.urls import path
 from django.contrib.auth.decorators import login_required
 from . import views
 
+app_name = 'mpatrol'
 urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
-    url(r'^reference/$', views.ReferenceView.as_view(), name='reference'),
+    path('', views.IndexView.as_view(), name='index'),
+    path('reference/', views.ReferenceView.as_view(), name='reference'),
 ]

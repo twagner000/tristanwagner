@@ -7,13 +7,13 @@ class Checklist(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     public = models.BooleanField(default=False)
-    owner = models.ForeignKey(User, blank=True, null=True)
+    owner = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     
     def __str__(self):
         return self.name
 
 class QuestionGroup(models.Model):
-    checklist = models.ForeignKey(Checklist)
+    checklist = models.ForeignKey(Checklist, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     sequence = models.PositiveIntegerField(default=10)
     help = models.TextField(blank=True)
@@ -25,7 +25,7 @@ class QuestionGroup(models.Model):
         return "%s: %s" % (self.checklist,self.name)
         
 class Question(models.Model):
-    question_group = models.ForeignKey(QuestionGroup)
+    question_group = models.ForeignKey(QuestionGroup, on_delete=models.CASCADE)
     question = models.CharField(max_length=200)
     sequence = models.PositiveIntegerField(default=10)
     weight = models.PositiveIntegerField(default=10)
@@ -38,10 +38,10 @@ class Question(models.Model):
         return self.question
 
 class AnsweredChecklist(models.Model):
-    checklist = models.ForeignKey(Checklist)
+    checklist = models.ForeignKey(Checklist, on_delete=models.CASCADE)
     for_date = models.DateField(default=timezone.now)
     created_date = models.DateTimeField(auto_now_add=True)
-    ans_by = models.ForeignKey(User)
+    ans_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s (%s)" % (self.checklist, self.ans_by)
@@ -59,8 +59,8 @@ class AnsweredChecklist(models.Model):
         return {'actual':actual, 'max':maxposs, 'pct':pct, 'groups':groups}
 
 class AnsweredQuestion(models.Model):
-    ans_checklist = models.ForeignKey(AnsweredChecklist)
-    question = models.ForeignKey(Question)
+    ans_checklist = models.ForeignKey(AnsweredChecklist, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     score = models.PositiveSmallIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)

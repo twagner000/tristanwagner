@@ -2,7 +2,7 @@ import math
 import random
 
 from django.shortcuts import render, redirect
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import View
 from django.views.generic.detail import DetailView
@@ -17,7 +17,7 @@ class CurrentTurnMixin(object):
     
     def open_games(self):
         g = Game.objects.filter(pk=self.request.session.get(Game.success_url_str, None), completed_date__isnull=True)
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             g = g | Game.objects.filter(user=self.request.user, completed_date__isnull=True)
         return g
     
@@ -58,7 +58,7 @@ class GameFormView(CurrentTurnMixin,FormView):
             keep = keep[0]
         else:
             keep = Game(name=form['name'].value())
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 keep.user = self.request.user
             keep.save()
             keep.turn_set.create()
@@ -67,7 +67,7 @@ class GameFormView(CurrentTurnMixin,FormView):
         for game in self.open_games():
             if game != keep:
                 game.completed_date = timezone.now()
-                if self.request.user.is_authenticated():
+                if self.request.user.is_authenticated:
                     game.user = self.request.user
                 game.save()
         return super(GameFormView, self).form_valid(form)
@@ -142,6 +142,6 @@ class VotedOutView(DetailView):
     def get(self, request, pk):
         self.object = self.get_object()
         if self.object.pk != self.request.session.get('deveconsim_game_pk', None):
-            if self.request.user.is_authenticated() and self.object.user != self.request.user:
+            if self.request.user.is_authenticated and self.object.user != self.request.user:
                 return redirect(reverse_lazy('deveconsim:start'))
         return super(VotedOutView, self).get(request)

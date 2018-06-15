@@ -148,8 +148,8 @@ class Structure(models.Model):
     name = models.CharField(unique=True, max_length=50)
     cost_gold = models.PositiveSmallIntegerField(default=100)
     cost_xp = models.PositiveSmallIntegerField(default=100)
-    tech_req = models.ForeignKey(Technology, null=True, blank=True, verbose_name='Required Technology')
-    struct_req = models.ForeignKey('self', null=True, blank=True, verbose_name='Required Structure')
+    tech_req = models.ForeignKey(Technology, models.PROTECT, null=True, blank=True, verbose_name='Required Technology')
+    struct_req = models.ForeignKey('self', models.PROTECT, null=True, blank=True, verbose_name='Required Structure')
     effects = models.TextField(blank=True)
     
     class Meta:
@@ -184,8 +184,8 @@ class Structure(models.Model):
             
 class WeaponBase(models.Model):
     name = models.CharField(unique=True, max_length=50)
-    tech_req = models.ForeignKey(Technology, null=True, blank=True, verbose_name='Required Technology')
-    struct_req = models.ForeignKey(Structure, null=True, blank=True, verbose_name='Required Structure')
+    tech_req = models.ForeignKey(Technology, models.PROTECT, null=True, blank=True, verbose_name='Required Technology')
+    struct_req = models.ForeignKey(Structure, models.PROTECT, null=True, blank=True, verbose_name='Required Structure')
     attack_mult = models.FloatField(default=1.0)
     cost_gold = models.PositiveSmallIntegerField(default=1)
     
@@ -215,8 +215,8 @@ class WeaponBase(models.Model):
 
 class WeaponMaterial(models.Model):
     name = models.CharField(unique=True, max_length=50)
-    tech_req = models.ForeignKey(Technology, null=True, blank=True, verbose_name='Required Technology')
-    struct_req = models.ForeignKey(Structure, null=True, blank=True, verbose_name='Required Structure')
+    tech_req = models.ForeignKey(Technology, models.PROTECT, null=True, blank=True, verbose_name='Required Technology')
+    struct_req = models.ForeignKey(Structure, models.PROTECT, null=True, blank=True, verbose_name='Required Structure')
     attack_mult = models.FloatField(default=1.0)
     cost_mult = models.FloatField(default=1.0)
     armor = models.PositiveSmallIntegerField(default=1)
@@ -245,12 +245,12 @@ class WeaponMaterial(models.Model):
 
 
 class Player(models.Model):
-    game = models.ForeignKey(Game)
-    user = models.ForeignKey(User)
+    game = models.ForeignKey(Game, models.CASCADE)
+    user = models.ForeignKey(User, models.PROTECT)
     started_date = models.DateTimeField(auto_now_add=True)
     last_action_date = models.DateTimeField(blank=True, null=True)
     
-    ll = models.ForeignKey(LeaderLevel, verbose_name='Leader Level')
+    ll = models.ForeignKey(LeaderLevel, models.PROTECT, verbose_name='Leader Level')
     gold = models.PositiveIntegerField(default=100)
     xp = models.PositiveIntegerField(default=0, verbose_name='Experience')
     technologies = models.ManyToManyField(Technology, blank=True)
@@ -281,13 +281,13 @@ class Player(models.Model):
 
         
 class Battalion(models.Model):
-    player = models.ForeignKey(Player)
+    player = models.ForeignKey(Player, models.CASCADE)
     battalion_number = models.PositiveSmallIntegerField(default=1)
-    creature = models.ForeignKey(Creature, null=True, blank=True)
+    creature = models.ForeignKey(Creature, models.PROTECT, null=True, blank=True)
     count = models.PositiveSmallIntegerField(default=0)
     level = models.PositiveSmallIntegerField(default=1)
-    weapon_base = models.ForeignKey(WeaponBase, null=True, blank=True)
-    weapon_material = models.ForeignKey(WeaponMaterial, null=True, blank=True)
+    weapon_base = models.ForeignKey(WeaponBase, models.PROTECT, null=True, blank=True)
+    weapon_material = models.ForeignKey(WeaponMaterial, models.PROTECT, null=True, blank=True)
     
     class Meta:
         unique_together = ('player', 'battalion_number',)
@@ -321,8 +321,8 @@ class Battalion(models.Model):
 
 class Message(models.Model):
     #see messages.e.txt
-    sender = models.ForeignKey(Player,related_name='sender_set',null=True)
-    recipient = models.ForeignKey(Player,related_name='recipient_set')
+    sender = models.ForeignKey(Player, models.PROTECT, related_name='sender_set', null=True)
+    recipient = models.ForeignKey(Player, models.PROTECT, related_name='recipient_set')
     sent_date = models.DateTimeField(auto_now_add=True)
     subject = models.TextField()
     message = models.TextField(blank=True)
@@ -336,8 +336,8 @@ class Message(models.Model):
     
     
 class Battle(models.Model):
-    attacker = models.ForeignKey(Player,related_name='attacker_set')
-    defender = models.ForeignKey(Player,related_name='defender_set')
+    attacker = models.ForeignKey(Player, models.PROTECT, related_name='attacker_set')
+    defender = models.ForeignKey(Player, models.PROTECT, related_name='defender_set')
     battle_date = models.DateTimeField(auto_now_add=True)
     successful_attack = models.BooleanField(default=False)
     
