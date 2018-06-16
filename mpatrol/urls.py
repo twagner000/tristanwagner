@@ -12,7 +12,10 @@ api_patterns = ([
 ], 'api')
 
 urlpatterns = [
-    path('', views.IndexView.as_view(), name='index'),
-    path('reference/', views.ReferenceView.as_view(), name='reference'),
     path('api/', include(api_patterns)),
+    path('', views.IndexView.as_view(), name='index'),
+    path('home/', views.HomeView.as_view(), name='home'),
+    path('resume/', views.ResumeFormView.as_view(), name='resume'),
+    path('join/', views.JoinFormView.as_view(), name='join'),
+    path('reference/', views.ReferenceView.as_view(), name='reference'),
 ]

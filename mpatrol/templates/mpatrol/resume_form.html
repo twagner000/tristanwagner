@@ -1,0 +1,9 @@
+{% load widget_tweaks %}
+
+<form role="form" action="{% url 'mpatrol:resume' %}" method="post">
+	{% csrf_token %}
+	{% for field in form %}
+	<div class="form-group">{{field|add_class:"form-control"}}</div>
+	{% endfor %}
+	<button type="submit" class="btn btn-primary btn-block">Resume</button>
+</form>

@@ -1,0 +1,132 @@
+{% extends "mpatrol/base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+	<h4 class="row">
+		<div class="col-xs-10">
+			The Mossflower Patrol Game: {{player.game.name}}
+			<small>{{calc.month}}, {{calc.year}} A.F.</small>
+		</div>
+		<div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="far fa-question-circle" aria-hidden="true"></span></button></div>
+	</h4>
+	
+			<table class="table">
+				<tr>
+					<th>{{player.character_name}}</th>
+					<td><span class="fas fa-user" aria-hidden="true"></span> {{player.ll.level}}</td>
+					<td>{{player.gold}} <span class="fas fa-coins" aria-hidden="true"></span></td>
+					<td>{{player.xp}} <span class="fas fa-angle-double-up" aria-hidden="true"></span></td>
+					<td>{{calc.cp_avail}} <span class="fas fa-bullhorn" aria-hidden="true"></span></td>
+					<td>{{player.ll.life}} <span class="fas fa-heart" aria-hidden="true"></span></td>
+					<td>{{player.unread_message_count}} <span class="fas fa-envelope" aria-hidden="true"></span></td>
+
+				</tr>
+			</table>
+		
+		
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table">
+				<tr>
+					<th>Attack</th>
+					<td>{{calc.attack|floatformat:2}}</td>
+				</tr>
+				<tr>
+					<th>Defense</th>
+					<td>{{calc.defense|floatformat:2}}</td>
+				</tr>
+				<tr>
+					<th>Gold / Turn</th>
+					<td>{{calc.work_gold}}</td>
+				</tr>
+				<tr>
+					<th>Experience / Turn</th>
+					<td>{{calc.work_xp}}</td>
+				</tr>
+				<tr>
+					<th>Battles Fought</th>
+					<td>{{player.battles_fought.count}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="col-md-6">
+			<table class="table">
+				<tr>
+					<th>
+						<span class="btn-group btn-group-sm pull-right">
+							<a href="#" class="btn btn-default" title="Research"><span class="fas fa-plus" aria-hidden="true"></span></a>
+						</span>
+						<span class="fas fa-flask" aria-hidden="true"></span> Technologies Researched
+					</th>
+				</tr>
+				<tr>
+					<td>
+					{% for tech in player.technologies.all %}
+						{{tech.name}}{% if not forloop.last %},{% endif %}
+					{% empty %}
+						-
+					{% endfor %}
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span class="btn-group btn-group-sm pull-right">
+							<a href="#" class="btn btn-default" title="Build"><span class="fas fa-plus" aria-hidden="true"></span></a>
+						</span>
+						<span class="fas fa-building" aria-hidden="true"></span> Structures Built
+					</th>
+				</tr>
+				<tr>
+					<td>
+					{% for structure in player.structures.all %}
+						{{structure.name}}{% if not forloop.last %},{% endif %}
+					{% empty %}
+						-
+					{% endfor %}
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	
+	<table class="table">
+		<tr>
+			<th></th>
+			<th>Battalion</th>
+			<th>Creature</th>
+			<th>Count</th>
+			<th>Level</th>
+			<th>Weapon Base</th>
+			<th>Weapon Material</th>
+		</tr>
+		{% for b in player.battalion_set.all %}
+			<tr>
+				<td>
+					<span class="btn-group btn-group-sm">
+						<a href="#" class="btn btn-default" title="Hire"><span class="fas fa-plus" aria-hidden="true"></span></a>
+						<a href="#" class="btn btn-default{% if not b.count %} disabled{% endif %}" title="Fire"><span class="fas fa-minus" aria-hidden="true"></span></a>
+					</span>
+				</td>
+				<td>{{b.battalion_number}}</td>
+				<td>{{b.creature|default_if_none:"-"}}</td>
+				<td>{{b.count}}</td>
+				<td>{{b.level}}</td>
+				<td>{{b.weapon_base|default_if_none:"-"}}</td>
+				<td>{{b.weapon_material|default_if_none:"-"}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+	<p><a href="newdeal.e.txt">Spend a Turn Working</a></p>
+	
+	<div>
+		<app-root></app-root>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/runtime.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/polyfills.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/styles.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/vendor.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/main.js' %}"></script>
+	</div>
+{% endblock %}
+
+{% block moreinfo %}{% include 'mpatrol/tutorial_home.html' %}{% endblock %}

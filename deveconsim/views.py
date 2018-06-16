@@ -16,7 +16,7 @@ class CurrentTurnMixin(object):
     success_url = reverse_lazy(Game.success_url_str)
     
     def open_games(self):
-        g = Game.objects.filter(pk=self.request.session.get(Game.success_url_str, None), completed_date__isnull=True)
+        g = Game.objects.filter(pk=self.request.session.get(Game.session_pk_var, None), completed_date__isnull=True)
         if self.request.user.is_authenticated:
             g = g | Game.objects.filter(user=self.request.user, completed_date__isnull=True)
         return g

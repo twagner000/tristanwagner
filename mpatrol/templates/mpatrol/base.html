@@ -5,15 +5,19 @@
     <nav class="navbar navbar-inverse navbar-fixed-bottom" id="game-nav">
         <div class="container">
             <div class="nav navbar-nav">
+				<span class="btn-group btn-group-sm">
+                    <a href="{% url 'mpatrol:index' %}" class="btn btn-default" title="Intro"><span class="fas fa-chess-knight" aria-hidden="true"></span></a>
+				</span>
                 <span class="btn-group btn-group-sm">
-                    <a href="{% url 'mpatrol:index' %}" class="btn btn-default" title="Overview"><span class="fas fa-chess-knight" aria-hidden="true"></span></a>
-					<a class="btn btn-default" title="Messages"><span class="fas fa-envelope" aria-hidden="true"></span></a>
-                    <a href="{% url 'mpatrol:reference' %}" class="btn btn-default" title="Reference"><span class="fas fa-question-circle" aria-hidden="true"></span></a>
+                    <a class="btn btn-default" title="Leader Level {{player.ll.level}}"><span class="fas fa-user" aria-hidden="true"></span> {{player.ll.level}}</a>
+                    <a class="btn btn-default" title="{{player.gold}} Gold">{{player.gold}} <span class="fas fa-coins" aria-hidden="true"></span></a>
+					<a class="btn btn-default" title="{{player.xp}} Experience">{{player.xp}} <span class="fas fa-angle-double-up" aria-hidden="true"></span></a>
+                    <a class="btn btn-default" title="{{player.unread_message_count}} Unread Messages">{{player.unread_message_count}} <span class="fas fa-envelope" aria-hidden="true"></span></a>
                 </span>
                 <span class="btn-group btn-group-sm pull-right">
-                    <a class="btn btn-success" title="Work"><span class="fas fa-briefcase" aria-hidden="true"></span></a>
-					<a class="btn btn-warning" title="Spy"><span class="fas fa-search" aria-hidden="true"></span></a>
-                    <a class="btn btn-danger" title="Attack"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
+                    <a href="#" class="btn btn-success{% if calc.action_taken %} disabled{% endif %}" title="Work"><span class="fas fa-briefcase" aria-hidden="true"></span></a>
+					<a class="btn btn-warning{% if calc.action_taken %} disabled{% endif %}" title="Spy"><span class="fas fa-search" aria-hidden="true"></span></a>
+                    <a class="btn btn-danger{% if calc.action_taken %} disabled{% endif %}" title="Attack"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
                 </span>
             </nav>
         </div>

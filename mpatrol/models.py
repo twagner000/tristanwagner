@@ -1,18 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
 import collections
+from datetime import datetime
 
 from . import constants
 
 class Game(models.Model):
     name = models.CharField(blank=True, null=True, max_length=200)
-    started_date = models.DateTimeField(auto_now_add=True)
+    started_date = models.DateTimeField(auto_now_add=True, editable=True)
+    started_date.editable=True #for testing only
     ended_date = models.DateTimeField(blank=True,null=True)
     
     def __str__(self):
-        return 'Game "{1}" started on {0:%m}/{0:%d}/{0:%y}'.format(self.started_date, self.name)
-        
-    #each real day is 2 months in game time
+        return '{1} (started {0:%m}/{0:%d}/{0:%y})'.format(self.started_date, self.name)
         
     
 class LeaderLevel(models.Model):
@@ -247,6 +247,7 @@ class WeaponMaterial(models.Model):
 class Player(models.Model):
     game = models.ForeignKey(Game, models.CASCADE)
     user = models.ForeignKey(User, models.PROTECT)
+    character_name = models.CharField(max_length=50)
     started_date = models.DateTimeField(auto_now_add=True)
     last_action_date = models.DateTimeField(blank=True, null=True)
     
@@ -263,9 +264,24 @@ class Player(models.Model):
         
     def __str__(self):
         return str(self.user)
+        
+    def save(self, *args, **kwargs):
+        try:
+            self.ll
+        except:
+            self.ll = LeaderLevel.objects.get(level=1)
+        super().save(*args, **kwargs)
     
     def calc(self):
         r = {}
+        start = self.game.started_date.astimezone(constants.pacific).date()
+        today = datetime.now().astimezone(constants.pacific).date()
+        last_action = self.last_action_date.astimezone(constants.pacific).date() if self.last_action_date else None
+        days = (today-start).days
+        r['turn'] = days
+        r['month'] = constants.months[days%6]
+        r['year'] = days//6+1
+        r['action_taken'] = last_action==today
         r['cp_avail'] = self.ll.cp-sum(b.cost_cp() for b in self.battalion_set.all())
         r['attack'] = (1+self.ll.level/10)*sum(b.attack() for b in self.battalion_set.all())
         r['defense'] = (1+self.ll.level/10)*sum(b.defense() for b in self.battalion_set.all())
@@ -278,7 +294,10 @@ class Player(models.Model):
         
     def battles_fought(self):
         return self.attacker_set.all() | self.defender_set.all()
-
+        
+    def unread_message_count(self):
+        return self.recipient_set.filter(unread=True).count()
+    
         
 class Battalion(models.Model):
     player = models.ForeignKey(Player, models.CASCADE)
