@@ -49,9 +49,8 @@ class HomeView(ActivePlayerMixin, TemplateView):
         context['calc'] = context['player'].calc()
         return context
         
-    def get(self, request, ng_route):
+    def get(self, request):
         return super().get(request)
-    
         
 class ReferenceView(ActivePlayerMixin, TemplateView):
     template_name = 'mpatrol/reference.html'

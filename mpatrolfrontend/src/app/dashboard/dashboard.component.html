@@ -1,8 +1,35 @@
-<h3>Top Creatures</h3>
-<div class="grid grid-pad">
-  <a *ngFor="let creature of creatures" class="col-1-4" routerLink="/detail/{{creature.pk}}">
-    <div class="module creature">
-      <h4>{{creature.name}}</h4>
-    </div>
-  </a>
+
+<div *ngIf="player">
+	<h3>
+		<span class="btn-group pull-right">
+			<a class="btn btn-default"><span class="far fa-question-circle" aria-hidden="true"></span></a>
+		</span>
+		{{player.character_name}}
+		<small>{{player.game.name}}, {{player.calc.month}}, {{player.calc.year}} A.F.</small>
+	</h3>
+	
+	<div class="row">
+		<div class="col-sm-4">
+			<app-actions></app-actions>
+		</div>
+		<div class="col-sm-8">
+			<app-upgrades [player]="player"></app-upgrades>
+		</div>
+		<div class="col-sm-6">
+			<app-battalions></app-battalions>
+		</div>
+		<div class="col-sm-6">
+			<app-mail></app-mail>
+		</div>
+	</div>
 </div>
+
+
+
+
+<hr>
+    <ul>
+		<li *ngFor="let creature of creatures">
+			<a routerLink="/detail/{{creature.pk}}">{{creature.name}}</a>
+		</li>
+    </ul>

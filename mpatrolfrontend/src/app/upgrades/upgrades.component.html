@@ -1,0 +1,34 @@
+<div class="panel panel-default">
+	<div class="panel-heading">Upgrades</div>
+	<table class="table">
+		<tr>
+			<td><a class="btn btn-default" title="Upgrade Leader Level"><span class="fas fa-user" aria-hidden="true"></span></a></td>
+			<td>Leader Level</td>
+			<td>
+				{{player.ll.level}} <span class="fas fa-user" aria-hidden="true"></span>
+			</td>
+			<td>
+				<span title="{{player.calc.cp_avail}} Creature Points">{{player.calc.cp_avail}}/{{player.ll.cp}} <span class="fas fa-bullhorn" aria-hidden="true"></span></span>
+			</td>
+			<td>
+				<span title="{{player.ll.life}} Life">{{player.ll.life}} <span class="fas fa-heart" aria-hidden="true"></span></span>
+			</td>
+		</tr>
+		<tr>
+			<td><a class="btn btn-default" title="Research"><span class="fas fa-flask" aria-hidden="true"></span></a></td>
+			<td>Technologies</td>
+			<td colspan="3">
+				<span *ngFor="let tech of player.technologies"><a><span class="badge">{{tech.name}}</span></a>&nbsp;</span>
+				<div *ngIf="!player.technologies">-</div>
+			</td>
+		</tr>
+		<tr>
+			<td><a class="btn btn-default" title="Build"><span class="fas fa-building" aria-hidden="true"></span></a></td>
+			<td>Structures</td>
+			<td colspan="3">
+				<span *ngFor="let structure of player.structures"><a><span class="badge">{{structure.name}}</span></a>&nbsp;</span>
+				<div *ngIf="!player.structures">-</div>
+			</td>
+		</tr>
+	</table>
+</div>

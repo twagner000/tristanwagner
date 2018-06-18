@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Creature, Technology
+from .models import Creature, Technology, Player
 
 class CreatureSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,3 +13,10 @@ class TechnologySerializer(serializers.ModelSerializer):
         model = Technology 
         fields = ('name', 'level', 'cost', 'prereq', 'prereq_names')
         #depth = 1
+        
+
+class PlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Player 
+        fields = ('id', 'game', 'll', 'technologies', 'structures', 'character_name', 'gold', 'xp', 'calc')
+        depth = 1

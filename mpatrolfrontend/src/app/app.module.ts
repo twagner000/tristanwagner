@@ -10,6 +10,10 @@ import { MessagesComponent } from './messages/messages.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import {APP_BASE_HREF} from '@angular/common';
+import { ActionsComponent } from './actions/actions.component';
+import { UpgradesComponent } from './upgrades/upgrades.component';
+import { BattalionsComponent } from './battalions/battalions.component';
+import { MailComponent } from './mail/mail.component';
 
     @NgModule({
     declarations: [
@@ -17,7 +21,11 @@ import {APP_BASE_HREF} from '@angular/common';
         CreaturesComponent,
         CreatureDetailComponent,
         MessagesComponent,
-        DashboardComponent
+        DashboardComponent,
+        ActionsComponent,
+        UpgradesComponent,
+        BattalionsComponent,
+        MailComponent
     ],
     imports: [
         BrowserModule ,
