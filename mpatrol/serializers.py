@@ -4,7 +4,7 @@ from .models import Creature, Technology
 class CreatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Creature 
-        fields = ('name', 'plural_name', 'min_ll', 'attack', 'defense', 'cost_cp', 'cost_gold', 'work_gold', 'work_xp', 'oversee')
+        fields = ('pk', 'name', 'plural_name', 'min_ll', 'attack', 'defense', 'cost_cp', 'cost_gold', 'work_gold', 'work_xp', 'oversee')
         #depth = 1
 
 

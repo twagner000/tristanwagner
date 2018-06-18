@@ -9,10 +9,16 @@ class CreatureList(generics.ListAPIView):
     serializer_class = CreatureSerializer
 
 
+class CreatureDetail(generics.RetrieveAPIView):
+    queryset = Creature.objects.all()
+    serializer_class = CreatureSerializer
+    
+
 class TechnologyList(generics.ListAPIView):
     queryset = Technology.objects.all()
     serializer_class = TechnologySerializer
     
+
 class TechnologyDetail(generics.RetrieveAPIView):
     queryset = Technology.objects.all()
     serializer_class = TechnologySerializer

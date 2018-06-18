@@ -1,0 +1,8 @@
+<h3>Top Creatures</h3>
+<div class="grid grid-pad">
+  <a *ngFor="let creature of creatures" class="col-1-4" routerLink="/detail/{{creature.pk}}">
+    <div class="module creature">
+      <h4>{{creature.name}}</h4>
+    </div>
+  </a>
+</div>

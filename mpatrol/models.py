@@ -329,12 +329,14 @@ class Battalion(models.Model):
         
     def attack(self):
         v = (1+self.level/10)*self.count*self.creature.attack if self.creature else 0
-        v *= self.weapon_base.attack_mult*self.weapon_material.attack_mult if self.weapon_base and self.weapon_material else 1
+        if self.weapon_base and self.weapon_material:
+            v *= max(1,self.weapon_base.attack_mult*self.weapon_material.attack_mult)
         return v
     
     def defense(self):
         v = (1+self.level/10)*self.count*self.creature.defense if self.creature else 0
-        v *= self.weapon_material.armor if self.weapon_material else 1
+        if self.weapon_material:
+            v *= max(1,self.weapon_material.armor)
         return v
     
 

@@ -7,6 +7,7 @@ app_name = 'mpatrol'
 
 api_patterns = ([
     path('creature/', api.CreatureList.as_view(), name='creature-list'),
+    path('creature/<int:pk>/', api.CreatureDetail.as_view(), name='creature-detail'),
     path('technology/', api.TechnologyList.as_view(), name='technology-list'),
     path('technology/<int:pk>/', api.TechnologyDetail.as_view(), name='technology-detail'),
 ], 'api')

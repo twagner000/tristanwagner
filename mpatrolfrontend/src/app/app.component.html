@@ -1,3 +1,17 @@
-<div style="text-align:center">
-        <button (click)="getCreatures()">Get /creatures </button> 
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<link rel="stylesheet" href="//127.0.0.1:8000/static/css/tw.css">
+
+
+<h1>{{title}}</h1>
+<nav>
+  <a routerLink="/creatures">Creatures</a>
+  <a routerLink="/dashboard">Dashboard</a>
+</nav>
+<div class="row">
+	<div class="col-sm-6">
+		<router-outlet></router-outlet>
+	</div>
+	<div class="col-sm-6">
+		<app-messages></app-messages>
+	</div>
 </div>

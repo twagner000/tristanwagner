@@ -2,125 +2,163 @@
 {% load staticfiles %}
 
 {% block content %}
-	<h4 class="row">
-		<div class="col-xs-10">
-			The Mossflower Patrol Game: {{player.game.name}}
-			<small>{{calc.month}}, {{calc.year}} A.F.</small>
-		</div>
-		<div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="far fa-question-circle" aria-hidden="true"></span></button></div>
-	</h4>
+	<h3>
+		<span class="btn-group pull-right">
+			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="far fa-question-circle" aria-hidden="true"></span></button>
+		</span>
+		{{player.character_name}}
+		<small>{{player.game.name}}, {{calc.month}}, {{calc.year}} A.F.</small>
+	</h3>
+	&nbsp;
 	
-			<table class="table">
-				<tr>
-					<th>{{player.character_name}}</th>
-					<td><span class="fas fa-user" aria-hidden="true"></span> {{player.ll.level}}</td>
-					<td>{{player.gold}} <span class="fas fa-coins" aria-hidden="true"></span></td>
-					<td>{{player.xp}} <span class="fas fa-angle-double-up" aria-hidden="true"></span></td>
-					<td>{{calc.cp_avail}} <span class="fas fa-bullhorn" aria-hidden="true"></span></td>
-					<td>{{player.ll.life}} <span class="fas fa-heart" aria-hidden="true"></span></td>
-					<td>{{player.unread_message_count}} <span class="fas fa-envelope" aria-hidden="true"></span></td>
-
-				</tr>
-			</table>
-		
-		
 	<div class="row">
-		<div class="col-md-6">
-			<table class="table">
-				<tr>
-					<th>Attack</th>
-					<td>{{calc.attack|floatformat:2}}</td>
-				</tr>
-				<tr>
-					<th>Defense</th>
-					<td>{{calc.defense|floatformat:2}}</td>
-				</tr>
-				<tr>
-					<th>Gold / Turn</th>
-					<td>{{calc.work_gold}}</td>
-				</tr>
-				<tr>
-					<th>Experience / Turn</th>
-					<td>{{calc.work_xp}}</td>
-				</tr>
-				<tr>
-					<th>Battles Fought</th>
-					<td>{{player.battles_fought.count}}</td>
-				</tr>
-			</table>
+		<div class="col-sm-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<span class="pull-right"><a href="#" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
+					Actions
+				</div>
+				<table class="table">
+					<tr>
+						<td>
+							<a class="btn btn-success{% if calc.action_taken %} disabled{% endif %}" title="Work"><span class="fas fa-briefcase" aria-hidden="true"></span></a>
+						</td>
+						<td>
+							Earnings per Turn
+						</td>
+						<td class="text-right">
+							{{calc.work_gold}} <span class="fas fa-coins"></span>
+						</td>
+						<td class="text-right">
+							{{calc.work_xp}} <span class="fas fa-angle-double-up"></span>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a class="btn btn-warning{% if calc.action_taken %} disabled{% endif %}" title="Spy"><span class="fas fa-user-secret" aria-hidden="true"></span></a>
+						</td>
+						<td>
+							Spy Attempts
+						</td>
+						<td colspan="2" class="text-right">TBD</td>
+					</tr>
+					<tr>
+						<td>
+							<a class="btn btn-danger{% if calc.action_taken %} disabled{% endif %}" title="Attack"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
+						</td>
+						<td>
+							Battles Fought
+						</td>
+						<td colspan="2" class="text-right">{{player.battles_fought.count}}</td>
+					</tr>
+				</table>
+			</div>
 		</div>
-		<div class="col-md-6">
-			<table class="table">
-				<tr>
-					<th>
-						<span class="btn-group btn-group-sm pull-right">
-							<a href="#" class="btn btn-default" title="Research"><span class="fas fa-plus" aria-hidden="true"></span></a>
-						</span>
-						<span class="fas fa-flask" aria-hidden="true"></span> Technologies Researched
-					</th>
-				</tr>
-				<tr>
-					<td>
-					{% for tech in player.technologies.all %}
-						{{tech.name}}{% if not forloop.last %},{% endif %}
-					{% empty %}
-						-
-					{% endfor %}
-					</td>
-				</tr>
-				<tr>
-					<th>
-						<span class="btn-group btn-group-sm pull-right">
-							<a href="#" class="btn btn-default" title="Build"><span class="fas fa-plus" aria-hidden="true"></span></a>
-						</span>
-						<span class="fas fa-building" aria-hidden="true"></span> Structures Built
-					</th>
-				</tr>
-				<tr>
-					<td>
-					{% for structure in player.structures.all %}
-						{{structure.name}}{% if not forloop.last %},{% endif %}
-					{% empty %}
-						-
-					{% endfor %}
-					</td>
-				</tr>
-			</table>
+		<div class="col-sm-8">
+			<div class="panel panel-default">
+				<div class="panel-heading">Upgrades</div>
+				<table class="table">
+					<tr>
+						<td><a class="btn btn-default" title="Upgrade Leader Level"><span class="fas fa-user" aria-hidden="true"></span></a></td>
+						<td>Leader Level</td>
+						<td>
+							{{player.ll.level}} <span class="fas fa-user" aria-hidden="true"></span>
+						</td>
+						<td>
+							<span title="{{calc.cp_avail}} Creature Points">{{calc.cp_avail}}/{{player.ll.cp}} <span class="fas fa-bullhorn" aria-hidden="true"></span></span>
+						</td>
+						<td>
+							<span title="{{player.ll.life}} Life">{{player.ll.life}} <span class="fas fa-heart" aria-hidden="true"></span></span>
+						</td>
+					</tr>
+					<tr>
+						<td><a class="btn btn-default" title="Research"><span class="fas fa-flask" aria-hidden="true"></span></a></td>
+						<td>Technologies</td>
+						<td colspan="3">
+							{% for tech in player.technologies.all %}
+								<a href="#"><span class="badge">{{tech.name}}</span></a>
+							{% empty %}
+								-
+							{% endfor %}
+							<!--div class="visible-lg" style="line-height: 1px;">{% for x in ""|ljust:"100" %}&nbsp;{% endfor %}</div-->
+						</td>
+					</tr>
+					<tr>
+						<td><a class="btn btn-default" title="Build"><span class="fas fa-building" aria-hidden="true"></span></a></td>
+						<td>Structures</td>
+						<td colspan="3">
+							{% for structure in player.structures.all %}
+								<a href="#"><span class="badge">{{structure.name}}</span></a>
+							{% empty %}
+								-
+							{% endfor %}
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 	
-	<table class="table">
-		<tr>
-			<th></th>
-			<th>Battalion</th>
-			<th>Creature</th>
-			<th>Count</th>
-			<th>Level</th>
-			<th>Weapon Base</th>
-			<th>Weapon Material</th>
-		</tr>
-		{% for b in player.battalion_set.all %}
-			<tr>
-				<td>
-					<span class="btn-group btn-group-sm">
-						<a href="#" class="btn btn-default" title="Hire"><span class="fas fa-plus" aria-hidden="true"></span></a>
-						<a href="#" class="btn btn-default{% if not b.count %} disabled{% endif %}" title="Fire"><span class="fas fa-minus" aria-hidden="true"></span></a>
-					</span>
-				</td>
-				<td>{{b.battalion_number}}</td>
-				<td>{{b.creature|default_if_none:"-"}}</td>
-				<td>{{b.count}}</td>
-				<td>{{b.level}}</td>
-				<td>{{b.weapon_base|default_if_none:"-"}}</td>
-				<td>{{b.weapon_material|default_if_none:"-"}}</td>
-			</tr>
-		{% endfor %}
-	</table>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Battalions</div>
+				<table class="table">
+					<tr>
+						<th>Creature</th>
+						<th>Count</th>
+						<th>Level</th>
+						<th>Weapon</th>
+						<th></th>
+					</tr>
+					{% for b in player.battalion_set.all %}
+						<tr>
+							<!--td><span class="label label-default">{{b.battalion_number}}</span></td-->
+							<td>{% if b.creature %}<a href="#" title="Fire Battalion"><span class="fas fa-minus-circle text-danger"></span></a> {{b.creature}}{% else %}<a href="#" title="Start Battalion"><span class="fas fa-plus"></span></a>{% endif %}</td>
+							<td>{% if b.creature %}<a href="#" title="Hire/Fire Creatures"><b>{{b.count}}</b></a>{% endif %}</td>
+							<td>{% if b.creature %}<a href="#" title="Train Battalion"><b>{{b.level}}</b></a>{% endif %}</td>
+							<td>{% if b.creature %}<a href="#" title="Buy/Sell Weapons"><b>{{b.weapon_material|default_if_none:""}} {{b.weapon_base}}</b></a>{% endif %}</td>
+							<td></td>
+						</tr>
+					{% endfor %}
+				</table>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-xs-6 text-right">
+							<p>Attack</p><p>Defense</p>
+						</div>
+						<div class="col-xs-6">
+							<span style="display: inline-block;" class="text-right">
+								<b><p>{{calc.attack|floatformat:1}}</p><p>{{calc.defense|floatformat:1}}</p></b>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="panel panel-default">
+				<div class="panel-heading"><span class="fas fa-envelope" aria-hidden="true"></span> Messages</div>
+				<table class="table">
+					<tr>
+						<th>Date</th>
+					</tr>
+					<tr>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
 
-	<p><a href="newdeal.e.txt">Spend a Turn Working</a></p>
+		
+		
+	
+	
 	
 	<div>
-		<app-root></app-root>
+		<router-outlet></router-outlet>
+		<app-messages></app-messages>
 		<script type="text/javascript" src="{% static 'mpatrolfrontend/runtime.js' %}"></script>
 		<script type="text/javascript" src="{% static 'mpatrolfrontend/polyfills.js' %}"></script>
 		<script type="text/javascript" src="{% static 'mpatrolfrontend/styles.js' %}"></script>

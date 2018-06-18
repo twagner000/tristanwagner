@@ -13,6 +13,15 @@ html, body {
     margin: 0;
 }
 
+.game-nav-info>a {
+	color: #9d9d9d;
+}
+
+.game-nav-info>a:focus, .game-nav-info>a:hover {
+	color: #fff;
+    text-decoration: none;
+}
+
 footer {
   padding-top: 20px;
   padding-bottom: 80px;
