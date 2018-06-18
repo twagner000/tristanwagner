@@ -2,7 +2,7 @@
 	<div class="panel-heading">Upgrades</div>
 	<table class="table">
 		<tr>
-			<td><a routerLink="/upgrade/leaderlevel" class="btn btn-default" title="Upgrade Leader Level"><span class="fas fa-user" aria-hidden="true"></span></a></td>
+			<td><a routerLink="/upgrade/leaderlevel" class="btn btn-primary" title="Upgrade Leader Level"><span class="fas fa-user" aria-hidden="true"></span></a></td>
 			<td>Leader Level</td>
 			<td>
 				{{player.ll.level}} <span class="fas fa-user" aria-hidden="true"></span>
@@ -15,7 +15,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><a class="btn btn-default" title="Research"><span class="fas fa-flask" aria-hidden="true"></span></a></td>
+			<td><a class="btn btn-primary" title="Research"><span class="fas fa-flask" aria-hidden="true"></span></a></td>
 			<td>Technologies</td>
 			<td colspan="3">
 				<span *ngFor="let tech of player.technologies"><a><span class="badge">{{tech.name}}</span></a>&nbsp;</span>
@@ -23,7 +23,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><a class="btn btn-default" title="Build"><span class="fas fa-building" aria-hidden="true"></span></a></td>
+			<td><a class="btn btn-primary" title="Build"><span class="fas fa-building" aria-hidden="true"></span></a></td>
 			<td>Structures</td>
 			<td colspan="3">
 				<span *ngFor="let structure of player.structures"><a><span class="badge">{{structure.name}}</span></a>&nbsp;</span>

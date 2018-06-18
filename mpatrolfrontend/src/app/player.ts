@@ -25,5 +25,5 @@ export class PlayerUpgradeLeaderLevel {
 	next_ll: LeaderLevel;
 	all_ll: LeaderLevel[];
 	xp: number;
-	upgrade: boolean;
+	upgrade_id: number;
 }

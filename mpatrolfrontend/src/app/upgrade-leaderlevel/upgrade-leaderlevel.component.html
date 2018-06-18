@@ -50,24 +50,26 @@
 		</div>
 	</div>
 	<div class="col-md-8">
-		<table *ngIf="upgrade" class="table">
-			<tr>
-				<th>Leader Level</th>
-				<th class="text-right">XP Cost</th>
-				<th class="text-right">Life</th>
-				<th class="text-right">Creature Points</th>
-				<th class="text-right">Creatures Enabled</th>
-			</tr>
-			<tr *ngFor="let ll of upgrade.all_ll">
-				<td>{{ll.level}}</td>
-				<td class="text-right">{{ll.xp_cost | number}}</td>
-				<td class="text-right">{{ll.life | number}}</td>
-				<td class="text-right">{{ll.cp | number}}</td>
-				<td class="text-right">
-					<span *ngFor="let creature of ll.enabled_creatures; let isLast=last">{{creature.name}}{{isLast ? '' : ', '}}</span>
-					<span *ngIf="!ll.enabled_creatures.length">-</span>
-				</td>
-			</tr>
-		</table>
+		<div class="table-responsive">
+			<table *ngIf="upgrade" class="table">
+				<tr>
+					<th>Leader Level</th>
+					<th class="text-right">XP Cost</th>
+					<th class="text-right">Life</th>
+					<th class="text-right">Creature Points</th>
+					<th class="text-right">Creatures Enabled</th>
+				</tr>
+				<tr *ngFor="let ll of upgrade.all_ll">
+					<td>{{ll.level}}</td>
+					<td class="text-right">{{ll.xp_cost | number}}</td>
+					<td class="text-right">{{ll.life | number}}</td>
+					<td class="text-right">{{ll.cp | number}}</td>
+					<td class="text-right">
+						<span *ngFor="let creature of ll.enabled_creatures; let isLast=last">{{creature.name}}{{isLast ? '' : ', '}}</span>
+						<span *ngIf="!ll.enabled_creatures.length">-</span>
+					</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </div>

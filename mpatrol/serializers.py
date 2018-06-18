@@ -63,19 +63,19 @@ class UpgradeLeaderLevelSerializer(serializers.ModelSerializer):
     current_ll = LeaderLevelSerializer(read_only=True)
     next_ll = LeaderLevelSerializer(read_only=True)
     all_ll = LeaderLevelSerializer(read_only=True, many=True)
-    upgrade = serializers.BooleanField()
+    upgrade_id = serializers.IntegerField()
     
     class Meta:
         model = Player
-        fields = ('id', 'current_ll', 'next_ll', 'all_ll', 'xp', 'upgrade')
+        fields = ('id', 'current_ll', 'next_ll', 'all_ll', 'xp', 'upgrade_id')
         read_only_fields = ('xp',)
         
     def validate(self, data):
         next_ll = self.instance.next_ll()
-        if not data.get('upgrade',False):
-            raise serializers.ValidationError('Did not receive upgrade = True.')
         if not next_ll:
             raise serializers.ValidationError('No upgrade available.')
+        if data.get('upgrade_id',None) != next_ll.id:
+            raise serializers.ValidationError('May only upgrade one level at a time.')
         if self.instance.xp < next_ll.xp_cost:
             raise serializers.ValidationError('Insufficient xp to upgrade.')
         return data

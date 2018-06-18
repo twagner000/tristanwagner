@@ -27,7 +27,7 @@ export class UpgradeLeaderlevelComponent implements OnInit {
 	}
 	
 	save(): void {
-		this.upgrade.upgrade = true;
+		this.upgrade.upgrade_id = this.upgrade.next_ll.id;
 		this.playerService.updatePlayerUpgradeLeaderLevel(this.upgrade)
 		.subscribe(() => this.location.back());
 	}

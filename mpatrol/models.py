@@ -310,8 +310,8 @@ class Player(models.Model):
     def all_ll(self):
         return LeaderLevel.objects.all()
         
-    def upgrade(self):
-        return False
+    def upgrade_id(self):
+        return None
     
         
 class Battalion(models.Model):
