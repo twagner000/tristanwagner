@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Player } from './player';
+import { Player, PlayerUpgradeLeaderLevel } from './player';
 import { Observable, of } from 'rxjs';
 import { MessageService } from './message.service';
-
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
+
+const httpOptions = {
+  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+};
 
 @Injectable({
 	providedIn: 'root'
@@ -24,6 +27,20 @@ export class PlayerService {
 			catchError(this.handleError<Player>(`getPlayer`))
 		);
 	}
+	
+	getPlayerUpgradeLeaderLevel(): Observable<PlayerUpgradeLeaderLevel> {
+		return this.http.get<PlayerUpgradeLeaderLevel>(this.url+'leaderlevel/').pipe(
+			tap(_ => this.log(`fetched playerupgradeleaderlevel`)),
+			catchError(this.handleError<PlayerUpgradeLeaderLevel>(`getPlayerUpgradeLeaderLevel`))
+		);
+	}
+	
+	updatePlayerUpgradeLeaderLevel (upgrade: PlayerUpgradeLeaderLevel): Observable<any> {
+	return this.http.put(this.url+'leaderlevel/', upgrade, httpOptions).pipe(
+			tap(_ => this.log(`updated playerupgradeleaderlevel`)),
+			catchError(this.handleError<any>('updatePlayerUpgradeLeaderLevel'))
+	);
+}
 	
 	/**
 	* Handle Http operation that failed.

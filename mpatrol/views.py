@@ -52,6 +52,7 @@ class HomeView(ActivePlayerMixin, TemplateView):
     def get(self, request):
         return super().get(request)
         
+
 class ReferenceView(ActivePlayerMixin, TemplateView):
     template_name = 'mpatrol/reference.html'
     

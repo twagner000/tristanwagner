@@ -14,6 +14,7 @@ import { ActionsComponent } from './actions/actions.component';
 import { UpgradesComponent } from './upgrades/upgrades.component';
 import { BattalionsComponent } from './battalions/battalions.component';
 import { MailComponent } from './mail/mail.component';
+import { UpgradeLeaderlevelComponent } from './upgrade-leaderlevel/upgrade-leaderlevel.component';
 
     @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import { MailComponent } from './mail/mail.component';
         ActionsComponent,
         UpgradesComponent,
         BattalionsComponent,
-        MailComponent
+        MailComponent,
+        UpgradeLeaderlevelComponent
     ],
     imports: [
         BrowserModule ,

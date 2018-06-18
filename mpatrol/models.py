@@ -27,6 +27,9 @@ class LeaderLevel(models.Model):
     def __str__(self):
         return str(self.level)
         
+    def enabled_creatures(self):
+        return Creature.objects.filter(min_ll=self.level)
+        
     @staticmethod
     def base_rules():
         LEADER_LEVELS = collections.OrderedDict([
@@ -74,17 +77,17 @@ class Creature(models.Model):
     @staticmethod
     def base_rules():
         CREATURES = collections.OrderedDict([
-            ('Shrew',collections.OrderedDict([('plural_name','Shrews'),('ll',1),('attack',1),('defense',1),('cost_cp',1),('cost_gold',20),('work_gold',5),('work_xp',1),('oversee',0)])),
-            ('Vole',collections.OrderedDict([('plural_name','Voles'),('ll',1),('attack',0),('defense',2),('cost_cp',1),('cost_gold',20),('work_gold',5),('work_xp',10),('oversee',0)])),
-            ('Mouse',collections.OrderedDict([('plural_name','Mice'),('ll',1),('attack',2),('defense',1),('cost_cp',1),('cost_gold',40),('work_gold',10),('work_xp',15),('oversee',0)])),
-            ('Hedgehog',collections.OrderedDict([('plural_name','Hedgehogs'),('ll',2),('attack',2),('defense',3),('cost_cp',2),('cost_gold',50),('work_gold',15),('work_xp',15),('oversee',0)])),
-            ('Squirrel',collections.OrderedDict([('plural_name','Squirrels'),('ll',2),('attack',3),('defense',2),('cost_cp',2),('cost_gold',50),('work_gold',20),('work_xp',20),('oversee',0)])),
-            ('Otter',collections.OrderedDict([('plural_name','Otters'),('ll',3),('attack',4),('defense',2),('cost_cp',3),('cost_gold',75),('work_gold',40),('work_xp',40),('oversee',0)])),
-            ('Hare',collections.OrderedDict([('plural_name','Hares'),('ll',4),('attack',4),('defense',4),('cost_cp',4),('cost_gold',85),('work_gold',50),('work_xp',60),('oversee',0)])),
-            ('Sparrow',collections.OrderedDict([('plural_name','Sparrows'),('ll',4),('attack',6),('defense',2),('cost_cp',4),('cost_gold',100),('work_gold',20),('work_xp',70),('oversee',5)])),
-            ('Owl',collections.OrderedDict([('plural_name','Owls'),('ll',5),('attack',8),('defense',4),('cost_cp',6),('cost_gold',125),('work_gold',20),('work_xp',70),('oversee',10)])),
-            ('Heron',collections.OrderedDict([('plural_name','Herons'),('ll',6),('attack',10),('defense',6),('cost_cp',8),('cost_gold',175),('work_gold',30),('work_xp',50),('oversee',15)])),
-            ('Badger',collections.OrderedDict([('plural_name','Badgers'),('ll',6),('attack',12),('defense',10),('cost_cp',10),('cost_gold',200),('work_gold',80),('work_xp',80),('oversee',0)]))
+            ('Shrew',collections.OrderedDict([('plural_name','Shrews'),('min_ll',1),('attack',1),('defense',1),('cost_cp',1),('cost_gold',20),('work_gold',5),('work_xp',1),('oversee',0)])),
+            ('Vole',collections.OrderedDict([('plural_name','Voles'),('min_ll',1),('attack',0),('defense',2),('cost_cp',1),('cost_gold',20),('work_gold',5),('work_xp',10),('oversee',0)])),
+            ('Mouse',collections.OrderedDict([('plural_name','Mice'),('min_ll',1),('attack',2),('defense',1),('cost_cp',1),('cost_gold',40),('work_gold',10),('work_xp',15),('oversee',0)])),
+            ('Hedgehog',collections.OrderedDict([('plural_name','Hedgehogs'),('min_ll',2),('attack',2),('defense',3),('cost_cp',2),('cost_gold',50),('work_gold',15),('work_xp',15),('oversee',0)])),
+            ('Squirrel',collections.OrderedDict([('plural_name','Squirrels'),('min_ll',2),('attack',3),('defense',2),('cost_cp',2),('cost_gold',50),('work_gold',20),('work_xp',20),('oversee',0)])),
+            ('Otter',collections.OrderedDict([('plural_name','Otters'),('min_ll',3),('attack',4),('defense',2),('cost_cp',3),('cost_gold',75),('work_gold',40),('work_xp',40),('oversee',0)])),
+            ('Hare',collections.OrderedDict([('plural_name','Hares'),('min_ll',4),('attack',4),('defense',4),('cost_cp',4),('cost_gold',85),('work_gold',50),('work_xp',60),('oversee',0)])),
+            ('Sparrow',collections.OrderedDict([('plural_name','Sparrows'),('min_ll',4),('attack',6),('defense',2),('cost_cp',4),('cost_gold',100),('work_gold',20),('work_xp',70),('oversee',5)])),
+            ('Owl',collections.OrderedDict([('plural_name','Owls'),('min_ll',5),('attack',8),('defense',4),('cost_cp',6),('cost_gold',125),('work_gold',20),('work_xp',70),('oversee',10)])),
+            ('Heron',collections.OrderedDict([('plural_name','Herons'),('min_ll',6),('attack',10),('defense',6),('cost_cp',8),('cost_gold',175),('work_gold',30),('work_xp',50),('oversee',15)])),
+            ('Badger',collections.OrderedDict([('plural_name','Badgers'),('min_ll',6),('attack',12),('defense',10),('cost_cp',10),('cost_gold',200),('work_gold',80),('work_xp',80),('oversee',0)]))
             ])
         for k,v in CREATURES.items():
             r,created = Creature.objects.get_or_create(name=k)
@@ -297,6 +300,18 @@ class Player(models.Model):
         
     def unread_message_count(self):
         return self.recipient_set.filter(unread=True).count()
+        
+    def current_ll(self):
+        return self.ll
+    
+    def next_ll(self):
+        return LeaderLevel.objects.filter(level=self.ll.level+1).first()
+        
+    def all_ll(self):
+        return LeaderLevel.objects.all()
+        
+    def upgrade(self):
+        return False
     
         
 class Battalion(models.Model):

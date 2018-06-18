@@ -1,38 +1,45 @@
 from django.core.exceptions import PermissionDenied
-from rest_framework import generics
+from rest_framework import generics, viewsets
 
-from .serializers import CreatureSerializer, TechnologySerializer, PlayerSerializer
-from .models import Creature, Technology, Player
-
-
-class CreatureList(generics.ListAPIView):
-    queryset = Creature.objects.all()
-    serializer_class = CreatureSerializer
-
-
-class CreatureDetail(generics.RetrieveAPIView):
-    queryset = Creature.objects.all()
-    serializer_class = CreatureSerializer
+from . import serializers, models
     
+    
+class LeaderLevelViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.LeaderLevel.objects.all()
+    serializer_class = serializers.LeaderLevelSerializer
+        
 
-class TechnologyList(generics.ListAPIView):
-    queryset = Technology.objects.all()
-    serializer_class = TechnologySerializer
-    
+class TechnologyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Technology.objects.all()
+    serializer_class = serializers.TechnologySerializer
 
-class TechnologyDetail(generics.RetrieveAPIView):
-    queryset = Technology.objects.all()
-    serializer_class = TechnologySerializer
     
-class PlayerDetail(generics.RetrieveAPIView):
-    serializer_class = PlayerSerializer
-    
+class StructureViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Structure.objects.all()
+    serializer_class = serializers.StructureSerializer
+
+
+class CreatureViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.Creature.objects.all()
+    serializer_class = serializers.CreatureSerializer
+
+
+class PlayerMixin(object):
     def get_queryset(self):
         if self.request.user.is_anonymous:
-            return Player.objects.filter(pk=11)
+            return models.Player.objects.filter(pk=11)
             #raise PermissionDenied()
-        return Player.objects.filter(user=self.request.user)
+        return models.Player.objects.filter(user=self.request.user)
     
     def get_object(self):
         #return self.get_queryset().get(pk=self.request.session.get('mpatrol_player_pk', None))
         return self.get_queryset().get(pk=11)
+
+
+class PlayerDetail(PlayerMixin, generics.RetrieveAPIView):
+    serializer_class = serializers.PlayerSerializer
+        
+        
+class UpgradeLeaderLevel(PlayerMixin, generics.RetrieveUpdateAPIView):
+    serializer_class = serializers.UpgradeLeaderLevelSerializer
+    

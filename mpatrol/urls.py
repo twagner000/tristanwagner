@@ -1,16 +1,21 @@
 from django.urls import path, include
 from django.contrib.auth.decorators import login_required
+from rest_framework.routers import DefaultRouter
 from . import views
 from . import api
 
 app_name = 'mpatrol'
 
-api_patterns = ([
-    path('creature/', api.CreatureList.as_view(), name='creature-list'),
-    path('creature/<int:pk>/', api.CreatureDetail.as_view(), name='creature-detail'),
-    path('technology/', api.TechnologyList.as_view(), name='technology-list'),
-    path('technology/<int:pk>/', api.TechnologyDetail.as_view(), name='technology-detail'),
+router = DefaultRouter()
+router.register('ll', api.LeaderLevelViewSet)
+router.register('tech', api.TechnologyViewSet)
+router.register('structure', api.StructureViewSet)
+router.register('creature', api.CreatureViewSet)
+api_patterns = router.urls
+
+api_patterns = (api_patterns + [
     path('player/', api.PlayerDetail.as_view(), name='player-detail'),
+    path('player/leaderlevel/', api.UpgradeLeaderLevel.as_view(), name='upgrade-leaderlevel'),
 ], 'api')
 
 urlpatterns = [
