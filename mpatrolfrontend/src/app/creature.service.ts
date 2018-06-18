@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Creature } from './creature';
-import { CREATURES } from './mock-creatures';
 import { Observable, of } from 'rxjs';
 import { MessageService } from './message.service';
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
-//import * as _ from 'lodash';
 
 
 
@@ -21,8 +19,6 @@ export class CreatureService {
 		private messageService: MessageService) { }
 
 	getCreatures(): Observable<Creature[]> {
-		//this.messageService.add('CreatureService: fetched creatures');
-		//return of(CREATURES);
 		return this.http
 			.get<Creature[]>(this.creaturesUrl)
 			.pipe(

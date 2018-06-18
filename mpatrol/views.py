@@ -48,6 +48,9 @@ class HomeView(ActivePlayerMixin, TemplateView):
         context['constants'] = constants
         context['calc'] = context['player'].calc()
         return context
+        
+    def get(self, request, ng_route):
+        return super().get(request)
     
         
 class ReferenceView(ActivePlayerMixin, TemplateView):

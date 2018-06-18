@@ -2,6 +2,16 @@
 {% load staticfiles %}
 
 {% block content %}
+	<div>
+		<app-root></app-root>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/runtime.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/polyfills.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/styles.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/vendor.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/main.js' %}"></script>
+	</div>
+	<hr>
+
 	<h3>
 		<span class="btn-group pull-right">
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="far fa-question-circle" aria-hidden="true"></span></button>
@@ -156,15 +166,7 @@
 	
 	
 	
-	<div>
-		<router-outlet></router-outlet>
-		<app-messages></app-messages>
-		<script type="text/javascript" src="{% static 'mpatrolfrontend/runtime.js' %}"></script>
-		<script type="text/javascript" src="{% static 'mpatrolfrontend/polyfills.js' %}"></script>
-		<script type="text/javascript" src="{% static 'mpatrolfrontend/styles.js' %}"></script>
-		<script type="text/javascript" src="{% static 'mpatrolfrontend/vendor.js' %}"></script>
-		<script type="text/javascript" src="{% static 'mpatrolfrontend/main.js' %}"></script>
-	</div>
+	
 {% endblock %}
 
 {% block moreinfo %}{% include 'mpatrol/tutorial_home.html' %}{% endblock %}

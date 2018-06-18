@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-//import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
@@ -10,6 +9,7 @@ import { CreatureDetailComponent } from './creature-detail/creature-detail.compo
 import { MessagesComponent } from './messages/messages.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import {APP_BASE_HREF} from '@angular/common';
 
     @NgModule({
     declarations: [
@@ -23,10 +23,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
         BrowserModule ,
         FormsModule,
 		AppRoutingModule,
-		//HttpModule,
 		HttpClientModule
     ],
-    providers: [],
+    providers: [{provide: APP_BASE_HREF, useValue : '/mpatrol/a' }],
     bootstrap: [AppComponent]
     })
     export class AppModule { }
