@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Location } from '@angular/common';
-import { PlayerUpgradeLeaderLevel } from '../player';
+import { Router } from '@angular/router';
+import { Player, LeaderLevel } from '../player';
+import { LeaderLevelService } from '../leader-level.service';
 import { PlayerService } from '../player.service';
 
 @Component({
@@ -10,26 +11,37 @@ import { PlayerService } from '../player.service';
 })
 export class UpgradeLeaderlevelComponent implements OnInit {
 
-	upgrade: PlayerUpgradeLeaderLevel;
+	@Input() player: Player;
+	leaderlevels: LeaderLevel[];
 
 	constructor(
+		private leaderLevelService: LeaderLevelService,
 		private playerService: PlayerService,
-		private location: Location
+		private router: Router,
 	) { }
 
 	ngOnInit() {
-		this.getPlayerUpgradeLeaderLevel();
+		this.getLeaderLevels();
+		this.getPlayer();
 	}
-
-	getPlayerUpgradeLeaderLevel(): void {
-		this.playerService.getPlayerUpgradeLeaderLevel()
-			.subscribe(upgrade => this.upgrade = upgrade);
+	
+	getLeaderLevels(): void {
+		this.leaderLevelService.getLeaderLevels()
+			.subscribe(leaderlevels => this.leaderlevels = leaderlevels);
+	}
+  
+	getPlayer(): void {
+		this.playerService.getPlayer()
+			.subscribe(player => this.player = player);
 	}
 	
 	save(): void {
-		this.upgrade.upgrade_id = this.upgrade.next_ll.id;
-		this.playerService.updatePlayerUpgradeLeaderLevel(this.upgrade)
-		.subscribe(() => this.location.back());
+		this.playerService.upgradePlayer({
+				'player_id': this.player.id,
+				'upgrade_type': 'll',
+				'upgrade_id': this.player.ll_upgrade.id
+			})
+			.subscribe(() => this.router.navigate(['/dashboard']));
 	}
 	
 }

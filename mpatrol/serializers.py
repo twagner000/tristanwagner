@@ -25,7 +25,7 @@ class TechnologySerializer(serializers.ModelSerializer):
     prereq = BriefTechnologySerializer(many=True)
     class Meta:
         model = Technology
-        fields = ('name', 'level', 'cost', 'prereq')
+        fields = ('name', 'level', 'cost_xp', 'prereq')
         
         
 class BriefStructureSerializer(serializers.ModelSerializer):
@@ -42,6 +42,12 @@ class StructureSerializer(serializers.ModelSerializer):
         fields = ('name', 'cost_gold', 'cost_xp', 'tech_req', 'struct_req', 'effects')
         
         
+class BriefLeaderLevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LeaderLevel
+        fields = ('id', 'level')
+        
+        
 class LeaderLevelSerializer(serializers.ModelSerializer):
     enabled_creatures = BriefCreatureSerializer(read_only=True, many=True)
     class Meta:
@@ -53,35 +59,10 @@ class PlayerSerializer(serializers.ModelSerializer):
     ll = LeaderLevelSerializer()
     technologies = BriefTechnologySerializer(many=True)
     structures = BriefStructureSerializer(many=True)
-    class Meta:
-        model = Player
-        fields = ('id', 'game', 'll', 'technologies', 'structures', 'character_name', 'gold', 'xp', 'calc')
-        depth = 1
-        
-
-class UpgradeLeaderLevelSerializer(serializers.ModelSerializer):
-    current_ll = LeaderLevelSerializer(read_only=True)
-    next_ll = LeaderLevelSerializer(read_only=True)
-    all_ll = LeaderLevelSerializer(read_only=True, many=True)
-    upgrade_id = serializers.IntegerField()
+    ll_upgrade = LeaderLevelSerializer()
+    structure_upgrade = StructureSerializer(many=True)
+    technology_upgrade = TechnologySerializer(many=True)
     
     class Meta:
         model = Player
-        fields = ('id', 'current_ll', 'next_ll', 'all_ll', 'xp', 'upgrade_id')
-        read_only_fields = ('xp',)
-        
-    def validate(self, data):
-        next_ll = self.instance.next_ll()
-        if not next_ll:
-            raise serializers.ValidationError('No upgrade available.')
-        if data.get('upgrade_id',None) != next_ll.id:
-            raise serializers.ValidationError('May only upgrade one level at a time.')
-        if self.instance.xp < next_ll.xp_cost:
-            raise serializers.ValidationError('Insufficient xp to upgrade.')
-        return data
-        
-    def update(self, instance, validated_data):
-        instance.xp = self.instance.xp - self.instance.next_ll().xp_cost
-        instance.ll = self.instance.next_ll()
-        instance.save()
-        return instance
+        fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp', 'technologies', 'structures', 'calc', 'll_upgrade', 'structure_upgrade', 'technology_upgrade')

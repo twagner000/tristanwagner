@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Exists, OuterRef
 import collections
 from datetime import datetime
 
@@ -8,7 +9,7 @@ from . import constants
 class Game(models.Model):
     name = models.CharField(blank=True, null=True, max_length=200)
     started_date = models.DateTimeField(auto_now_add=True, editable=True)
-    started_date.editable=True #for testing only
+    #started_date.editable=True #for testing only
     ended_date = models.DateTimeField(blank=True,null=True)
     
     def __str__(self):
@@ -98,12 +99,12 @@ class Creature(models.Model):
 
 class Technology(models.Model):
     name = models.CharField(unique=True, max_length=50)
-    level = models.PositiveSmallIntegerField(default=1)
-    cost = models.PositiveSmallIntegerField(default=100)
+    level = models.PositiveSmallIntegerField(default=1) #not leader level
+    cost_xp = models.PositiveSmallIntegerField(default=100)
     prereq = models.ManyToManyField('self', blank=True, symmetrical=False, verbose_name='Prerequisite')
     
     class Meta:
-        ordering = ['level','cost','name']
+        ordering = ['level','cost_xp','name']
         
     def __str__(self):
         return self.name
@@ -301,17 +302,22 @@ class Player(models.Model):
     def unread_message_count(self):
         return self.recipient_set.filter(unread=True).count()
         
-    def current_ll(self):
-        return self.ll
-    
-    def next_ll(self):
+    def ll_upgrade(self):
         return LeaderLevel.objects.filter(level=self.ll.level+1).first()
         
-    def all_ll(self):
-        return LeaderLevel.objects.all()
+    def structure_upgrade(self):
+        q = Structure.objects.exclude(cost_gold__gt=self.gold)
+        q = q.exclude(cost_xp__gt=self.xp)
+        q = q.exclude(pk__in=self.structures.values_list('pk'))
+        q = q.filter(tech_req__isnull=True) | q.filter(tech_req__in=self.technologies.values_list('pk'))
+        q = q.filter(struct_req__isnull=True) | q.filter(struct_req__in=self.structures.values_list('pk'))
+        return q
         
-    def upgrade_id(self):
-        return None
+    def technology_upgrade(self):
+        q = Technology.objects.exclude(cost_xp__gt=self.xp)
+        q = q.exclude(pk__in=self.technologies.values_list('pk'))
+        q = q.exclude(pk__in=[t.pk for t in q if t.prereq.exclude(pk__in=self.technologies.values_list('pk')).count()])
+        return q
     
         
 class Battalion(models.Model):

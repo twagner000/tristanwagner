@@ -15,6 +15,8 @@ import { UpgradesComponent } from './upgrades/upgrades.component';
 import { BattalionsComponent } from './battalions/battalions.component';
 import { MailComponent } from './mail/mail.component';
 import { UpgradeLeaderlevelComponent } from './upgrade-leaderlevel/upgrade-leaderlevel.component';
+import { UpgradeStructureComponent } from './upgrade-structure/upgrade-structure.component';
+import { UpgradeTechnologyComponent } from './upgrade-technology/upgrade-technology.component';
 
     @NgModule({
     declarations: [
@@ -27,7 +29,9 @@ import { UpgradeLeaderlevelComponent } from './upgrade-leaderlevel/upgrade-leade
         UpgradesComponent,
         BattalionsComponent,
         MailComponent,
-        UpgradeLeaderlevelComponent
+        UpgradeLeaderlevelComponent,
+        UpgradeStructureComponent,
+        UpgradeTechnologyComponent
     ],
     imports: [
         BrowserModule ,

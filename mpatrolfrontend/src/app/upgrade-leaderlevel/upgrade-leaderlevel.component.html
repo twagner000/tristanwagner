@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-md-4">
-		<div *ngIf="upgrade" class="panel panel-primary">
+		<div *ngIf="player" class="panel panel-primary">
 			<div class="panel-heading">
 				<a routerLink="/" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
 				Upgrade Leader Level
@@ -8,34 +8,34 @@
 			<div class="panel-body">
 				<p>Higher leader levels grant you attack and defense bonuses in combat, greater life points, and enable you to hire additional creature types. You will also gain more food from protecting more villagers, allowing you to hire more creatures into your army (creature points).</p>
 			</div>
-			<table *ngIf="upgrade.next_ll" class="table">
+			<table *ngIf="player.ll_upgrade" class="table">
 				<tr>
 					<th>Current Level</th>
-					<td class="text-right">{{upgrade.current_ll.level}}</td>
+					<td class="text-right">{{player.ll.level}}</td>
 				</tr>
 				<tr>
 					<th>Next Level</th>
-					<td class="text-right">{{upgrade.next_ll.level}}</td>
+					<td class="text-right">{{player.ll_upgrade.level}}</td>
 				</tr>
 				<tr>
 					<th>Current XP</th>
-					<td class="text-right">{{upgrade.xp | number}}</td>
+					<td class="text-right">{{player.xp | number}}</td>
 				</tr>
 				<tr>
 					<th>XP Cost to Upgrade</th>
-					<td class="text-right">{{upgrade.next_ll.xp_cost | number}}</td>
+					<td class="text-right">{{player.ll_upgrade.xp_cost | number}}</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="text-right">
 						<a routerLink="/" class="btn btn-default">Cancel</a>&nbsp;
-						<a class="btn btn-primary" [class.disabled]="upgrade.next_ll.xp_cost > upgrade.xp" (click)="save()">Upgrade</a>
+						<a class="btn btn-primary" [class.disabled]="player.ll_upgrade.xp_cost > player.xp" (click)="save()">Upgrade</a>
 					</td>
 				</tr>
 			</table>
-			<table *ngIf="!upgrade.next_ll" class="table">
+			<table *ngIf="!player.ll_upgrade" class="table">
 				<tr>
 					<th>Current Level</th>
-					<td class="text-right">{{upgrade.current_ll.level}}</td>
+					<td class="text-right">{{player.ll.level}}</td>
 				</tr>
 				<tr>
 					<th>Next Level</th>
@@ -51,7 +51,7 @@
 	</div>
 	<div class="col-md-8">
 		<div class="table-responsive">
-			<table *ngIf="upgrade" class="table">
+			<table *ngIf="leaderlevels" class="table">
 				<tr>
 					<th>Leader Level</th>
 					<th class="text-right">XP Cost</th>
@@ -59,7 +59,7 @@
 					<th class="text-right">Creature Points</th>
 					<th class="text-right">Creatures Enabled</th>
 				</tr>
-				<tr *ngFor="let ll of upgrade.all_ll">
+				<tr *ngFor="let ll of leaderlevels">
 					<td>{{ll.level}}</td>
 					<td class="text-right">{{ll.xp_cost | number}}</td>
 					<td class="text-right">{{ll.life | number}}</td>

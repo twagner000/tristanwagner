@@ -24,7 +24,7 @@ class CreatureAdmin(admin.ModelAdmin):
 
     
 class TechnologyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'level', 'cost', 'prereq_names')
+    list_display = ('name', 'level', 'cost_xp', 'prereq_names')
     
     
 class StructureAdmin(admin.ModelAdmin):

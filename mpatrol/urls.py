@@ -15,7 +15,7 @@ api_patterns = router.urls
 
 api_patterns = (api_patterns + [
     path('player/', api.PlayerDetail.as_view(), name='player-detail'),
-    path('player/leaderlevel/', api.UpgradeLeaderLevel.as_view(), name='upgrade-leaderlevel'),
+    path('player/upgrade/', api.PlayerUpgrade.as_view(), name='player-upgrade'),
 ], 'api')
 
 urlpatterns = [

@@ -15,7 +15,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><a class="btn btn-primary" title="Research"><span class="fas fa-flask" aria-hidden="true"></span></a></td>
+			<td><a routerLink="/upgrade/technology" class="btn btn-primary" title="Research"><span class="fas fa-flask" aria-hidden="true"></span></a></td>
 			<td>Technologies</td>
 			<td colspan="3">
 				<span *ngFor="let tech of player.technologies"><a><span class="badge">{{tech.name}}</span></a>&nbsp;</span>
@@ -23,7 +23,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td><a class="btn btn-primary" title="Build"><span class="fas fa-building" aria-hidden="true"></span></a></td>
+			<td><a routerLink="/upgrade/structure" class="btn btn-primary" title="Build"><span class="fas fa-building" aria-hidden="true"></span></a></td>
 			<td>Structures</td>
 			<td colspan="3">
 				<span *ngFor="let structure of player.structures"><a><span class="badge">{{structure.name}}</span></a>&nbsp;</span>

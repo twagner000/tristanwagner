@@ -1,38 +1,28 @@
 import { Injectable } from '@angular/core';
-import { Player, PlayerUpgrade } from './player';
+import { LeaderLevel } from './player';
 import { Observable, of } from 'rxjs';
 import { MessageService } from './message.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
-
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
 
 @Injectable({
 	providedIn: 'root'
 })
 
-export class PlayerService {
-	private url = 'http://localhost:8000/mpatrol/api/player/';
+export class LeaderLevelService {
+	private url = 'http://localhost:8000/mpatrol/api/ll/';
 
 	
 	constructor(
 		private http: HttpClient,
 		private messageService: MessageService) { }
 
-	getPlayer(): Observable<Player> {
-		return this.http.get<Player>(this.url).pipe(
-			tap(_ => this.log(`fetched player`)),
-			catchError(this.handleError<Player>(`getPlayer`))
-		);
-	}
-	
-	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {
-		return this.http.post(`${this.url}upgrade/`, upgrade, httpOptions).pipe(
-				tap(_ => this.log(`upgraded player_id=${upgrade.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`)),
-				catchError(this.handleError<any>('upgradePlayer'))
-		);
+	getLeaderLevels (): Observable<LeaderLevel[]> {
+		return this.http.get<LeaderLevel[]>(this.url)
+			.pipe(
+				tap(leaderlevels => this.log(`fetched leaderlevels`)),
+				catchError(this.handleError('getLeaderLevels', []))
+			);
 	}
 	
 	/**
@@ -56,6 +46,6 @@ export class PlayerService {
 	}
 	
 	private log(message: string) {
-		this.messageService.add('PlayerService: ' + message);
+		this.messageService.add('LeaderLevelService: ' + message);
 	}
 }

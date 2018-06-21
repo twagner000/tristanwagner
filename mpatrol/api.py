@@ -1,5 +1,7 @@
 from django.core.exceptions import PermissionDenied
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, views
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from . import serializers, models
     
@@ -38,8 +40,29 @@ class PlayerMixin(object):
 
 class PlayerDetail(PlayerMixin, generics.RetrieveAPIView):
     serializer_class = serializers.PlayerSerializer
-        
-        
-class UpgradeLeaderLevel(PlayerMixin, generics.RetrieveUpdateAPIView):
-    serializer_class = serializers.UpgradeLeaderLevelSerializer
+
     
+class PlayerUpgrade(views.APIView):
+    #permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, *args, **kwargs):
+        player = models.Player.objects.get(pk=request.data.get('player_id', None))
+        #if player.user != request.user:
+        #    return Response({"success": False, "error": "Cannot upgrade another user's player."})
+        print('add back user check')
+        upgrade_type = request.data.get('upgrade_type', None)
+        if upgrade_type == 'll':
+            ll_upgrade = player.ll_upgrade()
+            if not ll_upgrade:
+                return Response({"success": False, "error": "No leader level upgrade currently available."})
+            elif request.data.get('upgrade_id',None) != ll_upgrade.id:
+                return Response({"success": False, "error": "Can currently only upgrade to level {0}.".format(ll_upgrade.level)})
+            elif player.xp < ll_upgrade.xp_cost:
+                return Response({"success": False, "error": "Insufficient XP."})
+            else:
+                player.xp = player.xp - ll_upgrade.xp_cost
+                player.ll = ll_upgrade
+                player.save()
+                return Response({"success": True})
+        else:
+            return Response({"success": False, "error": "Invalid upgrade type."})
