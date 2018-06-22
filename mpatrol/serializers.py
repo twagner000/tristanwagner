@@ -25,7 +25,7 @@ class TechnologySerializer(serializers.ModelSerializer):
     prereq = BriefTechnologySerializer(many=True)
     class Meta:
         model = Technology
-        fields = ('name', 'level', 'cost_xp', 'prereq')
+        fields = ('id', 'name', 'level', 'cost_xp', 'prereq')
         
         
 class BriefStructureSerializer(serializers.ModelSerializer):
@@ -39,7 +39,7 @@ class StructureSerializer(serializers.ModelSerializer):
     struct_req = BriefStructureSerializer()
     class Meta:
         model = Structure
-        fields = ('name', 'cost_gold', 'cost_xp', 'tech_req', 'struct_req', 'effects')
+        fields = ('id', 'name', 'cost_gold', 'cost_xp', 'tech_req', 'struct_req', 'effects')
         
         
 class BriefLeaderLevelSerializer(serializers.ModelSerializer):

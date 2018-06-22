@@ -64,5 +64,30 @@ class PlayerUpgrade(views.APIView):
                 player.ll = ll_upgrade
                 player.save()
                 return Response({"success": True})
+        if upgrade_type == 'structure':
+            upgrade_list = player.structure_upgrade()
+            if not upgrade_list:
+                return Response({"success": False, "error": "No structures currently available/affordable."})
+            elif (request.data.get('upgrade_id',None),) not in upgrade_list.values_list('pk'):
+                return Response({"success": False, "error": "Invalid structure selection."})
+            else:
+                upgrade_obj = models.Structure.objects.get(pk=request.data.get('upgrade_id',None))
+                player.xp -= upgrade_obj.cost_xp
+                player.gold -= upgrade_obj.cost_gold
+                player.structures.add(upgrade_obj)
+                player.save()
+                return Response({"success": True})
+        if upgrade_type == 'technology':
+            upgrade_list = player.technology_upgrade()
+            if not upgrade_list:
+                return Response({"success": False, "error": "No technologies currently available/affordable."})
+            elif (request.data.get('upgrade_id',None),) not in upgrade_list.values_list('pk'):
+                return Response({"success": False, "error": "Invalid technology selection."})
+            else:
+                upgrade_obj = models.Technology.objects.get(pk=request.data.get('upgrade_id',None))
+                player.xp -= upgrade_obj.cost_xp
+                player.technologies.add(upgrade_obj)
+                player.save()
+                return Response({"success": True})
         else:
             return Response({"success": False, "error": "Invalid upgrade type."})

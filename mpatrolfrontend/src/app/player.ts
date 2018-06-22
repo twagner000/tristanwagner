@@ -14,7 +14,7 @@ export class Technology {
     id: number;
 	name: string;
     level: number;
-    cost: number;
+    cost_xp: number;
     prereq: Technology[];
 }
 
@@ -23,8 +23,8 @@ export class Structure {
 	name: string;
     cost_gold: number;
     cost_xp: number;
-    tech_req: Technology[];
-    struct_req: Structure[];
+    tech_req: Technology;
+    struct_req: Structure;
     effects: string;
 }
 

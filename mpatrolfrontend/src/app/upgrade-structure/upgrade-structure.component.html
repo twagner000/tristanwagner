@@ -1,3 +1,78 @@
-<p>
-  upgrade-structure works!
-</p>
+<div class="row">
+	<div class="col-md-4">
+		<div *ngIf="player" class="panel panel-primary">
+			<div class="panel-heading">
+				<a routerLink="/" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+				Build Structure
+			</div>
+			<div class="panel-body">
+				<p>Some structures enable other functions in the game, such as arming or training battalions. Other structures will increase your income.</p>
+			</div>
+			<table *ngIf="player.structure_upgrade" class="table">
+				<tr>
+					<th><label for="upgrade_id">Structure</label></th>
+					<td class="text-right" colspan="2">
+						<select class="form-control" id="selectedUpgrade" [(ngModel)]="selectedUpgrade">
+							<option *ngFor="let s of player.structure_upgrade" [ngValue]="s">{{s.name}}</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>You Have</th>
+					<td class="text-right">{{player.gold | number}} <span class="fas fa-coins"></span></td>
+					<td class="text-right">{{player.xp | number}} <span class="fas fa-angle-double-up"></span></td>
+				</tr>
+				<tr *ngIf="selectedUpgrade">
+					<th>Cost</th>
+					<td class="text-right">{{selectedUpgrade.cost_gold | number}} <span class="fas fa-coins"></span></td>
+					<td class="text-right">{{selectedUpgrade.cost_xp | number}} <span class="fas fa-angle-double-up"></span></td>
+				</tr>
+				<tr>
+					<td colspan="3" class="text-right">
+						<a routerLink="/" class="btn btn-default">Cancel</a>&nbsp;
+						<a class="btn btn-primary" (click)="save()" [class.disabled]="selectedUpgrade == null">Build</a>
+					</td>
+				</tr>
+			</table>
+			<table *ngIf="!player.structure_upgrade" class="table">
+				<tr>
+					<th>Structure</th>
+					<td class="text-right">No structure available and/or affordable.</td>
+				</tr>
+				<tr>
+					<td colspan="2" class="text-right">
+						<a routerLink="/" class="btn btn-default">Cancel</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="table-responsive">
+			<table *ngIf="structures" class="table">
+				<tr>
+					<th>Name</th>
+					<th class="text-right">Gold Cost</th>
+					<th class="text-right">XP Cost</th>
+					<th>Required Technology</th>
+					<th>Required Structure</th>
+					<th>Effects</th>
+				</tr>
+				<tr *ngFor="let s of structures">
+					<td>{{s.name}}</td>
+					<td class="text-right">{{s.cost_gold | number}}</td>
+					<td class="text-right">{{s.cost_xp | number}}</td>
+					<td>
+						<span *ngIf="s.tech_req">{{s.tech_req.name}}</span>
+						<span *ngIf="!s.tech_req">-</span>
+					</td>
+					<td>
+						<span *ngIf="s.struct_req">{{s.struct_req.name}}</span>
+						<span *ngIf="!s.struct_req">-</span>
+					</td>
+					<td>{{s.effects}}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>

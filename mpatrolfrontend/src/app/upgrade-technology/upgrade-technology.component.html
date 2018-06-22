@@ -1,3 +1,69 @@
-<p>
-  upgrade-technology works!
-</p>
+<div class="row">
+	<div class="col-md-4">
+		<div *ngIf="player" class="panel panel-primary">
+			<div class="panel-heading">
+				<a routerLink="/" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+				Research Technology
+			</div>
+			<div class="panel-body">
+				<p>Researching new technologies enables you to forge new weapons for your army and construct new structures.</p>
+			</div>
+			<table *ngIf="player.technology_upgrade" class="table">
+				<tr>
+					<th><label for="selectedUpgrade">Technology</label></th>
+					<td class="text-right">
+						<select class="form-control" id="selectedUpgrade" [(ngModel)]="selectedUpgrade">
+							<option *ngFor="let s of player.technology_upgrade" [ngValue]="s">{{s.name}}</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>You Have</th>
+					<td class="text-right">{{player.xp | number}} <span class="fas fa-angle-double-up"></span></td>
+				</tr>
+				<tr *ngIf="selectedUpgrade">
+					<th>Cost</th>
+					<td class="text-right">{{selectedUpgrade.cost_xp | number}} <span class="fas fa-angle-double-up"></span></td>
+				</tr>
+				<tr>
+					<td colspan="2" class="text-right">
+						<a routerLink="/" class="btn btn-default">Cancel</a>&nbsp;
+						<a class="btn btn-primary" (click)="save()" [class.disabled]="selectedUpgrade == null">Research</a>
+					</td>
+				</tr>
+			</table>
+			<table *ngIf="!player.technology_upgrade" class="table">
+				<tr>
+					<th>Structure</th>
+					<td class="text-right">No technology available and/or affordable.</td>
+				</tr>
+				<tr>
+					<td colspan="2" class="text-right">
+						<a routerLink="/" class="btn btn-default">Cancel</a>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="table-responsive">
+			<table *ngIf="technologies" class="table">
+				<tr>
+					<th>Name</th>
+					<th class="text-right">Level</th>
+					<th class="text-right">XP Cost</th>
+					<th>Required Technologies</th>
+				</tr>
+				<tr *ngFor="let t of technologies">
+					<td>{{t.name}}</td>
+					<td class="text-right">{{t.level | number}}</td>
+					<td class="text-right">{{t.cost_xp | number}}</td>
+					<td>
+						<span *ngFor="let pre of t.prereq; let isLast=last">{{pre.name}}{{isLast ? '' : ', '}}</span>
+						<span *ngIf="!t.prereq.length">-</span>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>

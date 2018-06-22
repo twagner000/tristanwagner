@@ -8,7 +8,7 @@ app_name = 'mpatrol'
 
 router = DefaultRouter()
 router.register('ll', api.LeaderLevelViewSet)
-router.register('tech', api.TechnologyViewSet)
+router.register('technology', api.TechnologyViewSet)
 router.register('structure', api.StructureViewSet)
 router.register('creature', api.CreatureViewSet)
 api_patterns = router.urls
