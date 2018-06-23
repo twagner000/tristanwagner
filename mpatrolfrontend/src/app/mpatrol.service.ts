@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Player, LeaderLevel, Structure, Technology } from './mpatrol';
-import { Observable, of } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -19,23 +19,45 @@ const httpOptions = {
 
 export class MpatrolService {
 	private url = 'http://localhost:8000/mpatrol/api/';
-	public player: Player;
-
+	private playerSubject = new Subject<Player>();
+	private player: Player;
 	
 	constructor(
 		private http: HttpClient,
 		private messageService: MessageService) { }
 
 	getPlayer(): Observable<Player> {
-		return this.http.get<Player>(`${this.url}player/`).pipe(
+		return this.playerSubject.asObservable();
+	}
+	
+	refreshPlayer() {
+		this.http.get<Player>(`${this.url}player/`).pipe(
 			tap(_ => this.log(`fetched player`)),
-			catchError(this.handleError<Player>(`getPlayer`))
-		);
+			catchError(this.handleError<Player>(`refreshPlayer`))
+		)
+			.subscribe(player => {
+				this.player = player;
+				this.playerSubject.next(player);
+			});
+	}
+	
+	refreshPlayerIfNeeded() : Player {
+		if (this.player)
+			return this.player;
+		this.refreshPlayer();
+		return null;
+	}
+	
+	clearPlayer() {
+		this.playerSubject.next();
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {
 		return this.http.post(`${this.url}upgrade/`, upgrade, httpOptions).pipe(
-				tap(_ => this.log(`upgraded player_id=${upgrade.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`)),
+				tap(_ => {
+					this.log(`upgraded player_id=${upgrade.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`);
+					this.refreshPlayer();
+				}),
 				catchError(this.handleError<any>('upgradePlayer'))
 		);
 	}

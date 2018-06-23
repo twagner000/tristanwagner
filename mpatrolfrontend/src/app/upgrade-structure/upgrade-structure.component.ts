@@ -21,6 +21,7 @@ export class UpgradeStructureComponent implements OnInit {
 	ngOnInit() {
 		this.mps.getPlayer()
 			.subscribe(player => this.player = player);
+		this.player = this.mps.refreshPlayerIfNeeded();
 		this.mps.getStructures()
 			.subscribe(structures => this.structures = structures);
 	}
