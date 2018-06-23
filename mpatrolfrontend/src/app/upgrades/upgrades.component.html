@@ -19,7 +19,7 @@
 			<td>Technologies</td>
 			<td colspan="3">
 				<span *ngFor="let tech of player.technologies"><a><span class="badge">{{tech.name}}</span></a>&nbsp;</span>
-				<div *ngIf="!player.technologies">-</div>
+				<div *ngIf="!player.technologies.length">-</div>
 			</td>
 		</tr>
 		<tr>
@@ -27,7 +27,7 @@
 			<td>Structures</td>
 			<td colspan="3">
 				<span *ngFor="let structure of player.structures"><a><span class="badge">{{structure.name}}</span></a>&nbsp;</span>
-				<div *ngIf="!player.structures">-</div>
+				<div *ngIf="!player.structures.length">-</div>
 			</td>
 		</tr>
 	</table>

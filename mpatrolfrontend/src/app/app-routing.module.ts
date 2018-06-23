@@ -12,9 +12,12 @@ import { CreatureDetailComponent }  from './creature-detail/creature-detail.comp
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'upgrade/leaderlevel', component: UpgradeLeaderlevelComponent },
-  { path: 'upgrade/technology', component: UpgradeTechnologyComponent },
-  { path: 'upgrade/structure', component: UpgradeStructureComponent },
+  { path: 'upgrade', children: [
+	  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+	  { path: 'leaderlevel', component: UpgradeLeaderlevelComponent },
+	  { path: 'technology', component: UpgradeTechnologyComponent },
+	  { path: 'structure', component: UpgradeStructureComponent }
+  ]},
   { path: 'detail/:pk', component: CreatureDetailComponent },
   { path: 'creatures', component: CreaturesComponent }
 ];

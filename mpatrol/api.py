@@ -51,7 +51,7 @@ class PlayerUpgrade(views.APIView):
         #    return Response({"success": False, "error": "Cannot upgrade another user's player."})
         print('add back user check')
         upgrade_type = request.data.get('upgrade_type', None)
-        if upgrade_type == 'll':
+        if upgrade_type == 'leaderlevel':
             ll_upgrade = player.ll_upgrade()
             if not ll_upgrade:
                 return Response({"success": False, "error": "No leader level upgrade currently available."})

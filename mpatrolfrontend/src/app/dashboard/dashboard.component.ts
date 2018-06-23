@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Creature } from '../creature';
 import { CreatureService } from '../creature.service';
-import { Player } from '../player';
-import { PlayerService } from '../player.service';
+import { Player } from '../mpatrol';
+import { MpatrolService } from '../mpatrol.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(
 	private creatureService: CreatureService,
-	private playerService: PlayerService
+	private mpatrolService: MpatrolService
 	) { }
 
   ngOnInit() {
@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit {
   }
   
   getPlayer(): void {
-    this.playerService.getPlayer()
+    this.mpatrolService.getPlayer()
       .subscribe(player => this.player = player);
   }
 }

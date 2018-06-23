@@ -7,7 +7,7 @@ from . import api
 app_name = 'mpatrol'
 
 router = DefaultRouter()
-router.register('ll', api.LeaderLevelViewSet)
+router.register('leaderlevel', api.LeaderLevelViewSet)
 router.register('technology', api.TechnologyViewSet)
 router.register('structure', api.StructureViewSet)
 router.register('creature', api.CreatureViewSet)
@@ -15,7 +15,7 @@ api_patterns = router.urls
 
 api_patterns = (api_patterns + [
     path('player/', api.PlayerDetail.as_view(), name='player-detail'),
-    path('player/upgrade/', api.PlayerUpgrade.as_view(), name='player-upgrade'),
+    path('upgrade/', api.PlayerUpgrade.as_view(), name='upgrade'),
 ], 'api')
 
 urlpatterns = [

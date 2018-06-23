@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { Player } from '../mpatrol';
+import { MpatrolService } from '../mpatrol.service';
 
 @Component({
   selector: 'app-battalions',
@@ -7,9 +10,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BattalionsComponent implements OnInit {
 
-  constructor() { }
+	@Input() player: Player;
 
-  ngOnInit() {
-  }
+	constructor() { }
+
+	ngOnInit() {
+	}
 
 }

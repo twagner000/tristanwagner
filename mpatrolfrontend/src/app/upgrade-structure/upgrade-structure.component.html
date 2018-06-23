@@ -10,7 +10,7 @@
 			</div>
 			<table *ngIf="player.structure_upgrade" class="table">
 				<tr>
-					<th><label for="upgrade_id">Structure</label></th>
+					<th><label for="selectedUpgrade">Structure</label></th>
 					<td class="text-right" colspan="2">
 						<select class="form-control" id="selectedUpgrade" [(ngModel)]="selectedUpgrade">
 							<option *ngFor="let s of player.structure_upgrade" [ngValue]="s">{{s.name}}</option>

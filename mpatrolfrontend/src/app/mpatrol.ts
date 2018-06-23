@@ -41,18 +41,3 @@ export class Player {
 	structure_upgrade: Structure[];
 	technology_upgrade: Technology[];
 }
-
-export class PlayerUpgradeLeaderLevel {
-	id: number;
-	current_ll: LeaderLevel;
-	next_ll: LeaderLevel;
-	all_ll: LeaderLevel[];
-	xp: number;
-	upgrade_id: number;
-}
-
-export class PlayerUpgrade {
-	player_id: number;
-	upgrade_type: string;
-	upgrade_id: number;
-}
