@@ -12,7 +12,7 @@ export class BriefCreature {
 export class BriefLeaderLevel {
 	id: number;
 	level: number;
-	xp_cost: number;
+	cost_xp: number;
 }
 
 export class BriefTechnology {

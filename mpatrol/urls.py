@@ -7,21 +7,16 @@ from . import api
 app_name = 'mpatrol'
 
 router = DefaultRouter()
+router.register('player', api.PlayerViewSet, base_name='player')
 router.register('leaderlevel', api.LeaderLevelViewSet)
 router.register('technology', api.TechnologyViewSet)
 router.register('structure', api.StructureViewSet)
 router.register('creature', api.CreatureViewSet)
-router.register('weapon-base', api.WeaponBaseViewSet)
-router.register('weapon-material', api.WeaponMaterialViewSet)
-api_patterns = router.urls
-
-api_patterns = (api_patterns + [
-    path('player/', api.PlayerDetail.as_view(), name='player-detail'),
-    path('upgrade/', api.PlayerUpgrade.as_view(), name='upgrade'),
-], 'api')
+router.register('weapon_base', api.WeaponBaseViewSet)
+router.register('weapon_material', api.WeaponMaterialViewSet)
 
 urlpatterns = [
-    path('api/', include(api_patterns)),
+    path('api/', include(router.urls), name='api'),
     path('', views.IndexView.as_view(), name='index'),
     path('a', views.HomeView.as_view(), name='home'),
     path('resume/', views.ResumeFormView.as_view(), name='resume'),

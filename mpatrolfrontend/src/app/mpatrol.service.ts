@@ -33,7 +33,7 @@ export class MpatrolService {
 	}
 	
 	refreshPlayer() {
-		this.http.get<Player>(`${this.url}player/`).pipe(
+		this.http.get<Player>(`${this.url}player/11/`).pipe(
 			tap(_ => this.log(`fetched player`)),
 			catchError(this.handleError<Player>(`refreshPlayer`))
 		).subscribe(
@@ -46,7 +46,7 @@ export class MpatrolService {
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {
-		return this.http.post(`${this.url}upgrade/`, upgrade, httpOptions).pipe(
+		return this.http.post(`${this.url}player/11/upgrade/`, upgrade, httpOptions).pipe(
 				tap(_ => {
 					this.log(`upgraded player_id=${upgrade.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`);
 					this.refreshPlayer();

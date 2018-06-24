@@ -1,7 +1,9 @@
 from django.core.exceptions import PermissionDenied
-from rest_framework import generics, viewsets, views
+from django.conf import settings
+from rest_framework import generics, viewsets, views, mixins, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 
 from . import serializers, models
     
@@ -34,70 +36,40 @@ class WeaponBaseViewSet(viewsets.ReadOnlyModelViewSet):
 class WeaponMaterialViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.WeaponMaterial.objects.all()
     serializer_class = serializers.WeaponMaterialSerializer
-
-
-class PlayerMixin(object):
-    def get_queryset(self):
-        if self.request.user.is_anonymous:
-            return models.Player.objects.filter(pk=11)
-            #raise PermissionDenied()
-        return models.Player.objects.filter(user=self.request.user)
     
-    def get_object(self):
-        #return self.get_queryset().get(pk=self.request.session.get('mpatrol_player_pk', None))
-        return self.get_queryset().get(pk=11)
-
-
-class PlayerDetail(PlayerMixin, generics.RetrieveAPIView):
+    
+class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PlayerSerializer
-
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
     
-class PlayerUpgrade(views.APIView):
-    #permission_classes = (IsAuthenticated,)
-    
-    def post(self, request, *args, **kwargs):
-        player = models.Player.objects.get(pk=request.data.get('player_id', None))
-        #if player.user != request.user:
-        #    return Response({"success": False, "error": "Cannot upgrade another user's player."})
-        print('add back user check')
-        upgrade_type = request.data.get('upgrade_type', None)
-        if upgrade_type == 'leaderlevel':
-            up_opt_ll = player.up_opt_ll()
-            if not up_opt_ll:
-                return Response({"success": False, "error": "No leader level upgrade currently available."})
-            elif request.data.get('upgrade_id',None) != up_opt_ll.id:
-                return Response({"success": False, "error": "Can currently only upgrade to level {0}.".format(up_opt_ll.level)})
-            elif player.xp < up_opt_ll.xp_cost:
-                return Response({"success": False, "error": "Insufficient XP."})
-            else:
-                player.xp = player.xp - up_opt_ll.xp_cost
-                player.ll = up_opt_ll
+    def get_queryset(self):
+        if settings.DEBUG:
+            return models.Player.objects.filter(game__ended_date__isnull=True)
+        return models.Player.objects.filter(user=self.request.user, game__ended_date__isnull=True)
+        
+    @action(methods=['post'], detail=True)
+    def upgrade(self, request, pk=None):
+        player = self.get_object()
+        serializer = serializers.PlayerUpgradeSerializer(player, data=request.data)
+        if serializer.is_valid():
+            up_opj = serializer.validated_data['upgrade_obj']
+            if serializer.validated_data['upgrade_type'] == 'leaderlevel':
+                player.xp = player.xp - up_opj.cost_xp
+                player.ll = up_opj
                 player.save()
-                return Response({"success": True})
-        if upgrade_type == 'structure':
-            upgrade_list = player.up_opts_structure()
-            if not upgrade_list:
-                return Response({"success": False, "error": "No structures currently available/affordable."})
-            elif (request.data.get('upgrade_id',None),) not in upgrade_list.values_list('pk'):
-                return Response({"success": False, "error": "Invalid structure selection."})
-            else:
-                upgrade_obj = models.Structure.objects.get(pk=request.data.get('upgrade_id',None))
-                player.xp -= upgrade_obj.cost_xp
-                player.gold -= upgrade_obj.cost_gold
-                player.structures.add(upgrade_obj)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            if serializer.validated_data['upgrade_type'] == 'structure':
+                player.xp -= up_opj.cost_xp
+                player.gold -= up_opj.cost_gold
+                player.structures.add(up_opj)
                 player.save()
-                return Response({"success": True})
-        if upgrade_type == 'technology':
-            upgrade_list = player.up_opts_technology()
-            if not upgrade_list:
-                return Response({"success": False, "error": "No technologies currently available/affordable."})
-            elif (request.data.get('upgrade_id',None),) not in upgrade_list.values_list('pk'):
-                return Response({"success": False, "error": "Invalid technology selection."})
-            else:
-                upgrade_obj = models.Technology.objects.get(pk=request.data.get('upgrade_id',None))
-                player.xp -= upgrade_obj.cost_xp
-                player.technologies.add(upgrade_obj)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            if serializer.validated_data['upgrade_type'] == 'technology':
+                player.xp -= up_opj.cost_xp
+                player.technologies.add(up_opj)
                 player.save()
-                return Response({"success": True})
+                return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response({"success": False, "error": "Invalid upgrade type."})
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            

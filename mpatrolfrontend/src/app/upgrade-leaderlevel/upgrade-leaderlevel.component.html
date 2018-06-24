@@ -23,12 +23,12 @@
 				</tr>
 				<tr>
 					<th>XP Cost to Upgrade</th>
-					<td class="text-right">{{player.up_opt_ll.xp_cost | number}}</td>
+					<td class="text-right">{{player.up_opt_ll.cost_xp | number}}</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="text-right">
 						<a routerLink="/" class="btn btn-default">Cancel</a>&nbsp;
-						<a class="btn btn-primary" [class.disabled]="player.up_opt_ll.xp_cost > player.xp" (click)="save()">Upgrade</a>
+						<a class="btn btn-primary" (click)="save()">Upgrade</a>
 					</td>
 				</tr>
 			</table>
@@ -39,7 +39,7 @@
 				</tr>
 				<tr>
 					<th>Next Level</th>
-					<td class="text-right">No upgrade available.</td>
+					<td class="text-right">No upgrade available/affordable.</td>
 				</tr>
 				<tr>
 					<td colspan="2" class="text-right">
@@ -61,7 +61,7 @@
 				</tr>
 				<tr *ngFor="let ll of leaderlevels">
 					<td>{{ll.level}}</td>
-					<td class="text-right">{{ll.xp_cost | number}}</td>
+					<td class="text-right">{{ll.cost_xp | number}}</td>
 					<td class="text-right">{{ll.life | number}}</td>
 					<td class="text-right">{{ll.cp | number}}</td>
 					<td class="text-right">

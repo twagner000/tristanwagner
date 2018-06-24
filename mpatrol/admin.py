@@ -16,7 +16,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
 
 class LeaderLevelAdmin(admin.ModelAdmin):
-    list_display = ('level', 'life', 'cp', 'xp_cost')
+    list_display = ('level', 'life', 'cp', 'cost_xp')
 
 
 class CreatureAdmin(admin.ModelAdmin):

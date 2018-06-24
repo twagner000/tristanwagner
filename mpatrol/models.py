@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Exists, OuterRef
+from django.core.exceptions import ObjectDoesNotExist
 import collections
 from datetime import datetime
 
@@ -20,7 +21,7 @@ class LeaderLevel(models.Model):
     level = models.PositiveSmallIntegerField(unique=True)
     life = models.PositiveIntegerField(default=0)
     cp = models.PositiveIntegerField(default=0)
-    xp_cost = models.PositiveIntegerField(default=0)
+    cost_xp = models.PositiveIntegerField(default=0)
     
     class Meta:
         ordering = ['level']
@@ -34,21 +35,21 @@ class LeaderLevel(models.Model):
     @staticmethod
     def base_rules():
         LEADER_LEVELS = collections.OrderedDict([
-            (1,collections.OrderedDict([('life',20),('cp',5),('xp_cost',0)])),
-            (2,collections.OrderedDict([('life',30),('cp',10),('xp_cost',100)])),
-            (3,collections.OrderedDict([('life',40),('cp',20),('xp_cost',200)])),
-            (4,collections.OrderedDict([('life',50),('cp',50),('xp_cost',500)])),
-            (5,collections.OrderedDict([('life',100),('cp',100),('xp_cost',1000)])),
-            (6,collections.OrderedDict([('life',200),('cp',200),('xp_cost',2000)])),
-            (7,collections.OrderedDict([('life',300),('cp',300),('xp_cost',3000)])),
-            (8,collections.OrderedDict([('life',400),('cp',400),('xp_cost',4000)])),
-            (9,collections.OrderedDict([('life',500),('cp',500),('xp_cost',5000)])),
-            (10,collections.OrderedDict([('life',1000),('cp',1000),('xp_cost',10000)])),
-            (11,collections.OrderedDict([('life',2000),('cp',2000),('xp_cost',20000)])),
-            (12,collections.OrderedDict([('life',4000),('cp',4000),('xp_cost',40000)])),
-            (13,collections.OrderedDict([('life',8000),('cp',8000),('xp_cost',80000)])),
-            (14,collections.OrderedDict([('life',16000),('cp',16000),('xp_cost',160000)])),
-            (15,collections.OrderedDict([('life',32000),('cp',32000),('xp_cost',320000)]))
+            (1,collections.OrderedDict([('life',20),('cp',5),('cost_xp',0)])),
+            (2,collections.OrderedDict([('life',30),('cp',10),('cost_xp',100)])),
+            (3,collections.OrderedDict([('life',40),('cp',20),('cost_xp',200)])),
+            (4,collections.OrderedDict([('life',50),('cp',50),('cost_xp',500)])),
+            (5,collections.OrderedDict([('life',100),('cp',100),('cost_xp',1000)])),
+            (6,collections.OrderedDict([('life',200),('cp',200),('cost_xp',2000)])),
+            (7,collections.OrderedDict([('life',300),('cp',300),('cost_xp',3000)])),
+            (8,collections.OrderedDict([('life',400),('cp',400),('cost_xp',4000)])),
+            (9,collections.OrderedDict([('life',500),('cp',500),('cost_xp',5000)])),
+            (10,collections.OrderedDict([('life',1000),('cp',1000),('cost_xp',10000)])),
+            (11,collections.OrderedDict([('life',2000),('cp',2000),('cost_xp',20000)])),
+            (12,collections.OrderedDict([('life',4000),('cp',4000),('cost_xp',40000)])),
+            (13,collections.OrderedDict([('life',8000),('cp',8000),('cost_xp',80000)])),
+            (14,collections.OrderedDict([('life',16000),('cp',16000),('cost_xp',160000)])),
+            (15,collections.OrderedDict([('life',32000),('cp',32000),('cost_xp',320000)]))
             ])
         for k,v in LEADER_LEVELS.items():
             r,created = LeaderLevel.objects.get_or_create(level=k)
@@ -303,7 +304,10 @@ class Player(models.Model):
         return self.recipient_set.filter(unread=True).count()
         
     def up_opt_ll(self):
-        return LeaderLevel.objects.filter(level=self.ll.level+1).first()
+        try:
+            return LeaderLevel.objects.get(level=self.ll.level+1, cost_xp__lte=self.xp)
+        except ObjectDoesNotExist:
+            return None
         
     def up_opts_structure(self):
         q = Structure.objects.exclude(cost_gold__gt=self.gold)
