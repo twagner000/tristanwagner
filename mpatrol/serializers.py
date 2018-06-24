@@ -5,13 +5,13 @@ from . import models
 class BriefCreatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Creature 
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'cost_cp', 'cost_gold')
 
 
 class CreatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Creature 
-        fields = ('pk', 'name', 'plural_name', 'min_ll', 'attack', 'defense', 'cost_cp', 'cost_gold', 'work_gold', 'work_xp', 'oversee')
+        fields = ('pk', 'name', 'cost_cp', 'cost_gold', 'plural_name', 'min_ll', 'attack', 'defense', 'work_gold', 'work_xp', 'oversee')
         #depth = 1
 
 
@@ -57,24 +57,44 @@ class LeaderLevelSerializer(serializers.ModelSerializer):
         
 class BriefWeaponBaseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.WeaponMaterial
-        fields = ('id', 'name')
+        model = models.WeaponBase
+        fields = ('id', 'name', 'cost_gold')
 
 
 class BriefWeaponMaterialSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WeaponMaterial
-        fields = ('id', 'name')
-    
+        fields = ('id', 'name', 'cost_mult')
+        
+        
+class WeaponBaseSerializer(BriefWeaponBaseSerializer):
+    class Meta(BriefWeaponBaseSerializer.Meta):
+        fields = BriefWeaponBaseSerializer.Meta.fields + ('tech_req', 'struct_req', 'attack_mult')
+
+
+class WeaponMaterialSerializer(BriefWeaponMaterialSerializer):
+    class Meta(BriefWeaponMaterialSerializer.Meta):
+        fields = BriefWeaponMaterialSerializer.Meta.fields + ('tech_req', 'struct_req', 'attack_mult', 'armor')
+        
+
+class BattalionLevelSerializer(serializers.Serializer):
+    level = serializers.IntegerField()
+    cost_xp_ea = serializers.IntegerField()
+
     
 class BattalionSerializer(serializers.ModelSerializer):
     creature = BriefCreatureSerializer()
     weapon_base = BriefWeaponBaseSerializer()
     weapon_material = BriefWeaponMaterialSerializer()
+    up_opt_level = BattalionLevelSerializer()
+    up_opts_creature = BriefCreatureSerializer(many=True)
+    up_opts_weapon_base = BriefWeaponBaseSerializer(many=True)
+    up_opts_weapon_material = BriefWeaponMaterialSerializer(many=True)
     
     class Meta:
         model = models.Battalion
-        fields = ('id', 'battalion_number', 'creature', 'count', 'level', 'weapon_base', 'weapon_material')
+        fields = ('id', 'battalion_number', 'creature', 'count', 'level', 'weapon_base', 'weapon_material',
+                  'up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
         
 
 class BriefGameSerializer(serializers.ModelSerializer):

@@ -2,9 +2,11 @@ export class Calc {
 	avail_xp: number;
 }
 
-export class Creature {
-  id: number;
-  name: string;
+export class BriefCreature {
+	id: number;
+	name: string;
+	cost_cp: number;
+	cost_gold: number;
 }
 
 export class BriefLeaderLevel {
@@ -13,23 +15,10 @@ export class BriefLeaderLevel {
 	xp_cost: number;
 }
 
-export class LeaderLevel extends BriefLeaderLevel {
-	life: number;
-	cp: number;
-}
-
 export class BriefTechnology {
     id: number;
 	name: string;
     cost_xp: number;
-}
-
-export class Technology {
-    id: number;
-	name: string;
-    cost_xp: number;
-    min_ll: number;
-    prereq: Technology[];
 }
 
 export class BriefStructure {
@@ -39,14 +28,44 @@ export class BriefStructure {
     cost_xp: number;
 }
 
-export class Structure {
+export class BriefWeaponBase {
+	id: number;
+	name: string;
+	cost_gold: number;
+}
+
+export class BriefWeaponMaterial {
+	id: number;
+	name: string;
+	cost_mult: number;
+}
+
+export class LeaderLevel extends BriefLeaderLevel {
+	life: number;
+	cp: number;
+}
+
+export class Technology extends BriefTechnology {
+    min_ll: number;
+    prereq: Technology[];
+}
+
+export class Structure extends BriefStructure{
     id: number;
 	name: string;
     cost_gold: number;
     cost_xp: number;
-    tech_req: Technology;
-    struct_req: Structure;
-    effects: string;
+}
+
+export class Battalion {
+	id: number;
+	battalion_number: number;
+	creature: BriefCreature;
+	count: number;
+	level: number;
+	weapon_base: BriefWeaponBase;
+	weapon_material: BriefWeaponMaterial;
+	up_opts_creature: BriefCreature[];
 }
 
 export class Player {
@@ -57,6 +76,7 @@ export class Player {
 	xp: number;
 	technologies: Technology[];
 	structures: Structure[];
+	battalions: Battalion[];
 	calc: Calc;
 	up_opt_ll: BriefLeaderLevel;
 	up_opts_structure: BriefStructure[];

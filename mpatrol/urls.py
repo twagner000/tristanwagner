@@ -11,6 +11,8 @@ router.register('leaderlevel', api.LeaderLevelViewSet)
 router.register('technology', api.TechnologyViewSet)
 router.register('structure', api.StructureViewSet)
 router.register('creature', api.CreatureViewSet)
+router.register('weapon-base', api.WeaponBaseViewSet)
+router.register('weapon-material', api.WeaponMaterialViewSet)
 api_patterns = router.urls
 
 api_patterns = (api_patterns + [

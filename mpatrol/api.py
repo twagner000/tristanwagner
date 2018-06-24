@@ -26,6 +26,16 @@ class CreatureViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.CreatureSerializer
 
 
+class WeaponBaseViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.WeaponBase.objects.all()
+    serializer_class = serializers.WeaponBaseSerializer
+
+
+class WeaponMaterialViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.WeaponMaterial.objects.all()
+    serializer_class = serializers.WeaponMaterialSerializer
+
+
 class PlayerMixin(object):
     def get_queryset(self):
         if self.request.user.is_anonymous:

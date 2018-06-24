@@ -360,6 +360,37 @@ class Battalion(models.Model):
         if self.weapon_material:
             v *= max(1,self.weapon_material.armor)
         return v
+        
+    def up_opts_creature(self):
+        q = Creature.objects.exclude(min_ll__gt=self.player.ll.level)
+        if self.count > 0 and self.creature:
+            q = q.filter(pk=self.creature.pk)
+        return q
+        
+    def up_opt_level(self):
+        if self.count > 0 and self.level < constants.MAX_BATTALION_LEVEL:
+            return {'level': self.level+1, 'cost_xp_ea': 10}
+        return None
+        
+    def up_opts_weapon_base(self):
+        if self.count <= 0:
+            return []
+        q = WeaponBase.objects.all()
+        if self.weapon_base:
+            q = q.filter(pk=self.weapon_base.pk)
+        q = q.filter(tech_req__isnull=True) | q.filter(tech_req__in=self.player.technologies.values_list('pk'))
+        q = q.filter(struct_req__isnull=True) | q.filter(struct_req__in=self.player.structures.values_list('pk'))
+        return q
+    
+    def up_opts_weapon_material(self):
+        if self.count <= 0:
+            return []
+        q = WeaponMaterial.objects.all()
+        if self.weapon_material:
+            q = q.filter(pk=self.weapon_material.pk)
+        q = q.filter(tech_req__isnull=True) | q.filter(tech_req__in=self.player.technologies.values_list('pk'))
+        q = q.filter(struct_req__isnull=True) | q.filter(struct_req__in=self.player.structures.values_list('pk'))
+        return q
     
 
 class Message(models.Model):
