@@ -8,12 +8,12 @@
 			<div class="panel-body">
 				<p>Some structures enable other functions in the game, such as arming or training battalions. Other structures will increase your income.</p>
 			</div>
-			<table *ngIf="player.structure_upgrade" class="table">
+			<table *ngIf="player.up_opts_structure" class="table">
 				<tr>
 					<th><label for="selectedUpgrade">Structure</label></th>
 					<td class="text-right" colspan="2">
 						<select class="form-control" id="selectedUpgrade" [(ngModel)]="selectedUpgrade">
-							<option *ngFor="let s of player.structure_upgrade" [ngValue]="s">{{s.name}}</option>
+							<option *ngFor="let s of player.up_opts_structure" [ngValue]="s">{{s.name}}</option>
 						</select>
 					</td>
 				</tr>
@@ -34,7 +34,7 @@
 					</td>
 				</tr>
 			</table>
-			<table *ngIf="!player.structure_upgrade" class="table">
+			<table *ngIf="!player.up_opts_structure" class="table">
 				<tr>
 					<th>Structure</th>
 					<td class="text-right">No structure available and/or affordable.</td>

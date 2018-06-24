@@ -18,20 +18,20 @@ class CreatureSerializer(serializers.ModelSerializer):
 class BriefTechnologySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Technology
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'cost_xp')
         
 
 class TechnologySerializer(serializers.ModelSerializer):
     prereq = BriefTechnologySerializer(many=True)
     class Meta:
         model = models.Technology
-        fields = ('id', 'name', 'min_ll', 'cost_xp', 'prereq')
+        fields = ('id', 'name', 'cost_xp', 'min_ll', 'prereq')
         
         
 class BriefStructureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Structure
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'cost_gold', 'cost_xp')
         
 
 class StructureSerializer(serializers.ModelSerializer):
@@ -45,14 +45,14 @@ class StructureSerializer(serializers.ModelSerializer):
 class BriefLeaderLevelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.LeaderLevel
-        fields = ('id', 'level')
+        fields = ('id', 'level', 'xp_cost')
         
         
 class LeaderLevelSerializer(serializers.ModelSerializer):
     enabled_creatures = BriefCreatureSerializer(read_only=True, many=True)
     class Meta:
         model = models.LeaderLevel
-        fields = ('id', 'level', 'life', 'cp', 'xp_cost', 'enabled_creatures')
+        fields = ('id', 'level', 'xp_cost', 'life', 'cp', 'enabled_creatures')
         
         
 class BriefWeaponBaseSerializer(serializers.ModelSerializer):
@@ -89,10 +89,12 @@ class PlayerSerializer(serializers.ModelSerializer):
     technologies = BriefTechnologySerializer(many=True)
     structures = BriefStructureSerializer(many=True)
     battalions = BattalionSerializer(many=True)
-    ll_upgrade = LeaderLevelSerializer()
-    structure_upgrade = StructureSerializer(many=True)
-    technology_upgrade = TechnologySerializer(many=True)
+    up_opt_ll = BriefLeaderLevelSerializer()
+    up_opts_structure = BriefStructureSerializer(many=True)
+    up_opts_technology = BriefTechnologySerializer(many=True)
     
     class Meta:
         model = models.Player
-        fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp', 'technologies', 'structures', 'battalions', 'calc', 'll_upgrade', 'structure_upgrade', 'technology_upgrade')
+        fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp',
+                  'technologies', 'structures', 'battalions', 'calc',
+                  'up_opt_ll', 'up_opts_structure', 'up_opts_technology')

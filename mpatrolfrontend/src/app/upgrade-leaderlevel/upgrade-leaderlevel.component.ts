@@ -28,7 +28,7 @@ export class UpgradeLeaderlevelComponent implements OnInit {
 		this.mps.upgradePlayer(new PlayerUpgrade(
 				this.player.id,
 				'leaderlevel',
-				this.player.ll_upgrade.id)
+				this.player.up_opt_ll.id)
 			).subscribe(() => this.router.navigate(['/dashboard']));
 	}
 	

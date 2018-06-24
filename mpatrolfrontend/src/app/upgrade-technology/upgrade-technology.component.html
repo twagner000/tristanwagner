@@ -8,12 +8,12 @@
 			<div class="panel-body">
 				<p>Researching new technologies enables you to forge new weapons for your army and construct new structures.</p>
 			</div>
-			<table *ngIf="player.technology_upgrade" class="table">
+			<table *ngIf="player.up_opts_technology" class="table">
 				<tr>
 					<th><label for="selectedUpgrade">Technology</label></th>
 					<td class="text-right">
 						<select class="form-control" id="selectedUpgrade" [(ngModel)]="selectedUpgrade">
-							<option *ngFor="let s of player.technology_upgrade" [ngValue]="s">{{s.name}}</option>
+							<option *ngFor="let s of player.up_opts_technology" [ngValue]="s">{{s.name}}</option>
 						</select>
 					</td>
 				</tr>
@@ -32,7 +32,7 @@
 					</td>
 				</tr>
 			</table>
-			<table *ngIf="!player.technology_upgrade" class="table">
+			<table *ngIf="!player.up_opts_technology" class="table">
 				<tr>
 					<th>Structure</th>
 					<td class="text-right">No technology available and/or affordable.</td>

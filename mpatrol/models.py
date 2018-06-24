@@ -302,10 +302,10 @@ class Player(models.Model):
     def unread_message_count(self):
         return self.recipient_set.filter(unread=True).count()
         
-    def ll_upgrade(self):
+    def up_opt_ll(self):
         return LeaderLevel.objects.filter(level=self.ll.level+1).first()
         
-    def structure_upgrade(self):
+    def up_opts_structure(self):
         q = Structure.objects.exclude(cost_gold__gt=self.gold)
         q = q.exclude(cost_xp__gt=self.xp)
         q = q.exclude(pk__in=self.structures.values_list('pk'))
@@ -313,7 +313,7 @@ class Player(models.Model):
         q = q.filter(struct_req__isnull=True) | q.filter(struct_req__in=self.structures.values_list('pk'))
         return q
         
-    def technology_upgrade(self):
+    def up_opts_technology(self):
         q = Technology.objects.exclude(cost_xp__gt=self.xp)
         q = q.exclude(min_ll__gt=self.ll.level)
         q = q.exclude(pk__in=self.technologies.values_list('pk'))

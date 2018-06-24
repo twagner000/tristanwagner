@@ -52,20 +52,20 @@ class PlayerUpgrade(views.APIView):
         print('add back user check')
         upgrade_type = request.data.get('upgrade_type', None)
         if upgrade_type == 'leaderlevel':
-            ll_upgrade = player.ll_upgrade()
-            if not ll_upgrade:
+            up_opt_ll = player.up_opt_ll()
+            if not up_opt_ll:
                 return Response({"success": False, "error": "No leader level upgrade currently available."})
-            elif request.data.get('upgrade_id',None) != ll_upgrade.id:
-                return Response({"success": False, "error": "Can currently only upgrade to level {0}.".format(ll_upgrade.level)})
-            elif player.xp < ll_upgrade.xp_cost:
+            elif request.data.get('upgrade_id',None) != up_opt_ll.id:
+                return Response({"success": False, "error": "Can currently only upgrade to level {0}.".format(up_opt_ll.level)})
+            elif player.xp < up_opt_ll.xp_cost:
                 return Response({"success": False, "error": "Insufficient XP."})
             else:
-                player.xp = player.xp - ll_upgrade.xp_cost
-                player.ll = ll_upgrade
+                player.xp = player.xp - up_opt_ll.xp_cost
+                player.ll = up_opt_ll
                 player.save()
                 return Response({"success": True})
         if upgrade_type == 'structure':
-            upgrade_list = player.structure_upgrade()
+            upgrade_list = player.up_opts_structure()
             if not upgrade_list:
                 return Response({"success": False, "error": "No structures currently available/affordable."})
             elif (request.data.get('upgrade_id',None),) not in upgrade_list.values_list('pk'):
@@ -78,7 +78,7 @@ class PlayerUpgrade(views.APIView):
                 player.save()
                 return Response({"success": True})
         if upgrade_type == 'technology':
-            upgrade_list = player.technology_upgrade()
+            upgrade_list = player.up_opts_technology()
             if not upgrade_list:
                 return Response({"success": False, "error": "No technologies currently available/affordable."})
             elif (request.data.get('upgrade_id',None),) not in upgrade_list.values_list('pk'):
