@@ -99,12 +99,12 @@ class Creature(models.Model):
 
 class Technology(models.Model):
     name = models.CharField(unique=True, max_length=50)
-    level = models.PositiveSmallIntegerField(default=1) #not leader level
+    min_ll = models.PositiveSmallIntegerField(default=1, verbose_name='Min Leader Level')
     cost_xp = models.PositiveSmallIntegerField(default=100)
     prereq = models.ManyToManyField('self', blank=True, symmetrical=False, verbose_name='Prerequisite')
     
     class Meta:
-        ordering = ['level','cost_xp','name']
+        ordering = ['min_ll','cost_xp','name']
         
     def __str__(self):
         return self.name
@@ -115,16 +115,16 @@ class Technology(models.Model):
     @staticmethod
     def base_rules():
         TECHS = collections.OrderedDict([
-            ('Bronze Working',collections.OrderedDict([('level',1),('cost',100)])),
-            ('Woodworking',collections.OrderedDict([('level',1),('cost',100)])),
-            ('Currency',collections.OrderedDict([('level',2),('cost',200)])),
-            ('Iron Working',collections.OrderedDict([('level',2),('cost',200)])),
-            ('Carpentry',collections.OrderedDict([('level',2),('cost',200)])),
-            ('Writing',collections.OrderedDict([('level',2),('cost',200)])),
-            ('Trade',collections.OrderedDict([('level',3),('cost',500)])),
-            ('Masonry',collections.OrderedDict([('level',4),('cost',1000)])),
-            ('Weaving',collections.OrderedDict([('level',4),('cost',1000)])),
-            ('Map Making',collections.OrderedDict([('level',4),('cost',1000)]))
+            ('Bronze Working',collections.OrderedDict([('min_ll',1),('cost',100)])),
+            ('Woodworking',collections.OrderedDict([('min_ll',1),('cost',100)])),
+            ('Currency',collections.OrderedDict([('min_ll',2),('cost',200)])),
+            ('Iron Working',collections.OrderedDict([('min_ll',2),('cost',200)])),
+            ('Carpentry',collections.OrderedDict([('min_ll',2),('cost',200)])),
+            ('Writing',collections.OrderedDict([('min_ll',2),('cost',200)])),
+            ('Trade',collections.OrderedDict([('min_ll',3),('cost',500)])),
+            ('Masonry',collections.OrderedDict([('min_ll',4),('cost',1000)])),
+            ('Weaving',collections.OrderedDict([('min_ll',4),('cost',1000)])),
+            ('Map Making',collections.OrderedDict([('min_ll',4),('cost',1000)]))
             ])
         for k,v in TECHS.items():
             r,created = Technology.objects.get_or_create(name=k)
@@ -315,6 +315,7 @@ class Player(models.Model):
         
     def technology_upgrade(self):
         q = Technology.objects.exclude(cost_xp__gt=self.xp)
+        q = q.exclude(min_ll__gt=self.ll.level)
         q = q.exclude(pk__in=self.technologies.values_list('pk'))
         q = q.exclude(pk__in=[t.pk for t in q if t.prereq.exclude(pk__in=self.technologies.values_list('pk')).count()])
         return q

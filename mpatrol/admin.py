@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import Game, Player, Battalion, LeaderLevel, Creature, Technology, Structure, WeaponBase, WeaponMaterial
+from . import models
 
 class GameAdmin(admin.ModelAdmin):
     list_display = ('name', 'started_date', 'ended_date')
 
     
 class BattalionInline(admin.TabularInline):
-    model = Battalion
+    model = models.Battalion
 
     
 class PlayerAdmin(admin.ModelAdmin):
@@ -24,7 +24,7 @@ class CreatureAdmin(admin.ModelAdmin):
 
     
 class TechnologyAdmin(admin.ModelAdmin):
-    list_display = ('name', 'level', 'cost_xp', 'prereq_names')
+    list_display = ('name', 'min_ll', 'cost_xp', 'prereq_names')
     
     
 class StructureAdmin(admin.ModelAdmin):
@@ -39,13 +39,13 @@ class WeaponMaterialAdmin(admin.ModelAdmin):
     list_display = ('name', 'tech_req', 'struct_req', 'attack_mult', 'cost_mult', 'armor')
     
     
-admin.site.register(Game, GameAdmin)
-admin.site.register(Player, PlayerAdmin)
-admin.site.register(LeaderLevel, LeaderLevelAdmin)
-admin.site.register(Creature, CreatureAdmin)
-admin.site.register(Technology, TechnologyAdmin)
-admin.site.register(Structure, StructureAdmin)
-admin.site.register(WeaponBase, WeaponBaseAdmin)
-admin.site.register(WeaponMaterial, WeaponMaterialAdmin)
+admin.site.register(models.Game, GameAdmin)
+admin.site.register(models.Player, PlayerAdmin)
+admin.site.register(models.LeaderLevel, LeaderLevelAdmin)
+admin.site.register(models.Creature, CreatureAdmin)
+admin.site.register(models.Technology, TechnologyAdmin)
+admin.site.register(models.Structure, StructureAdmin)
+admin.site.register(models.WeaponBase, WeaponBaseAdmin)
+admin.site.register(models.WeaponMaterial, WeaponMaterialAdmin)
 
 

@@ -25,7 +25,7 @@ class TechnologySerializer(serializers.ModelSerializer):
     prereq = BriefTechnologySerializer(many=True)
     class Meta:
         model = models.Technology
-        fields = ('id', 'name', 'level', 'cost_xp', 'prereq')
+        fields = ('id', 'name', 'min_ll', 'cost_xp', 'prereq')
         
         
 class BriefStructureSerializer(serializers.ModelSerializer):

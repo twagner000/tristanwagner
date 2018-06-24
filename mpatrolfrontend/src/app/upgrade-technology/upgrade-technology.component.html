@@ -50,13 +50,13 @@
 			<table *ngIf="technologies" class="table">
 				<tr>
 					<th>Name</th>
-					<th class="text-right">Level</th>
+					<th class="text-right">Min Leader Level</th>
 					<th class="text-right">XP Cost</th>
 					<th>Required Technologies</th>
 				</tr>
 				<tr *ngFor="let t of technologies">
 					<td>{{t.name}}</td>
-					<td class="text-right">{{t.level | number}}</td>
+					<td class="text-right">{{t.min_ll | number}}</td>
 					<td class="text-right">{{t.cost_xp | number}}</td>
 					<td>
 						<span *ngFor="let pre of t.prereq; let isLast=last">{{pre.name}}{{isLast ? '' : ', '}}</span>
