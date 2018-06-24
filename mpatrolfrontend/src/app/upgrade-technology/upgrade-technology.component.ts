@@ -21,7 +21,6 @@ export class UpgradeTechnologyComponent implements OnInit {
 	ngOnInit() {
 		this.mps.getPlayer()
 			.subscribe(player => this.player = player);
-		this.player = this.mps.refreshPlayerIfNeeded();
 		this.mps.getTechnologies()
 			.subscribe(technologies => this.technologies = technologies);
 	}

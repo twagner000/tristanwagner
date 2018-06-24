@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Player, LeaderLevel, Structure, Technology } from './mpatrol';
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -19,14 +19,17 @@ const httpOptions = {
 
 export class MpatrolService {
 	private url = 'http://localhost:8000/mpatrol/api/';
-	private playerSubject = new Subject<Player>();
-	private player: Player;
+	private playerSubject = new BehaviorSubject<Player>(null);
+	//private player: Player;
 	
 	constructor(
 		private http: HttpClient,
 		private messageService: MessageService) { }
 
 	getPlayer(): Observable<Player> {
+		if (!this.playerSubject.getValue()) {
+			this.refreshPlayer();
+		}
 		return this.playerSubject.asObservable();
 	}
 	
@@ -34,22 +37,13 @@ export class MpatrolService {
 		this.http.get<Player>(`${this.url}player/`).pipe(
 			tap(_ => this.log(`fetched player`)),
 			catchError(this.handleError<Player>(`refreshPlayer`))
-		)
-			.subscribe(player => {
-				this.player = player;
-				this.playerSubject.next(player);
-			});
-	}
-	
-	refreshPlayerIfNeeded() : Player {
-		if (this.player)
-			return this.player;
-		this.refreshPlayer();
-		return null;
+		).subscribe(
+			player => this.playerSubject.next(player)
+		);
 	}
 	
 	clearPlayer() {
-		this.playerSubject.next();
+		this.playerSubject.next(null);
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {

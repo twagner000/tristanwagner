@@ -20,7 +20,6 @@ export class UpgradeLeaderlevelComponent implements OnInit {
 	ngOnInit() {
 		this.mps.getPlayer()
 			.subscribe(player => this.player = player);
-		this.player = this.mps.refreshPlayerIfNeeded();
 		this.mps.getLeaderLevels()
 			.subscribe(leaderlevels => this.leaderlevels = leaderlevels);
 	}
