@@ -19,18 +19,17 @@ const httpOptions = {
 
 export class MpatrolService {
 	private url = 'http://localhost:8000/mpatrol/api/';
-	private playerSubject = new BehaviorSubject<Player>(null);
-	//private player: Player;
+	private player = new BehaviorSubject<Player>(null);
 	
 	constructor(
 		private http: HttpClient,
 		private messageService: MessageService) { }
 
 	getPlayer(): Observable<Player> {
-		if (!this.playerSubject.getValue()) {
+		if (!this.player.getValue()) {
 			this.refreshPlayer();
 		}
-		return this.playerSubject.asObservable();
+		return this.player.asObservable();
 	}
 	
 	refreshPlayer() {
@@ -38,12 +37,12 @@ export class MpatrolService {
 			tap(_ => this.log(`fetched player`)),
 			catchError(this.handleError<Player>(`refreshPlayer`))
 		).subscribe(
-			player => this.playerSubject.next(player)
+			player => this.player.next(player)
 		);
 	}
 	
 	clearPlayer() {
-		this.playerSubject.next(null);
+		this.player.next(null);
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {

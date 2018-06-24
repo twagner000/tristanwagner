@@ -286,13 +286,13 @@ class Player(models.Model):
         r['month'] = constants.months[days%6]
         r['year'] = days//6+1
         r['action_taken'] = last_action==today
-        r['cp_avail'] = self.ll.cp-sum(b.cost_cp() for b in self.battalion_set.all())
-        r['attack'] = (1+self.ll.level/10)*sum(b.attack() for b in self.battalion_set.all())
-        r['defense'] = (1+self.ll.level/10)*sum(b.defense() for b in self.battalion_set.all())
-        r['oversee'] = sum(b.oversee() for b in self.battalion_set.all())
-        r['work_xp'] = sum(b.work_xp() for b in self.battalion_set.all())
-        gold_mult = max(1,2-(sum(b.count for b in self.battalion_set.all())/r['oversee']) if r['oversee']>0 else 1)
-        r['work_gold'] = gold_mult*sum(b.work_gold() for b in self.battalion_set.all())
+        r['cp_avail'] = self.ll.cp-sum(b.cost_cp() for b in self.battalions.all())
+        r['attack'] = (1+self.ll.level/10)*sum(b.attack() for b in self.battalions.all())
+        r['defense'] = (1+self.ll.level/10)*sum(b.defense() for b in self.battalions.all())
+        r['oversee'] = sum(b.oversee() for b in self.battalions.all())
+        r['work_xp'] = sum(b.work_xp() for b in self.battalions.all())
+        gold_mult = max(1,2-(sum(b.count for b in self.battalions.all())/r['oversee']) if r['oversee']>0 else 1)
+        r['work_gold'] = gold_mult*sum(b.work_gold() for b in self.battalions.all())
         #payday variable can also add +100 gold, but doesn't show up anywhere?
         return r
         
@@ -321,7 +321,7 @@ class Player(models.Model):
     
         
 class Battalion(models.Model):
-    player = models.ForeignKey(Player, models.CASCADE)
+    player = models.ForeignKey(Player, models.CASCADE, related_name='battalions')
     battalion_number = models.PositiveSmallIntegerField(default=1)
     creature = models.ForeignKey(Creature, models.PROTECT, null=True, blank=True)
     count = models.PositiveSmallIntegerField(default=0)

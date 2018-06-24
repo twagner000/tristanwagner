@@ -1,3 +1,42 @@
-<p>
-  battalions works!
-</p>
+<div class="panel panel-default">
+	<div class="panel-heading">Battalions</div>
+	<table class="table">
+		<tr>
+			<th>Creature</th>
+			<th>Count</th>
+			<th>Level</th>
+			<th>Weapon</th>
+			<th></th>
+		</tr>
+		<tr *ngFor="let b of player.battalions">
+			<!--td><span class="label label-default">{{b.battalion_number}}</span></td-->
+			<td>
+				<span *ngIf="b.creature"><a href="#" title="Fire Battalion"><span class="fas fa-minus-circle text-danger"></span></a> {{b.creature.name}}</span>
+				<span *ngIf="!b.creature"><a href="#" title="Start Battalion"><span class="fas fa-plus"></span></a></span>
+			</td>
+			<td><a *ngIf="b.creature" href="#" title="Hire/Fire Creatures"><b>{{b.count}}</b></a></td>
+			<td><a *ngIf="b.creature" href="#" title="Train Battalion"><b>{{b.level}}</b></a></td>
+			<td>
+				<a *ngIf="b.creature" href="#" title="Buy/Sell Weapons">
+					<b *ngIf="b.weapon_material && b.weapon_base">{{b.weapon_material.name}} {{b.weapon_base.name}}</b>
+					<b *ngIf="!b.weapon_material"><span class="fas fa-plus"></span></b>
+				</a>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-xs-6 text-right">
+				<p>Attack</p><p>Defense</p>
+			</div>
+			<div class="col-xs-6">
+				<span style="display: inline-block;" class="text-right">
+					<b><p>{{player.calc.attack|number:'1.1-1'}}</p><p>{{player.calc.defense|number:'1.1-1'}}</p></b>
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--a routerLink="/upgrade/leaderlevel" class="btn btn-primary" title="Upgrade Leader Level"><span class="fas fa-user" aria-hidden="true"></span></a-->

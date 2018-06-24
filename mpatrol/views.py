@@ -91,7 +91,7 @@ class JoinFormView(LoginRequiredMixin, FormView):
         p = Player(game=form.cleaned_data['game'], user=self.request.user, character_name=form.cleaned_data['character_name'])
         p.save()
         for i in range(1,9):
-            p.battalion_set.create(battalion_number=i)
+            p.battalions.create(battalion_number=i)
         p.save()
         self.request.session['mpatrol_player_pk'] = p.pk
         return super().form_valid(form)

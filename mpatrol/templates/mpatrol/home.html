@@ -121,7 +121,7 @@
 						<th>Weapon</th>
 						<th></th>
 					</tr>
-					{% for b in player.battalion_set.all %}
+					{% for b in player.battalions.all %}
 						<tr>
 							<!--td><span class="label label-default">{{b.battalion_number}}</span></td-->
 							<td>{% if b.creature %}<a href="#" title="Fire Battalion"><span class="fas fa-minus-circle text-danger"></span></a> {{b.creature}}{% else %}<a href="#" title="Start Battalion"><span class="fas fa-plus"></span></a>{% endif %}</td>
