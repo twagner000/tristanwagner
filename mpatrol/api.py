@@ -4,6 +4,7 @@ from rest_framework import generics, viewsets, views, mixins, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from . import serializers, models
     
@@ -36,9 +37,15 @@ class WeaponBaseViewSet(viewsets.ReadOnlyModelViewSet):
 class WeaponMaterialViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.WeaponMaterial.objects.all()
     serializer_class = serializers.WeaponMaterialSerializer
+
+
+class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = models.Battalion.objects.all()
+    serializer_class = serializers.BattalionSerializer
+    lookup_field = 'battalion_number'
     
     
-class PlayerViewSet(viewsets.ReadOnlyModelViewSet):
+class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PlayerSerializer
     if not settings.DEBUG:
         permission_classes = [IsAuthenticated]

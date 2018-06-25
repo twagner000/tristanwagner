@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Player, LeaderLevel, Structure, Technology } from './mpatrol';
+import { Player, Battalion, LeaderLevel, Structure, Technology, Creature } from './mpatrol';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -55,6 +55,14 @@ export class MpatrolService {
 		);
 	}
 	
+	getBattalion (player_id: number, battalion_number: number): Observable<Battalion> {
+		return this.http.get<Battalion>(`${this.url}player/${player_id}/battalion/${battalion_number}/`)
+			.pipe(
+				tap(battalion => this.log(`fetched player ${player_id} battalion number ${battalion_number}`)),
+				catchError(this.handleError<Battalion>(`getBattalion`))
+			);
+	}
+	
 	getLeaderLevels (): Observable<LeaderLevel[]> {
 		return this.http.get<LeaderLevel[]>(`${this.url}leaderlevel/`)
 			.pipe(
@@ -76,6 +84,14 @@ export class MpatrolService {
 			.pipe(
 				tap(technologies => this.log(`fetched technologies`)),
 				catchError(this.handleError('getTechnologies', []))
+			);
+	}
+	
+	getCreatures (): Observable<Creature[]> {
+		return this.http.get<Creature[]>(`${this.url}creature/`)
+			.pipe(
+				tap(technologies => this.log(`fetched creatures`)),
+				catchError(this.handleError('getCreatures', []))
 			);
 	}
 	

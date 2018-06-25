@@ -1,7 +1,0 @@
-
-		<h2>Creature List</h2>
-		<ul class="list-group">
-		  <li *ngFor="let creature of creatures" class="list-group-item"> <!--(click)="onSelect(creature)" [class.active]="creature === selectedCreature"-->
-			<a routerLink="/detail/{{creature.pk}}"><span class="badge">{{creature.pk}}</span> {{creature.name}}</a>
-		  </li>
-		</ul>

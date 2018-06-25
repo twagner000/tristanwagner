@@ -1,5 +1,5 @@
 export class Calc {
-	avail_xp: number;
+	cp_avail: number;
 }
 
 export class BriefCreature {
@@ -9,10 +9,25 @@ export class BriefCreature {
 	cost_gold: number;
 }
 
+export class Creature extends BriefCreature {
+	plural_name: string;
+    min_ll: number;
+    attack: number;
+    defense: number;
+    work_gold: number;
+    work_xp: number;
+    oversee: number;
+}
+
 export class BriefLeaderLevel {
 	id: number;
 	level: number;
 	cost_xp: number;
+}
+
+export class LeaderLevel extends BriefLeaderLevel {
+	life: number;
+	cp: number;
 }
 
 export class BriefTechnology {
@@ -21,7 +36,19 @@ export class BriefTechnology {
     cost_xp: number;
 }
 
+export class Technology extends BriefTechnology {
+    min_ll: number;
+    prereq: Technology[];
+}
+
 export class BriefStructure {
+    id: number;
+	name: string;
+    cost_gold: number;
+    cost_xp: number;
+}
+
+export class Structure extends BriefStructure{
     id: number;
 	name: string;
     cost_gold: number;
@@ -38,23 +65,6 @@ export class BriefWeaponMaterial {
 	id: number;
 	name: string;
 	cost_mult: number;
-}
-
-export class LeaderLevel extends BriefLeaderLevel {
-	life: number;
-	cp: number;
-}
-
-export class Technology extends BriefTechnology {
-    min_ll: number;
-    prereq: Technology[];
-}
-
-export class Structure extends BriefStructure{
-    id: number;
-	name: string;
-    cost_gold: number;
-    cost_xp: number;
 }
 
 export class Battalion {

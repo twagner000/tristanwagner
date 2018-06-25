@@ -1,13 +1,16 @@
 from django.urls import path, include
 from django.contrib.auth.decorators import login_required
-from rest_framework.routers import DefaultRouter
+from rest_framework_extensions.routers import ExtendedDefaultRouter
+#NEED TO UPDATE rest_framework_extensions/routers.py FROM GITHUB
+
 from . import views
 from . import api
 
 app_name = 'mpatrol'
 
-router = DefaultRouter()
-router.register('player', api.PlayerViewSet, base_name='player')
+router = ExtendedDefaultRouter()
+player = router.register('player', api.PlayerViewSet, base_name='player')
+player.register('battalion', api.BattalionViewSet, base_name='player-battalion', parents_query_lookups=['player_id'])
 router.register('leaderlevel', api.LeaderLevelViewSet)
 router.register('technology', api.TechnologyViewSet)
 router.register('structure', api.StructureViewSet)

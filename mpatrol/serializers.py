@@ -78,19 +78,24 @@ class BattalionLevelSerializer(serializers.Serializer):
     cost_xp_ea = serializers.IntegerField()
 
     
-class BattalionSerializer(serializers.ModelSerializer):
+class BriefBattalionSerializer(serializers.ModelSerializer):
     creature = BriefCreatureSerializer()
     weapon_base = BriefWeaponBaseSerializer()
     weapon_material = BriefWeaponMaterialSerializer()
+    
+    class Meta:
+        model = models.Battalion
+        fields = ('id', 'player', 'battalion_number', 'creature', 'count', 'level', 'weapon_base', 'weapon_material')
+                  
+                  
+class BattalionSerializer(BriefBattalionSerializer):
     up_opt_level = BattalionLevelSerializer()
     up_opts_creature = BriefCreatureSerializer(many=True)
     up_opts_weapon_base = BriefWeaponBaseSerializer(many=True)
     up_opts_weapon_material = BriefWeaponMaterialSerializer(many=True)
     
-    class Meta:
-        model = models.Battalion
-        fields = ('id', 'battalion_number', 'creature', 'count', 'level', 'weapon_base', 'weapon_material',
-                  'up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
+    class Meta(BriefBattalionSerializer.Meta):
+        fields = BriefBattalionSerializer.Meta.fields + ('up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
         
 
 class BriefGameSerializer(serializers.ModelSerializer):
@@ -130,7 +135,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     ll = LeaderLevelSerializer()
     technologies = BriefTechnologySerializer(many=True)
     structures = BriefStructureSerializer(many=True)
-    battalions = BattalionSerializer(many=True)
+    battalions = BriefBattalionSerializer(many=True)
     up_opt_ll = BriefLeaderLevelSerializer()
     up_opts_structure = BriefStructureSerializer(many=True)
     up_opts_technology = BriefTechnologySerializer(many=True)

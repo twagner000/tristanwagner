@@ -5,9 +5,9 @@ import { DashboardComponent }   from './dashboard/dashboard.component';
 import { UpgradeLeaderlevelComponent }   from './upgrade-leaderlevel/upgrade-leaderlevel.component';
 import { UpgradeTechnologyComponent }   from './upgrade-technology/upgrade-technology.component';
 import { UpgradeStructureComponent }   from './upgrade-structure/upgrade-structure.component';
-
-import { CreaturesComponent }      from './creatures/creatures.component';
-import { CreatureDetailComponent }  from './creature-detail/creature-detail.component';
+import { BattalionHireComponent }   from './battalion-hire/battalion-hire.component';
+import { BattalionTrainComponent }   from './battalion-train/battalion-train.component';
+import { BattalionArmComponent }   from './battalion-arm/battalion-arm.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -18,8 +18,12 @@ const routes: Routes = [
 	  { path: 'technology', component: UpgradeTechnologyComponent },
 	  { path: 'structure', component: UpgradeStructureComponent }
   ]},
-  { path: 'detail/:pk', component: CreatureDetailComponent },
-  { path: 'creatures', component: CreaturesComponent }
+  { path: 'battalion/:battalion_number', children: [
+	  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+	  { path: 'hire', component: BattalionHireComponent },
+	  { path: 'train', component: BattalionTrainComponent },
+	  { path: 'arm', component: BattalionArmComponent }
+  ]}
 ];
 
 @NgModule({

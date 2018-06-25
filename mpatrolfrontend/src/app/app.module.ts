@@ -4,8 +4,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
-import { CreaturesComponent } from './creatures/creatures.component';
-import { CreatureDetailComponent } from './creature-detail/creature-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { AppRoutingModule } from './/app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -17,12 +15,13 @@ import { MailComponent } from './mail/mail.component';
 import { UpgradeLeaderlevelComponent } from './upgrade-leaderlevel/upgrade-leaderlevel.component';
 import { UpgradeStructureComponent } from './upgrade-structure/upgrade-structure.component';
 import { UpgradeTechnologyComponent } from './upgrade-technology/upgrade-technology.component';
+import { BattalionHireComponent } from './battalion-hire/battalion-hire.component';
+import { BattalionTrainComponent } from './battalion-train/battalion-train.component';
+import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
 
     @NgModule({
     declarations: [
         AppComponent,
-        CreaturesComponent,
-        CreatureDetailComponent,
         MessagesComponent,
         DashboardComponent,
         ActionsComponent,
@@ -31,7 +30,10 @@ import { UpgradeTechnologyComponent } from './upgrade-technology/upgrade-technol
         MailComponent,
         UpgradeLeaderlevelComponent,
         UpgradeStructureComponent,
-        UpgradeTechnologyComponent
+        UpgradeTechnologyComponent,
+        BattalionHireComponent,
+        BattalionTrainComponent,
+        BattalionArmComponent
     ],
     imports: [
         BrowserModule ,
