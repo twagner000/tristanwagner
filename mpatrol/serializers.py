@@ -95,7 +95,7 @@ class BattalionSerializer(BriefBattalionSerializer):
     up_opts_weapon_material = BriefWeaponMaterialSerializer(many=True)
     
     class Meta(BriefBattalionSerializer.Meta):
-        fields = BriefBattalionSerializer.Meta.fields + ('up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
+        fields = BriefBattalionSerializer.Meta.fields + ('training_cost_xp_ea', 'up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
         
 
 class BriefGameSerializer(serializers.ModelSerializer):

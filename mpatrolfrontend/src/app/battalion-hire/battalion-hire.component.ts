@@ -36,12 +36,6 @@ export class BattalionHireComponent implements OnInit {
 						.subscribe(battalion => {
 							this.battalion = battalion;
 							if (battalion.creature) this.update.creature = battalion.creature;
-							/*if (battalion.creature) {
-								this.update.count = battalion.count;
-								for (var i=0; i<battalion.up_opts_creature.length; i++)
-									if (battalion.up_opts_creature[i].id == battalion.creature.id)
-										this.update.creature = battalion.up_opts_creature[i];
-							}*/
 						});
 				}
 			});
@@ -75,7 +69,7 @@ export class BattalionHireComponent implements OnInit {
 	}
 	
 	get unit_cost_xp() {
-		return 10*(this.battalion.level-1);
+		return this.battalion.training_cost_xp_ea*(this.battalion.level-1);
 	}
 	
 	get unit_refund_gold() {

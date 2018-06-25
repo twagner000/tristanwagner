@@ -365,6 +365,9 @@ class Battalion(models.Model):
             v *= max(1,self.weapon_material.armor)
         return v
         
+    def training_cost_xp_ea(self):
+        return constants.BATTALION_TRAINING_XP_COST
+        
     def up_opts_creature(self):
         q = Creature.objects.exclude(min_ll__gt=self.player.ll.level)
         if self.count > 0 and self.creature:
@@ -373,7 +376,7 @@ class Battalion(models.Model):
         
     def up_opt_level(self):
         if self.count > 0 and self.level < constants.MAX_BATTALION_LEVEL:
-            return {'level': self.level+1, 'cost_xp_ea': 10}
+            return {'level': self.level+1, 'cost_xp_ea': constants.BATTALION_TRAINING_XP_COST}
         return None
         
     def up_opts_weapon_base(self):
