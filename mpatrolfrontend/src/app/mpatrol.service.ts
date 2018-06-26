@@ -6,7 +6,17 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 
 export class PlayerUpgrade {
-	constructor(public player_id: number, public upgrade_type: string, public upgrade_id: number) { }
+	constructor(
+		public player_id: number,
+		public upgrade_type: string,
+		public upgrade_id: number
+	) { }
+}
+
+export class BattalionUpdate {
+	constructor(
+		public creature_id: number,
+		public count_delta: number) { }
 }
 
 const httpOptions = {
@@ -46,13 +56,14 @@ export class MpatrolService {
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {
-		return this.http.post(`${this.url}player/11/upgrade/`, upgrade, httpOptions).pipe(
+		return this.http.post(`${this.url}player/11/upgrade/`, upgrade, httpOptions)
+			.pipe(
 				tap(_ => {
 					this.log(`upgraded player_id=${upgrade.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`);
 					this.refreshPlayer();
 				}),
 				catchError(this.handleError<any>('upgradePlayer'))
-		);
+			);
 	}
 	
 	getBattalion (player_id: number, battalion_number: number): Observable<Battalion> {
@@ -60,6 +71,17 @@ export class MpatrolService {
 			.pipe(
 				tap(battalion => this.log(`fetched player ${player_id} battalion number ${battalion_number}`)),
 				catchError(this.handleError<Battalion>(`getBattalion`))
+			);
+	}
+	
+	updateBattalion (player_id: number, battalion_number: number, action: string, update: BattalionUpdate): Observable<any> {
+		return this.http.post(`${this.url}player/${player_id}/battalion/${battalion_number}/${action}/`, update, httpOptions)
+			.pipe(
+				tap(_ => {
+					this.log(`updated action ${action} player ${player_id} battalion number ${battalion_number}`);
+					this.refreshPlayer();
+				}),
+				catchError(this.handleError<any>('updateBattalion'))
 			);
 	}
 	

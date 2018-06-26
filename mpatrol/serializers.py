@@ -89,15 +89,39 @@ class BriefBattalionSerializer(serializers.ModelSerializer):
                   
                   
 class BattalionSerializer(BriefBattalionSerializer):
-    up_opt_level = BattalionLevelSerializer()
-    up_opts_creature = BriefCreatureSerializer(many=True)
-    up_opts_weapon_base = BriefWeaponBaseSerializer(many=True)
-    up_opts_weapon_material = BriefWeaponMaterialSerializer(many=True)
+    up_opt_level = BattalionLevelSerializer(required=False)
+    up_opts_creature = BriefCreatureSerializer(required=False, many=True)
+    up_opts_weapon_base = BriefWeaponBaseSerializer(required=False, many=True)
+    up_opts_weapon_material = BriefWeaponMaterialSerializer(required=False, many=True)
     
     class Meta(BriefBattalionSerializer.Meta):
         fields = BriefBattalionSerializer.Meta.fields + ('training_cost_xp_ea', 'up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
-        
 
+
+class BattalionUpdateSerializer(serializers.ModelSerializer):
+    ACTIONS = ('hire','fire')
+    action = serializers.ChoiceField(ACTIONS, write_only=True)
+    creature_id = serializers.IntegerField(required=False, write_only=True)
+    count_delta = serializers.IntegerField(required=False, write_only=True)
+    
+    class Meta:
+        model = models.Battalion
+        fields = ('id', 'action', 'creature_id', 'count_delta')
+                    
+    def validate(self, data):
+        if data['action'] == 'hire':
+            try:
+                data['creature'] = self.instance.up_opts_creature().get(id=data['creature_id'])
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError("invalid creature_id")
+            if not data['count_delta'] or data['count_delta'] < 1 or data['count_delta'] > self.instance.max_hire(data['creature']):
+                raise serializers.ValidationError("invalid count_delta")
+        if data['action'] == 'fire':
+            if not data['count_delta'] or data['count_delta'] < 1 or data['count_delta'] > self.instance.count:
+                raise serializers.ValidationError("invalid count_delta")
+        return data        
+
+        
 class BriefGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
@@ -115,7 +139,6 @@ class PlayerUpgradeSerializer(serializers.ModelSerializer):
         fields = ('id', 'upgrade_type', 'upgrade_id')
     
     def validate(self, data):
-        print('data at serializer validator: {0}'.format(data))
         if data['upgrade_type'] == 'leaderlevel':
             data['upgrade_obj'] = self.instance.up_opt_ll()
             if not data['upgrade_obj'] or data['upgrade_obj'].id != data['upgrade_id']:

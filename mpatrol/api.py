@@ -43,6 +43,53 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Battalion.objects.all()
     serializer_class = serializers.BattalionSerializer
     lookup_field = 'battalion_number'
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        q = super().get_queryset()
+        if settings.DEBUG:
+            return q.filter(player__game__ended_date__isnull=True)
+        return q.filter(player__user=self.request.user, player__game__ended_date__isnull=True)
+        
+    @action(methods=['post'], detail=True)
+    def hire(self, request, parent_lookup_player_id, battalion_number):
+        battalion = self.get_object()
+        request.data.update({'action':'hire'})
+        serializer = serializers.BattalionUpdateSerializer(battalion, data=request.data)
+        if serializer.is_valid():
+            if not battalion.count: #make sure other fields are reset if this is a new battalion
+                battalion.creature = serializer.validated_data['creature']
+                battalion.level = 1
+                battalion.weapon_base = None
+                battalion.weapon_material = None
+            battalion.count += serializer.validated_data['count_delta']
+            battalion.player.gold -= serializer.validated_data['count_delta']*battalion.cost_gold(serializer.validated_data['creature'])
+            battalion.player.xp -= serializer.validated_data['count_delta']*battalion.cost_xp()
+            battalion.player.save()
+            battalion.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(methods=['post'], detail=True)
+    def fire(self, request, parent_lookup_player_id, battalion_number):
+        battalion = self.get_object()
+        request.data.update({'action':'fire'})
+        serializer = serializers.BattalionUpdateSerializer(battalion, data=request.data)
+        if serializer.is_valid():
+            battalion.player.gold += serializer.validated_data['count_delta']*battalion.refund_gold()
+            battalion.count -= serializer.validated_data['count_delta']
+            if not battalion.count: #make sure other fields are reset if firing entire battalion
+                battalion.creature = None
+                battalion.level = 1
+                battalion.weapon_base = None
+                battalion.weapon_material = None
+            battalion.player.save()
+            battalion.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
 class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):

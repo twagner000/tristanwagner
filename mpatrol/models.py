@@ -368,6 +368,26 @@ class Battalion(models.Model):
     def training_cost_xp_ea(self):
         return constants.BATTALION_TRAINING_XP_COST
         
+    def cost_gold(self, creature):
+        unit_cost = creature.cost_gold
+        if self.weapon_base and self.weapon_material:
+            unit_cost += self.weapon_base.cost_gold*self.weapon_material.cost_mult
+        return unit_cost
+        
+    def cost_xp(self):
+        return self.training_cost_xp_ea()*(self.level-1)
+        
+    def max_hire(self, creature):
+        max_gold = self.player.gold // self.cost_gold(creature)
+        max_xp = self.player.xp // self.cost_xp() if self.cost_xp() else 10**6
+        max_cp = self.player.calc()['cp_avail'] // creature.cost_cp
+        return min(max_gold,max_xp,max_cp)
+	
+    def refund_gold(self):
+        if self.weapon_base and self.weapon_material:
+            return self.weapon_base.cost_gold*self.weapon_material.cost_mult
+        return 0
+        
     def up_opts_creature(self):
         q = Creature.objects.exclude(min_ll__gt=self.player.ll.level)
         if self.count > 0 and self.creature:

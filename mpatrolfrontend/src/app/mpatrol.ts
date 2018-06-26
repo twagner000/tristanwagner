@@ -67,7 +67,7 @@ export class BriefWeaponMaterial {
 	cost_mult: number;
 }
 
-export class Battalion {
+export class BriefBattalion {
 	id: number;
 	battalion_number: number;
 	creature: BriefCreature;
@@ -75,7 +75,14 @@ export class Battalion {
 	level: number;
 	weapon_base: BriefWeaponBase;
 	weapon_material: BriefWeaponMaterial;
+}
+
+export class Battalion extends BriefBattalion {
 	up_opts_creature: BriefCreature[];
+	training_cost_xp_ea: number;
+	new_action: string;
+	new_creature_id: number;
+	new_count_delta: number;
 }
 
 export class Player {
