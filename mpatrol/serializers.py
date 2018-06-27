@@ -58,6 +58,9 @@ class BriefWeaponBaseSerializer(serializers.ModelSerializer):
         
         
 class WeaponBaseSerializer(BriefWeaponBaseSerializer):
+    tech_req = BriefTechnologySerializer()
+    struct_req = BriefStructureSerializer()
+    
     class Meta(BriefWeaponBaseSerializer.Meta):
         fields = BriefWeaponBaseSerializer.Meta.fields + ('tech_req', 'struct_req', 'attack_mult')
 
@@ -69,6 +72,9 @@ class BriefWeaponMaterialSerializer(serializers.ModelSerializer):
 
 
 class WeaponMaterialSerializer(BriefWeaponMaterialSerializer):
+    tech_req = BriefTechnologySerializer()
+    struct_req = BriefStructureSerializer()
+    
     class Meta(BriefWeaponMaterialSerializer.Meta):
         fields = BriefWeaponMaterialSerializer.Meta.fields + ('tech_req', 'struct_req', 'attack_mult', 'armor')
 

@@ -1,3 +1,144 @@
-<p>
-  battalion-arm works!
-</p>
+<div class="row">
+	<div class="col-md-4">
+		<form>
+			<!--div *ngIf="battalion" class="panel panel-primary">
+				<div class="panel-heading">
+					<a routerLink="/" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+					Arm: Battalion {{battalion.battalion_number}}
+				</div>
+				<div class="panel-body">
+					<p>New creatures will come in with the same level and weapons as the rest of the battalion, which may increase cost.</p>
+					<p>In order to change creature type, you must first fire all the creatures in the battalion.</p>
+				</div>
+				<table *ngIf="battalion.up_opts_creature" class="table">
+					<tr>
+						<th>Creature Type</th>
+						<td colspan="3">
+							<span *ngIf="battalion.creature">{{battalion.creature.name}}</span>
+							<span *ngIf="!battalion.creature">
+								<select class="form-control" name="creature" [(ngModel)]="new_creature">
+									<option *ngFor="let c of battalion.up_opts_creature" [ngValue]="c">{{c.name}}</option>
+								</select>
+							</span>
+						</td>
+					</tr>
+					<tr *ngIf="battalion.creature"> 
+						<th>Action</th>
+						<td colspan="3">
+							<div class="btn-group" data-toggle="buttons">
+								<label *ngFor="let item of ['hire','fire']" class="btn btn-default" (click)="new_action = item" [class.active]="item === new_action" style="text-transform: capitalize;">
+									<input type="radio" name="new_action" [checked]="item === new_action">
+									{{item}}
+								</label>
+							</div>
+						</td>
+					</tr>
+					<tr *ngIf="new_creature">
+						<td>
+							<div><b># to <span style="text-transform: capitalize;">{{new_action}}</span></b></div>
+							<small class="text-muted">
+								Max
+								<span *ngIf="new_action=='hire'">{{max_hire}}</span>
+								<span *ngIf="new_action=='fire'">{{battalion.count}}</span>
+							</small>
+						</td>
+						<td colspan="3">
+							<input type="number" class="form-control" name="count" min="1" [max]="new_action == 'hire' ? max_hire : battalion.count" required [(ngModel)]="new_count_delta" #count="ngModel">
+						</td>
+					</tr>
+					<tr *ngIf="new_creature">
+						<th>You Have</th>
+						<td class="text-right">{{player.gold | number}} <span class="fas fa-coins"></span></td>
+						<td class="text-right">{{player.xp | number}} <span class="fas fa-angle-double-up"></span></td>
+						<td class="text-right">{{player.calc.cp_avail}} <span class="fas fa-bullhorn" aria-hidden="true"></span></td>
+					</tr>
+					<tr *ngIf="new_creature && new_action == 'hire'">
+						<th>Cost</th>
+						<td class="text-right" [class.text-danger]="cost_gold > player.gold">{{new_count_delta*unit_cost_gold | number}} <span class="fas fa-coins"></span></td>
+						<td class="text-right" [class.text-danger]="cost_xp > player.xp">{{new_count_delta*unit_cost_xp | number}} <span class="fas fa-angle-double-up"></span></td>
+						<td class="text-right" [class.text-danger]="cost_cp > player.calc.cp_avail">{{new_count_delta*new_creature.cost_cp | number}} <span class="fas fa-bullhorn" aria-hidden="true"></span></td>
+					</tr>
+					<tr *ngIf="new_creature && new_action == 'fire'">
+						<th>Refund</th>
+						<td class="text-right">{{new_count_delta*unit_refund_gold | number}} <span class="fas fa-coins"></span></td>
+						<td class="text-right">0 <span class="fas fa-angle-double-up"></span></td>
+						<td class="text-right">{{new_count_delta*new_creature.cost_cp | number}} <span class="fas fa-bullhorn" aria-hidden="true"></span></td>
+					</tr>
+					<tr>
+						<td colspan="4" class="text-right">
+							<a routerLink="/" class="btn btn-default">Cancel</a>&nbsp;
+							<a class="btn btn-primary" (click)="save()" [class.disabled]="invalid_count" [class.btn-danger]="new_action == 'fire'"><span style="text-transform: capitalize;">{{new_action}}</span></a>
+						</td>
+					</tr>
+				</table>
+			</div-->
+		</form>
+	</div>
+	<div class="col-md-8">
+		<h4>Battalions</h4>
+		<div class="table-responsive">
+			<table *ngIf="player" class="table">
+				<tr>
+					<th>#</th>
+					<th>Creature</th>
+					<th>Count</th>
+					<th>Level</th>
+					<th>Weapon</th>
+				</tr>
+				<tr *ngFor="let b of player.battalions" [class.active]="battalion && b.id == battalion.id">
+					<td><span class="label label-default">{{b.battalion_number}}</span></td>
+					<td>
+						<span *ngIf="b.creature">{{b.creature.name}}</span>
+						<span *ngIf="!b.creature">-</span>
+					</td>
+					<td><span *ngIf="b.creature">{{b.count}}</span></td>
+					<td><span *ngIf="b.creature">{{b.level}}</span></td>
+					<td>
+						<span *ngIf="b.creature && b.weapon_material && b.weapon_base">{{b.weapon_material.name}} {{b.weapon_base.name}}</span>
+						<span *ngIf="b.creature && !b.weapon_material">-</span>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div *ngIf="weapon_bases" class="table-responsive">
+			<h4>Weapon Base</h4>
+			<table class="table">
+				<tr>
+					<th>Name</th>
+					<th class="text-right">Gold Cost</th>
+					<th class="text-right">Required Technology</th>
+					<th class="text-right">Required Structure</th>
+					<th class="text-right">Attack Multiplier</th>
+				</tr>
+				<tr *ngFor="let w of weapon_bases">
+					<td>{{w.name}}</td>
+					<td class="text-right">{{w.cost_gold | number}}</td>
+					<td class="text-right"><span *ngIf="w.tech_req">{{w.tech_req.name}}</span></td>
+					<td class="text-right"><span *ngIf="w.struct_req">{{w.struct_req.name}}</span></td>
+					<td class="text-right">{{w.attack_mult | number}}</td>
+				</tr>
+			</table>
+		</div>
+		<div *ngIf="weapon_materials" class="table-responsive">
+			<h4>Weapon Material</h4>
+			<table class="table">
+				<tr>
+					<th>Name</th>
+					<th class="text-right">Cost Multiplier</th>
+					<th class="text-right">Required Technology</th>
+					<th class="text-right">Required Structure</th>
+					<th class="text-right">Attack Multiplier</th>
+					<th class="text-right">Armor</th>
+				</tr>
+				<tr *ngFor="let w of weapon_materials">
+					<td>{{w.name}}</td>
+					<td class="text-right">{{w.cost_mult | number}}</td>
+					<td class="text-right"><span *ngIf="w.tech_req">{{w.tech_req.name}}</span></td>
+					<td class="text-right"><span *ngIf="w.struct_req">{{w.struct_req.name}}</span></td>
+					<td class="text-right">{{w.attack_mult | number}}</td>
+					<td class="text-right">{{w.armor | number}}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>

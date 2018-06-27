@@ -61,10 +61,23 @@ export class BriefWeaponBase {
 	cost_gold: number;
 }
 
+export class WeaponBase extends BriefWeaponBase {
+	tech_req: Technology;
+	struct_req: Structure;
+	attack_mult: number;
+}
+
 export class BriefWeaponMaterial {
 	id: number;
 	name: string;
 	cost_mult: number;
+}
+
+export class WeaponMaterial extends BriefWeaponMaterial {
+	tech_req: Technology;
+	struct_req: Structure;
+	attack_mult: number;
+	armor: number;
 }
 
 export class BriefBattalion {

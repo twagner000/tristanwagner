@@ -121,6 +121,22 @@ export class MpatrolService {
 			);
 	}
 	
+	getWeaponBases (): Observable<WeaponBase[]> {
+		return this.http.get<WeaponBase[]>(`${this.url}weapon_base/`)
+			.pipe(
+				tap(technologies => this.log(`fetched weaponbases`)),
+				catchError(this.handleError('getWeaponBases', []))
+			);
+	}
+	
+	getWeaponMaterials (): Observable<WeaponMaterial[]> {
+		return this.http.get<WeaponMaterial[]>(`${this.url}weapon_material/`)
+			.pipe(
+				tap(technologies => this.log(`fetched weaponmaterials`)),
+				catchError(this.handleError('getWeaponMaterials', []))
+			);
+	}
+	
 	/**
 	* Handle Http operation that failed.
 	* Let the app continue.
