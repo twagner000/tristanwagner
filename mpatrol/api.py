@@ -71,22 +71,28 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
+    
     @action(methods=['post'], detail=True)
-    def fire(self, request, parent_lookup_player_id, battalion_number):
+    def train(self, request, parent_lookup_player_id, battalion_number):
         battalion = self.get_object()
-        request.data.update({'action':'fire'})
+        request.data.update({'action':'train'})
         serializer = serializers.BattalionUpdateSerializer(battalion, data=request.data)
         if serializer.is_valid():
-            battalion.player.gold += serializer.validated_data['count_delta']*battalion.refund_gold()
-            battalion.count -= serializer.validated_data['count_delta']
-            if not battalion.count: #make sure other fields are reset if firing entire battalion
-                battalion.creature = None
-                battalion.level = 1
-                battalion.weapon_base = None
-                battalion.weapon_material = None
+            battalion.player.xp -= battalion.count*battalion.training_cost_xp_ea()
+            battalion.level = serializer.validated_data['level']
             battalion.player.save()
             battalion.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(methods=['post'], detail=True)
+    def arm(self, request, parent_lookup_player_id, battalion_number):
+        battalion = self.get_object()
+        request.data.update({'action':'arm'})
+        serializer = serializers.BattalionUpdateSerializer(battalion, data=request.data)
+        if serializer.is_valid():
+            #do stuff
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

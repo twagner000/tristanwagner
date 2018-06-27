@@ -1,3 +1,75 @@
-<p>
-  battalion-train works!
-</p>
+<div class="row">
+	<div class="col-md-4">
+		<form>
+			<div *ngIf="battalion" class="panel panel-primary">
+				<div class="panel-heading">
+					<a routerLink="/" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+					Train: Battalion {{battalion.battalion_number}}
+				</div>
+				<div class="panel-body">
+					<p>Training a battalion increases its level, and therefore its attack and defense.</p>
+				</div>
+				<table class="table">
+					<tr *ngIf="!battalion.up_opt_level">
+						<td colspan="2">
+							Either you cannot afford a level upgrade for all the creatures in the battalion, you have not yet built the Training Grounds, or there are no more levels available.
+						</td>
+					</tr>
+					<tr *ngIf="battalion.up_opt_level">
+						<th>New Level</th>
+						<td class="text-right">
+							{{battalion.up_opt_level}}
+						</td>
+					</tr>
+					<tr *ngIf="battalion.up_opt_level">
+						<th>You Have</th>
+						<td class="text-right">{{player.xp | number}} <span class="fas fa-angle-double-up"></span></td>
+					</tr>
+					<tr *ngIf="battalion.up_opt_level">
+						<th>Cost</th>
+						<td class="text-right">{{battalion.count*battalion.training_cost_xp_ea | number}} <span class="fas fa-angle-double-up"></span></td>
+					</tr>
+					<tr>
+						<td colspan="2" class="text-right">
+							<a routerLink="/" class="btn btn-default">Cancel</a>&nbsp;
+							<a class="btn btn-primary" (click)="save()" [class.disabled]="!battalion.up_opt_level" >Train</a>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+	<div class="col-md-8">
+		<h4>Battalions</h4>
+		<div class="table-responsive">
+			<table *ngIf="player" class="table">
+				<tr>
+					<th>#</th>
+					<th>Creature</th>
+					<th>Count</th>
+					<th>Level</th>
+					<th>Weapon</th>
+				</tr>
+				<tr *ngFor="let b of player.battalions" [class.active]="battalion && b.id == battalion.id">
+					<td><span class="label label-default">{{b.battalion_number}}</span></td>
+					<td>
+						<span *ngIf="b.creature">{{b.creature.name}}</span>
+						<span *ngIf="!b.creature">-</span>
+					</td>
+					<td><span *ngIf="b.creature">{{b.count}}</span></td>
+					<td><span *ngIf="b.creature">{{b.level}}</span></td>
+					<td>
+						<span *ngIf="b.creature && b.weapon_material && b.weapon_base">{{b.weapon_material.name}} {{b.weapon_base.name}}</span>
+						<span *ngIf="b.creature && !b.weapon_material">-</span>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div *ngIf="battalion">
+			<h4>Battalion Levels</h4>
+			<p>Increasing battalion level costs {{battalion.training_cost_xp_ea}} <span class="fas fa-angle-double-up"></span> per creature.</p>
+			<p>Each additional level imparts a 10% bonus to attack and defense.</p>
+			<p>The Training Grounds structure is required to train battalions.</p>
+		</div>
+	</div>
+</div>

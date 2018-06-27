@@ -79,6 +79,9 @@ export class BriefBattalion {
 
 export class Battalion extends BriefBattalion {
 	up_opts_creature: BriefCreature[];
+	up_opt_level: number;
+	up_opts_weapon_base: BriefWeaponBase[];
+	up_opts_weapon_material: BriefWeaponMaterial[];
 	training_cost_xp_ea: number;
 	new_action: string;
 	new_creature_id: number;

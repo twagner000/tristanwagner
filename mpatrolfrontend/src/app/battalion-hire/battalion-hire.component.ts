@@ -34,6 +34,8 @@ export class BattalionHireComponent implements OnInit {
 					this.mps.getBattalion(player.id, battalion_number)
 						.subscribe(battalion => {
 							this.battalion = battalion;
+							if (battalion.creature && this.route.snapshot.queryParamMap.get('fire'))
+								this.new_action = 'fire';
 							if (battalion.creature) this.new_creature = battalion.creature;
 						});
 				}
@@ -88,7 +90,10 @@ export class BattalionHireComponent implements OnInit {
 				this.new_action,
 				new BattalionUpdate(
 					this.new_creature.id,
-					this.new_count_delta
+					this.new_count_delta,
+					null,
+					null,
+					null
 				)
 			).subscribe(() => this.router.navigate(['/dashboard']));
 	}

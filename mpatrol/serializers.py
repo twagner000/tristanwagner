@@ -71,11 +71,6 @@ class BriefWeaponMaterialSerializer(serializers.ModelSerializer):
 class WeaponMaterialSerializer(BriefWeaponMaterialSerializer):
     class Meta(BriefWeaponMaterialSerializer.Meta):
         fields = BriefWeaponMaterialSerializer.Meta.fields + ('tech_req', 'struct_req', 'attack_mult', 'armor')
-        
-
-class BattalionLevelSerializer(serializers.Serializer):
-    level = serializers.IntegerField()
-    cost_xp_ea = serializers.IntegerField()
 
     
 class BriefBattalionSerializer(serializers.ModelSerializer):
@@ -89,24 +84,27 @@ class BriefBattalionSerializer(serializers.ModelSerializer):
                   
                   
 class BattalionSerializer(BriefBattalionSerializer):
-    up_opt_level = BattalionLevelSerializer(required=False)
-    up_opts_creature = BriefCreatureSerializer(required=False, many=True)
-    up_opts_weapon_base = BriefWeaponBaseSerializer(required=False, many=True)
-    up_opts_weapon_material = BriefWeaponMaterialSerializer(required=False, many=True)
+    up_opt_level = serializers.IntegerField()
+    up_opts_creature = BriefCreatureSerializer(many=True)
+    up_opts_weapon_base = BriefWeaponBaseSerializer(many=True)
+    up_opts_weapon_material = BriefWeaponMaterialSerializer(many=True)
     
     class Meta(BriefBattalionSerializer.Meta):
         fields = BriefBattalionSerializer.Meta.fields + ('training_cost_xp_ea', 'up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
 
 
 class BattalionUpdateSerializer(serializers.ModelSerializer):
-    ACTIONS = ('hire','fire')
+    ACTIONS = ('hire','fire','train','arm')
     action = serializers.ChoiceField(ACTIONS, write_only=True)
-    creature_id = serializers.IntegerField(required=False, write_only=True)
-    count_delta = serializers.IntegerField(required=False, write_only=True)
+    creature_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
+    count_delta = serializers.IntegerField(required=False, allow_null=True, write_only=True)
+    level = serializers.IntegerField(required=False, allow_null=True, write_only=True)
+    weapon_base_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
+    weapon_material_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     
     class Meta:
         model = models.Battalion
-        fields = ('id', 'action', 'creature_id', 'count_delta')
+        fields = ('id', 'action', 'creature_id', 'count_delta', 'level', 'weapon_base_id', 'weapon_material_id')
                     
     def validate(self, data):
         if data['action'] == 'hire':
@@ -119,6 +117,11 @@ class BattalionUpdateSerializer(serializers.ModelSerializer):
         if data['action'] == 'fire':
             if not data['count_delta'] or data['count_delta'] < 1 or data['count_delta'] > self.instance.count:
                 raise serializers.ValidationError("invalid count_delta")
+        if data['action'] == 'train':
+            if data['level'] != self.instance.level+1:
+                raise serializers.ValidationError("invalid level")
+        if data['action'] == 'arm':
+            raise serializers.ValidationError("arm validator incomplete")
         return data        
 
         

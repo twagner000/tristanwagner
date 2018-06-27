@@ -16,7 +16,11 @@ export class PlayerUpgrade {
 export class BattalionUpdate {
 	constructor(
 		public creature_id: number,
-		public count_delta: number) { }
+		public count_delta: number,
+		public level: number,
+		public weapon_base_id: number,
+		public weapon_material_id: number
+	) { }
 }
 
 const httpOptions = {

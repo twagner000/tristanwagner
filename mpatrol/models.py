@@ -396,7 +396,8 @@ class Battalion(models.Model):
         
     def up_opt_level(self):
         if self.count > 0 and self.level < constants.MAX_BATTALION_LEVEL:
-            return {'level': self.level+1, 'cost_xp_ea': constants.BATTALION_TRAINING_XP_COST}
+            if self.player.structures.filter(name='Training Grounds').count():
+                return self.level+1
         return None
         
     def up_opts_weapon_base(self):

@@ -2,16 +2,16 @@
 	<div class="panel-heading">Battalions</div>
 	<table class="table">
 		<tr>
+			<th>#</th>
 			<th>Creature</th>
 			<th>Count</th>
 			<th>Level</th>
 			<th>Weapon</th>
-			<th></th>
 		</tr>
 		<tr *ngFor="let b of player.battalions">
-			<!--td><span class="label label-default">{{b.battalion_number}}</span></td-->
+			<td><span class="label label-default">{{b.battalion_number}}</span></td>
 			<td>
-				<span *ngIf="b.creature"><a href="#" title="Fire Battalion"><span class="fas fa-minus-circle text-danger"></span></a> {{b.creature.name}}</span>
+				<span *ngIf="b.creature"><a routerLink="/battalion/{{b.battalion_number}}/hire" [queryParams]="{fire: true}" title="Fire Battalion"><span class="fas fa-minus-circle text-danger"></span></a> {{b.creature.name}}</span>
 				<span *ngIf="!b.creature"><a routerLink="/battalion/{{b.battalion_number}}/hire" title="Start Battalion"><span class="fas fa-plus"></span></a></span>
 			</td>
 			<td><a *ngIf="b.creature" routerLink="/battalion/{{b.battalion_number}}/hire" title="Hire/Fire Creatures"><b>{{b.count}}</b></a></td>
@@ -22,7 +22,6 @@
 					<b *ngIf="!b.weapon_material"><span class="fas fa-plus"></span></b>
 				</a>
 			</td>
-			<td></td>
 		</tr>
 	</table>
 	<div class="panel-body">

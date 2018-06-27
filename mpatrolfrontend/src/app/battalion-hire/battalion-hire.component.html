@@ -86,7 +86,7 @@
 					<th>Weapon</th>
 				</tr>
 				<tr *ngFor="let b of player.battalions" [class.active]="battalion && b.id == battalion.id">
-					<td>{{b.battalion_number}}</td>
+					<td><span class="label label-default">{{b.battalion_number}}</span></td>
 					<td>
 						<span *ngIf="b.creature">{{b.creature.name}}</span>
 						<span *ngIf="!b.creature">-</span>
