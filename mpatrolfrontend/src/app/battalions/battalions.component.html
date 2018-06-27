@@ -4,23 +4,23 @@
 		<tr>
 			<th>#</th>
 			<th>Creature</th>
-			<th>Count</th>
-			<th>Level</th>
-			<th>Weapon</th>
+			<th class="text-right">Count</th>
+			<th class="text-right">Level</th>
+			<th class="text-right">Weapon</th>
+			<th class="text-right">Actions</th>
 		</tr>
 		<tr *ngFor="let b of player.battalions">
 			<td><span class="label label-default">{{b.battalion_number}}</span></td>
-			<td>
-				<span *ngIf="b.creature"><a routerLink="/battalion/{{b.battalion_number}}/hire" [queryParams]="{fire: true}" title="Fire Battalion"><span class="fas fa-minus-circle text-danger"></span></a> {{b.creature.name}}</span>
-				<span *ngIf="!b.creature"><a routerLink="/battalion/{{b.battalion_number}}/hire" title="Start Battalion"><span class="fas fa-plus"></span></a></span>
-			</td>
-			<td><a *ngIf="b.creature" routerLink="/battalion/{{b.battalion_number}}/hire" title="Hire/Fire Creatures"><b>{{b.count}}</b></a></td>
-			<td><a *ngIf="b.creature" routerLink="/battalion/{{b.battalion_number}}/train" href="#" title="Train Battalion"><b>{{b.level}}</b></a></td>
-			<td>
-				<a *ngIf="b.creature" routerLink="/battalion/{{b.battalion_number}}/arm" title="Buy/Sell Weapons">
-					<b *ngIf="b.weapon_material && b.weapon_base">{{b.weapon_material.name}} {{b.weapon_base.name}}</b>
-					<b *ngIf="!b.weapon_material"><span class="fas fa-plus"></span></b>
-				</a>
+			<td><span *ngIf="b.creature">{{b.creature.name}}</span></td>
+			<td class="text-right"><span *ngIf="b.creature">{{b.count}}</span></td>
+			<td class="text-right"><span *ngIf="b.creature">{{b.level}}</span></td>
+			<td class="text-right"><span *ngIf="b.creature && b.weapon_material && b.weapon_base">{{b.weapon_material.name}} {{b.weapon_base.name}}</span></td>
+			<td class="text-right">
+				<div class="btn-group btn-group-xs" role="group">
+					<a class="btn btn-default" routerLink="/battalion/{{b.battalion_number}}/hire" [class.btn-primary]="!b.creature"><span class="fas fa-users"></span></a>
+					<a class="btn btn-default" routerLink="/battalion/{{b.battalion_number}}/train" [class.disabled]="!b.creature"><span class="fas fa-arrow-up"></span></a>
+					<a class="btn btn-default" routerLink="/battalion/{{b.battalion_number}}/arm" [class.disabled]="!b.creature"><span class="fas fa-bolt"></span></a>
+				</div>
 			</td>
 		</tr>
 	</table>
