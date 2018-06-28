@@ -15,6 +15,6 @@ export class ActionsComponent implements OnInit {
 	}
 	
 	get action_available() : boolean {
-		return false;
+		return true;
 	}
 }

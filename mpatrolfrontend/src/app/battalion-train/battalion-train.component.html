@@ -6,9 +6,6 @@
 					<a routerLink="/" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
 					Train: Battalion {{battalion.battalion_number}}
 				</div>
-				<div class="panel-body">
-					<p>Training a battalion increases its level, and therefore its attack and defense.</p>
-				</div>
 				<table class="table">
 					<tr *ngIf="!battalion.up_opt_level">
 						<td colspan="2">

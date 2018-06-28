@@ -6,7 +6,7 @@
 	<table class="table">
 		<tr>
 			<td>
-				<a class="btn btn-success" [class.disabled]="!action_available" title="Work"><span class="fas fa-briefcase" aria-hidden="true"></span></a>
+				<a class="btn btn-success" [class.disabled]="!action_available" title="Work" data-toggle="modal" data-target="#actionWork"><span class="fas fa-briefcase" aria-hidden="true"></span></a>
 			</td>
 			<td>
 				Earnings per Turn
@@ -20,7 +20,7 @@
 		</tr>
 		<tr>
 			<td>
-				<a class="btn btn-warning" [class.disabled]="!action_available" title="Spy"><span class="fas fa-user-secret" aria-hidden="true"></span></a>
+				<a class="btn btn-warning" [class.disabled]="!action_available" title="Spy" data-toggle="modal" data-target="#actionSpy"><span class="fas fa-user-secret" aria-hidden="true"></span></a>
 			</td>
 			<td>
 				Spy Attempts
@@ -29,7 +29,7 @@
 		</tr>
 		<tr>
 			<td>
-				<a class="btn btn-danger" [class.disabled]="!action_available" title="Attack"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
+				<a class="btn btn-danger" [class.disabled]="!action_available" title="Attack" data-toggle="modal" data-target="#actionAttack"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
 			</td>
 			<td>
 				Battles Fought
@@ -47,9 +47,62 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title">More info on Actions</h4>
+				<h4 class="modal-title">Actions</h4>
 			</div>
-			<div class="modal-body">More info goes here.</div>
+			<div class="modal-body">
+				<p>You may complete one action per day.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="actionWork" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title"><span class="fas fa-briefcase" aria-hidden="true"></span> Work</h4>
+			</div>
+			<div class="modal-body">
+				<p>Work</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="actionSpy" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title"><span class="fas fa-user-secret" aria-hidden="true"></span> Spy</h4>
+			</div>
+			<div class="modal-body">
+				<p>Spy</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="actionAttack" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title"><span class="fas fa-bullseye" aria-hidden="true"></span> Attack</h4>
+			</div>
+			<div class="modal-body">
+				<p>Attack</p>
+			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>

@@ -6,10 +6,6 @@
 					<a routerLink="/" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
 					Hire/Fire Creatures: Battalion {{battalion.battalion_number}}
 				</div>
-				<div class="panel-body">
-					<p>New creatures will come in with the same level and weapons as the rest of the battalion, which may increase cost.</p>
-					<p>In order to change creature type, you must first fire all the creatures in the battalion.</p>
-				</div>
 				<table *ngIf="battalion.up_opts_creature" class="table">
 					<tr>
 						<th>Creature Type</th>
