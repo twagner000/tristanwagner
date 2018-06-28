@@ -388,6 +388,12 @@ class Battalion(models.Model):
             return self.weapon_base.cost_gold*self.weapon_material.cost_mult
         return 0
         
+    def arm_cost(self, weapon_base, weapon_material):
+        cur_weapons_gold = 0
+        if (self.weapon_base and self.weapon_material):
+            cur_weapons_gold = self.weapon_base.cost_gold*self.weapon_material.cost_mult
+        return self.count*(weapon_base.cost_gold*weapon_material.cost_mult - cur_weapons_gold)
+        
     def up_opts_creature(self):
         q = Creature.objects.exclude(min_ll__gt=self.player.ll.level)
         if self.count > 0 and self.creature:
@@ -404,8 +410,6 @@ class Battalion(models.Model):
         if self.count <= 0:
             return []
         q = WeaponBase.objects.all()
-        if self.weapon_base:
-            q = q.filter(pk=self.weapon_base.pk)
         q = q.filter(tech_req__isnull=True) | q.filter(tech_req__in=self.player.technologies.values_list('pk'))
         q = q.filter(struct_req__isnull=True) | q.filter(struct_req__in=self.player.structures.values_list('pk'))
         return q
@@ -414,8 +418,6 @@ class Battalion(models.Model):
         if self.count <= 0:
             return []
         q = WeaponMaterial.objects.all()
-        if self.weapon_material:
-            q = q.filter(pk=self.weapon_material.pk)
         q = q.filter(tech_req__isnull=True) | q.filter(tech_req__in=self.player.technologies.values_list('pk'))
         q = q.filter(struct_req__isnull=True) | q.filter(struct_req__in=self.player.structures.values_list('pk'))
         return q

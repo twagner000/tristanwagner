@@ -124,10 +124,22 @@ class BattalionUpdateSerializer(serializers.ModelSerializer):
             if not data['count_delta'] or data['count_delta'] < 1 or data['count_delta'] > self.instance.count:
                 raise serializers.ValidationError("invalid count_delta")
         if data['action'] == 'train':
+            data['cost_xp'] = self.instance.count*self.instance.training_cost_xp_ea()
+            if not self.instance.count:
+                raise serializers.ValidationError("must have creatures in battalion")
             if data['level'] != self.instance.level+1:
                 raise serializers.ValidationError("invalid level")
         if data['action'] == 'arm':
-            raise serializers.ValidationError("arm validator incomplete")
+            try:
+                data['weapon_base'] = self.instance.up_opts_weapon_base().get(id=data['weapon_base_id'])
+                data['weapon_material'] = self.instance.up_opts_weapon_material().get(id=data['weapon_material_id'])
+                data['cost_gold'] = self.instance.arm_cost(data['weapon_base'],data['weapon_material'])
+                if not self.instance.count:
+                    raise serializers.ValidationError("must have creatures in battalion")
+                if data['cost_gold'] > self.instance.player.gold:
+                    raise serializers.ValidationError("insufficient gold")
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError("invalid weapon_base_id or weapon_material_id")
         return data        
 
         

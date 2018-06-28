@@ -78,7 +78,7 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         request.data.update({'action':'train'})
         serializer = serializers.BattalionUpdateSerializer(battalion, data=request.data)
         if serializer.is_valid():
-            battalion.player.xp -= battalion.count*battalion.training_cost_xp_ea()
+            battalion.player.xp -= serializer.validated_data['cost_xp']
             battalion.level = serializer.validated_data['level']
             battalion.player.save()
             battalion.save()
@@ -92,7 +92,11 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         request.data.update({'action':'arm'})
         serializer = serializers.BattalionUpdateSerializer(battalion, data=request.data)
         if serializer.is_valid():
-            #do stuff
+            battalion.player.gold -= serializer.validated_data['cost_gold']
+            battalion.weapon_base = serializer.validated_data['weapon_base']
+            battalion.weapon_material = serializer.validated_data['weapon_material']
+            battalion.player.save()
+            battalion.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

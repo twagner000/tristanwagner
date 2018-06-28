@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Player, Battalion, LeaderLevel, Structure, Technology, Creature } from './mpatrol';
+import { Player, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial } from './mpatrol';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
