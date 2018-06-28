@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Player } from '../mpatrol';
 
 @Component({
   selector: 'app-actions',
@@ -6,10 +7,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./actions.component.css']
 })
 export class ActionsComponent implements OnInit {
+	@Input() player: Player;
 
-  constructor() { }
+	constructor() { }
 
-  ngOnInit() {
-  }
-
+	ngOnInit() {
+	}
+	
+	get action_available() : boolean {
+		return false;
+	}
 }

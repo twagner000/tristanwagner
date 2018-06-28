@@ -1,3 +1,58 @@
-<p>
-  actions works!
-</p>
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<span class="pull-right"><a href data-toggle="modal" data-target="#moreInfoActions" title="More info on Actions"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
+		Actions
+	</div>
+	<table class="table">
+		<tr>
+			<td>
+				<a class="btn btn-success" [class.disabled]="!action_available" title="Work"><span class="fas fa-briefcase" aria-hidden="true"></span></a>
+			</td>
+			<td>
+				Earnings per Turn
+			</td>
+			<td class="text-right">
+				{{player.calc.work_gold}} <span class="fas fa-coins"></span>
+			</td>
+			<td class="text-right">
+				{{player.calc.work_xp}} <span class="fas fa-angle-double-up"></span>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a class="btn btn-warning" [class.disabled]="!action_available" title="Spy"><span class="fas fa-user-secret" aria-hidden="true"></span></a>
+			</td>
+			<td>
+				Spy Attempts
+			</td>
+			<td colspan="2" class="text-right">TBD</td>
+		</tr>
+		<tr>
+			<td>
+				<a class="btn btn-danger" [class.disabled]="!action_available" title="Attack"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
+			</td>
+			<td>
+				Battles Fought
+			</td>
+			<td colspan="2" class="text-right">
+				<span *ngIf="player.battles_fought">{{player.battles_fought.length}}</span>
+				<span *ngIf="!player.battles_fought">0</span>
+			</td>
+		</tr>
+	</table>
+</div>
+
+<div class="modal fade" id="moreInfoActions" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">More info on Actions</h4>
+			</div>
+			<div class="modal-body">More info goes here.</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
