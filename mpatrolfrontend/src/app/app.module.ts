@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppComponent } from './app.component';
 import { MessagesComponent } from './messages/messages.component';
@@ -33,13 +34,14 @@ import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
         UpgradeTechnologyComponent,
         BattalionHireComponent,
         BattalionTrainComponent,
-        BattalionArmComponent
+        BattalionArmComponent,
     ],
     imports: [
         BrowserModule ,
         FormsModule,
 		AppRoutingModule,
-		HttpClientModule
+		HttpClientModule,
+		ModalModule.forRoot()
     ],
     providers: [{provide: APP_BASE_HREF, useValue : '/mpatrol/a' }],
     bootstrap: [AppComponent]

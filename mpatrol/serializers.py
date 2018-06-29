@@ -1,8 +1,17 @@
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
+import json
 from . import models
 
 
+class JSONTextField(serializers.Field):
+    def to_internal_value(self, obj):
+        return json.dumps(obj)
+
+    def to_representation(self, data):
+        return json.loads(data) if data else None
+        
+        
 class BriefCreatureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Creature 
@@ -97,6 +106,14 @@ class BattalionSerializer(BriefBattalionSerializer):
     
     class Meta(BriefBattalionSerializer.Meta):
         fields = BriefBattalionSerializer.Meta.fields + ('training_cost_xp_ea', 'up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
+        
+        
+class PlayerLogSerializer(serializers.ModelSerializer):
+    json_data = JSONTextField()
+    
+    class Meta:
+        model = models.PlayerLog
+        fields = ('player', 'target_player', 'date', 'action', 'action_points', 'description', 'json_data')
 
 
 class BattalionUpdateSerializer(serializers.ModelSerializer):
@@ -173,6 +190,18 @@ class PlayerUpgradeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("invalid upgrade_id")
         return data
         
+
+class PlayerActionSerializer(serializers.ModelSerializer):
+    action = serializers.ChoiceField(models.PlayerLog.ACTIONS, write_only=True)
+    target_player_id = serializers.IntegerField(write_only=True)
+    
+    class Meta:
+        model = models.Player
+        fields = ('id', 'action', 'target_player_id')
+    
+    def validate(self, data):
+        return data
+
         
 class PlayerSerializer(serializers.ModelSerializer):
     game = BriefGameSerializer()

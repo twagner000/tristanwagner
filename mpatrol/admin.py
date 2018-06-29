@@ -39,6 +39,10 @@ class WeaponMaterialAdmin(admin.ModelAdmin):
     list_display = ('name', 'tech_req', 'struct_req', 'attack_mult', 'cost_mult', 'armor')
     
     
+class PlayerLogAdmin(admin.ModelAdmin):
+    list_display = ('player','date','action','action_points','description')
+    
+    
 admin.site.register(models.Game, GameAdmin)
 admin.site.register(models.Player, PlayerAdmin)
 admin.site.register(models.LeaderLevel, LeaderLevelAdmin)
@@ -47,5 +51,5 @@ admin.site.register(models.Technology, TechnologyAdmin)
 admin.site.register(models.Structure, StructureAdmin)
 admin.site.register(models.WeaponBase, WeaponBaseAdmin)
 admin.site.register(models.WeaponMaterial, WeaponMaterialAdmin)
-
+admin.site.register(models.PlayerLog, PlayerLogAdmin)
 

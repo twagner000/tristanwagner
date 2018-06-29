@@ -11,6 +11,7 @@ app_name = 'mpatrol'
 router = ExtendedDefaultRouter()
 player = router.register('player', api.PlayerViewSet, base_name='player')
 player.register('battalion', api.BattalionViewSet, base_name='player-battalion', parents_query_lookups=['player_id'])
+player.register('log', api.PlayerLogViewSet, base_name='player-log', parents_query_lookups=['player_id'])
 router.register('leaderlevel', api.LeaderLevelViewSet)
 router.register('technology', api.TechnologyViewSet)
 router.register('structure', api.StructureViewSet)

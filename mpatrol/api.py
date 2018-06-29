@@ -102,6 +102,19 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
+class PlayerLogViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = models.PlayerLog.objects.all()
+    serializer_class = serializers.PlayerLogSerializer
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        q = super().get_queryset()
+        if settings.DEBUG:
+            return q.filter(player__game__ended_date__isnull=True)
+        return q.filter(player__user=self.request.user, player__game__ended_date__isnull=True)
+            
+            
 class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PlayerSerializer
     if not settings.DEBUG:
@@ -111,6 +124,15 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         if settings.DEBUG:
             return models.Player.objects.filter(game__ended_date__isnull=True)
         return models.Player.objects.filter(user=self.request.user, game__ended_date__isnull=True)
+        
+    @action(methods=['post'], detail=True)
+    def work(self, request, pk=None):
+        player = self.get_object()
+        serializer = serializers.PlayerActionSerializer(player, data=request.data)
+        if serializer.is_valid():
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     @action(methods=['post'], detail=True)
     def upgrade(self, request, pk=None):

@@ -13,6 +13,13 @@ export class PlayerUpgrade {
 	) { }
 }
 
+export class PlayerAction {
+    constructor(
+		public action: string,
+		public target_player_id: number
+	) { }
+}
+
 export class BattalionUpdate {
 	constructor(
 		public creature_id: number,
@@ -67,6 +74,17 @@ export class MpatrolService {
 					this.refreshPlayer();
 				}),
 				catchError(this.handleError<any>('upgradePlayer'))
+			);
+	}
+	
+	playerAction (player_id: number, playerAction: PlayerAction): Observable<any> {
+		return this.http.post(`${this.url}player/${player_id}/${playerAction.action}/`, playerAction, httpOptions)
+			.pipe(
+				tap(_ => {
+					this.log(`player action player_id=${player_id} action=${playerAction.action} target_player_id=${playerAction.target_player_id}`);
+					this.refreshPlayer();
+				}),
+				catchError(this.handleError<any>('playerAction'))
 			);
 	}
 	

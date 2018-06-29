@@ -4,6 +4,7 @@ from django.db.models import Exists, OuterRef
 from django.core.exceptions import ObjectDoesNotExist
 import collections
 from datetime import datetime
+import json
 
 from . import constants
 
@@ -450,6 +451,28 @@ class Battle(models.Model):
     
     def __str__(self):
         return 'Battle {0} attacked {1} on {2}'.format(self.attacker, self.defender, self.battle_date)
+
+
+class PlayerLog(models.Model):
+    ACTIONS = (
+        ('work','Work'),
+        ('spy','Spy'),
+        ('attack','Attack'),
+    )
+    player = models.ForeignKey(Player, models.PROTECT, related_name='logs')
+    target_player = models.ForeignKey(Player, models.PROTECT, blank=True, null=True, related_name='targeted_logs')
+    date = models.DateTimeField(auto_now_add=True)
+    action = models.CharField(max_length=20)
+    action_points = models.PositiveSmallIntegerField(default=0)
+    description = models.TextField(blank=True)
+    json_data = models.TextField(blank=True)
+    #for json_data, use json.dumps(pyvar) or pyvar = json.loads(self.json_data)
+    
+    class Meta:
+        ordering = ['-date']
+    
+    def __str__(self):
+        return '{0} action "{1}" target {2}'.format(self.player.character_name, self.action, self.target_player.character_name if self.target_player else None)
 
 
 
