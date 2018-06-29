@@ -36,18 +36,26 @@ export class ActionsComponent implements OnInit {
 	}
 	
 	saveWork(): void {
-		console.log('saveWork()');
 		this.processing = true;
-		setTimeout(() => {
-				this.processing = false;
-				this.closeModal();
-			}, 1000);
-		/*this.mps.playerAction(
+		this.mps.playerAction(
 				this.player.id,
 				new PlayerAction(
 					'work',
 					null
 				)
-			).subscribe(() => this.router.navigate(['/dashboard']));*/
+			).subscribe(() => {
+				this.processing = false;
+				this.closeModal();
+			});
+	}
+	
+	saveSpy(): void {
+		this.mps.addMessage('warning','Spy feature TBD',false);
+		this.closeModal();
+	}
+	
+	saveAttack(): void {
+		this.mps.addMessage('warning','Attack feature TBD',false);
+		this.closeModal();
 	}
 }

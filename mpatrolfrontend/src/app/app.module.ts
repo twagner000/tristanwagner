@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 import { AppComponent } from './app.component';
 import { MessagesComponent } from './messages/messages.component';
@@ -41,7 +42,8 @@ import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
         FormsModule,
 		AppRoutingModule,
 		HttpClientModule,
-		ModalModule.forRoot()
+		ModalModule.forRoot(),
+		AlertModule.forRoot()
     ],
     providers: [{provide: APP_BASE_HREF, useValue : '/mpatrol/a' }],
     bootstrap: [AppComponent]

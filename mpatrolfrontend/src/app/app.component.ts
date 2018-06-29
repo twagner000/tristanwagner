@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MpatrolService, Message } from './mpatrol.service';
 
 @Component({
     selector: 'app-root',
@@ -10,5 +11,6 @@ export class AppComponent {
     title = 'Mossflower Patrol Game';
 
 	constructor(
+		public mps: MpatrolService
 	) { }
 }

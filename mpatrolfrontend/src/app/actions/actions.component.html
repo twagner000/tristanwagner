@@ -1,6 +1,6 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
-		<span class="pull-right"><a href data-toggle="modal" data-target="#moreInfoActions" title="More info on Actions"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
+		<span class="pull-right"><a [routerLink]="" (click)="openModal(moreInfo)" title="More info on Actions"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
 		Actions
 	</div>
 	<table class="table">
@@ -20,7 +20,7 @@
 		</tr>
 		<tr>
 			<td>
-				<a class="btn btn-warning" [class.disabled]="!action_available" title="Spy" data-toggle="modal" data-target="#actionSpy"><span class="fas fa-user-secret" aria-hidden="true"></span></a>
+				<a class="btn btn-warning" [class.disabled]="!action_available" title="Spy" (click)="openModal(actionSpy)"><span class="fas fa-user-secret" aria-hidden="true"></span></a>
 			</td>
 			<td>
 				Spy Attempts
@@ -29,7 +29,7 @@
 		</tr>
 		<tr>
 			<td>
-				<a class="btn btn-danger" [class.disabled]="!action_available" title="Attack" data-toggle="modal" data-target="#actionAttack"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
+				<a class="btn btn-danger" [class.disabled]="!action_available" title="Attack" (click)="openModal(actionAttack)"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
 			</td>
 			<td>
 				Battles Fought
@@ -42,22 +42,20 @@
 	</table>
 </div>
 
-<div class="modal fade" id="moreInfoActions" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title">Actions</h4>
-			</div>
-			<div class="modal-body">
-				<p>You may complete one action per day.</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
+<ng-template #moreInfo>
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" aria-label="Close" (click)="closeModal()"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">Actions</h4>
+		</div>
+		<div class="modal-body">
+			<p>You may complete one action per day.</p>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" (click)="closeModal()">Close</button>
 		</div>
 	</div>
-</div>
+</ng-template>
 
 <ng-template #actionWork>
 	<div class="modal-header">
@@ -65,26 +63,24 @@
 		<h4 class="modal-title"><span class="fas fa-briefcase" aria-hidden="true"></span> Work</h4>
 	</div>
 	<div class="modal-body">
-		{{player.character_name}}
-		<p>CHECKBOX confirm use daily action</p>
-		<p>update gold, experience, last action date</p>
-		<p>You have successfully worked for one day. Check your stats to see what you earned! You will not be able to attack or earn money again this turn.</p>
+		<p>Are you sure you want to use your daily action to put your creatures to work?</p>
 	</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-default" (click)="closeModal()" [class.disabled]="processing">Cancel</button>
-		<button type="button" class="btn btn-primary" (click)="saveWork()" [class.disabled]="processing">Confirm</button>
+		<button type="button" class="btn btn-primary" (click)="saveWork()" [class.disabled]="processing">
+			<span *ngIf="processing">Submitting...</span>
+			<span *ngIf="!processing">Submit</span>
+		</button>
 	</div>
 </ng-template>
 
-<div class="modal fade" id="actionSpy" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title"><span class="fas fa-user-secret" aria-hidden="true"></span> Spy</h4>
-			</div>
-			<div class="modal-body">
-				<p>Welcome, sir to your intelligence headquarters. Here you can ah, observe other Patrol Masters and vermin and investigate what your doing. You can find out serveral things from your espionage activities. Every turn you can send a spy to one Patrol Master's army to check things out. The spy will always return information on how many total creatures your that Patrol Master has. Sometimes, the spy may also return information on the attack rating, defense rating, or how much gold this Patrol Master can earn per turn. Of course your spy may not always have a chance to examine the advanced information. Oh! We must warn you, there is a fairly large chance that our espionage activities might be discovered. Your spy will report if he is spotted.</p>
+<ng-template #actionSpy>
+	<div class="modal-header">
+		<button type="button" class="close" aria-label="Close" (click)="closeModal()" [class.disabled]="processing"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title"><span class="fas fa-user-secret" aria-hidden="true"></span> Spy</h4>
+	</div>
+	<div class="modal-body">
+<p>Welcome, sir to your intelligence headquarters. Here you can ah, observe other Patrol Masters and vermin and investigate what your doing. You can find out serveral things from your espionage activities. Every turn you can send a spy to one Patrol Master's army to check things out. The spy will always return information on how many total creatures your that Patrol Master has. Sometimes, the spy may also return information on the attack rating, defense rating, or how much gold this Patrol Master can earn per turn. Of course your spy may not always have a chance to examine the advanced information. Oh! We must warn you, there is a fairly large chance that our espionage activities might be discovered. Your spy will report if he is spotted.</p>
 1. generate list of other characters
 2. SELECT choose character to spy on
 3. CHECKBOX confirm use daily action
@@ -100,27 +96,29 @@ ADD: save intelligence for later in message to active player?
 <p>5. 25% chance spying is discovered</p>
 <p>Sir! We have also received word from the spy that are espionage activities are discovered!</p>
 <p>send message "Intelligence H.Q./{{character}} Has Spied on You!/{{character}} has spied on you, sir. He came away with information on our numbers. Attack rating, Defense rating data may also be missing. Information on how much gold we earn per turn and how much experience we earn per turn may also be retrieved.</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div>
 	</div>
-</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" (click)="closeModal()" [class.disabled]="processing">Cancel</button>
+		<button type="button" class="btn btn-primary" (click)="saveSpy()" [class.disabled]="processing">
+			<span *ngIf="processing">Submitting...</span>
+			<span *ngIf="!processing">Submit</span>
+		</button>
+	</div>
+</ng-template>
 
-<div class="modal fade" id="actionAttack" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title"><span class="fas fa-bullseye" aria-hidden="true"></span> Attack</h4>
-			</div>
-			<div class="modal-body">
-				<p>Attack</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div>
+<ng-template #actionAttack>
+	<div class="modal-header">
+		<button type="button" class="close" aria-label="Close" (click)="closeModal()" [class.disabled]="processing"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title"><span class="fas fa-bullseye" aria-hidden="true"></span> Attack</h4>
 	</div>
-</div>
+	<div class="modal-body">
+		<p>Attack</p>
+	</div>
+	<div class="modal-footer">
+		<button type="button" class="btn btn-default" (click)="closeModal()" [class.disabled]="processing">Cancel</button>
+		<button type="button" class="btn btn-primary" (click)="saveAttack()" [class.disabled]="processing">
+			<span *ngIf="processing">Submitting...</span>
+			<span *ngIf="!processing">Submit</span>
+		</button>
+	</div>
+</ng-template>

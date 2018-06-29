@@ -255,7 +255,7 @@ class Player(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     character_name = models.CharField(max_length=50)
     started_date = models.DateTimeField(auto_now_add=True)
-    last_action_date = models.DateTimeField(blank=True, null=True)
+    #last_action_date = models.DateTimeField(blank=True, null=True)
     
     ll = models.ForeignKey(LeaderLevel, models.PROTECT, verbose_name='Leader Level')
     gold = models.PositiveIntegerField(default=100)
@@ -282,12 +282,12 @@ class Player(models.Model):
         r = {}
         start = self.game.started_date.astimezone(constants.pacific).date()
         today = datetime.now().astimezone(constants.pacific).date()
-        last_action = self.last_action_date.astimezone(constants.pacific).date() if self.last_action_date else None
+        #last_action = self.last_action_date.astimezone(constants.pacific).date() if self.last_action_date else None
         days = (today-start).days
         r['turn'] = days
         r['month'] = constants.months[days%6]
         r['year'] = days//6+1
-        r['action_taken'] = last_action==today
+        #r['action_taken'] = last_action==today
         r['cp_avail'] = self.ll.cp-sum(b.cost_cp() for b in self.battalions.all())
         r['attack'] = (1+self.ll.level/10)*sum(b.attack() for b in self.battalions.all())
         r['defense'] = (1+self.ll.level/10)*sum(b.defense() for b in self.battalions.all())

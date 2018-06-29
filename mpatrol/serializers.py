@@ -193,7 +193,7 @@ class PlayerUpgradeSerializer(serializers.ModelSerializer):
 
 class PlayerActionSerializer(serializers.ModelSerializer):
     action = serializers.ChoiceField(models.PlayerLog.ACTIONS, write_only=True)
-    target_player_id = serializers.IntegerField(write_only=True)
+    target_player_id = serializers.IntegerField(required=False, allow_null=True, write_only=True)
     
     class Meta:
         model = models.Player

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework_extensions.mixins import NestedViewSetMixin
+from datetime import datetime
 
 from . import serializers, models
     
@@ -130,7 +131,14 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         player = self.get_object()
         serializer = serializers.PlayerActionSerializer(player, data=request.data)
         if serializer.is_valid():
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            calc = player.calc()
+            player.gold += calc['work_gold']
+            player.xp += calc['work_xp']
+            msg = 'You worked for one day and earned {0} gold and {1} xp. You will not be able to attack or earn money again this turn.'.format(calc['work_gold'],calc['work_xp'])
+            log = models.PlayerLog(player=player, action='work', action_points=1, description=msg)
+            player.save()
+            log.save()
+            return Response({'message':msg}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
