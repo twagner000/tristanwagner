@@ -198,14 +198,68 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
                 json_data['discovered'] = True
                 msg += "<p>Sir! We have also received word from the spy that our espionage activities were discovered!</p>"
                 msg2 = "<p>{0} has spied on you, sir. They came away with information on our numbers. Attack rating, defense rating, or other data may also be missing.</p>".format(player.character_name)
-                log2 = models.PlayerLog(player=target_player, action='spied-on', action_points=0, description=msg2, target_player=player, json_data=json.dumps(json_data))
+                log2 = models.PlayerLog(player=target_player, action='spied-on', action_points=0, description=msg2, target_player=player, json_data=json.dumps(json_data), acknowledged=False)
                 log2.save()
-            log = models.PlayerLog(player=player, action='spy', action_points=1, description=msg, target_player=target_player, json_data=json.dumps(json_data))
+            log = models.PlayerLog(player=player, action='spy', action_points=1, description=msg, target_player=target_player, json_data=json.dumps(json_data), success=not json_data['discovered'])
             log.save()
             return Response({'message':msg}, status=status.HTTP_200_OK)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
-        
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    @action(methods=['post'], detail=True)
+    def attack(self, request, pk=None):
+        player = self.get_object()
+        serializer = serializers.PlayerActionSerializer(player, data=request.data)
+        if serializer.is_valid():
+            target_player = serializer.validated_data['target_player']
+            ranfac = lambda:.9+.2*random.random()
+            contestants = [player, target_player]
+            life = [p.ll.life for p in contestants]
+            calc = [p.calc() for p in contestants]
+            msg = ""
+            battle = []
+            for turn in range(200):
+                if min(life) <= 0:
+                    break
+                attack = round(calc[turn%2]['attack'] * ranfac(),0)
+                defense = round(calc[turn%2+1]['defense'] * ranfac(),0)
+                damage = min(life[turn%2+1],max(1,attack-defense)) #always do at least 1 damage
+                life[turn%2+1] -= damage
+                battle.append({
+                    'leader':contestants[turn%2].character_name,
+                    'action':'Attack',
+                    'attack':attack,
+                    'blocked':min(defense,attack-1),
+                    'damage': damage,
+                    'attacker_life': life[0],
+                    'defender_life': life[1]
+                    })
+                print(battle[-1])
+            
+            if life[1] <= 0:
+                winner, loser = contestants[0],contestants[1]
+                wlife, llife = life[0], life[1]
+            else:
+                winner,loser = contestants[1], contestants[0]
+                wlife, llife = life[1], life[0]
+            xp_won = random.randint(1,1000) #only winner gains xp
+            gold_won = max(0,loser.gold - loser.ll.level*100) #loser keeps 100 gold per leader level; winner steals the rest
+            winner_troop_retain_ratio = .5 + wlife/(2*winner.ll.life) #take % life lost and lose half that many troops
+            loser_troop_retain_ratio = .5
+            
+            msg += "<p>Winner: {0}".format(winner.character_name)
+            msg += "<p>Experience: {0}</p>".format(xp_won)
+            msg += "<p>Gold: {0}</p>".format(xp_won)
+            msg += "<p>The winner has lost {0}% of their troops.</p>".format(100*(1-winner_troop_retain_ratio))
+            msg += "<p>The loser has lost 50% of their troops.</p>"
+    
+            #newfile2 = newfile2 + "\nMessage "+int(messages+1)+" (Sender/Date/Subject/Status/Message): Mossflower HQ/"+szday+", "+year+" A.F./"+usrname+" Has Attacked You and Won!/Unread/"+replace(replace("<p align='center'>You have lost a battle to "+usrname+". You lost "+gwon+" Gold and the following troops: </p>"+troopslost+"<p align='center'>They have lost: </p>"+troopslostw+"<p align='center'>Here is a table with the battle stats: </p>"+battletable$, "/", "!(s)")$, "\"", "'")$
+            
+            return Response({'message':msg}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            
     @action(methods=['post'], detail=True)
     def upgrade(self, request, pk=None):
         player = self.get_object()

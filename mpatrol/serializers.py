@@ -200,23 +200,23 @@ class PlayerActionSerializer(serializers.ModelSerializer):
         fields = ('id', 'action', 'target_player_id')
     
     def validate(self, data):
-        #check for action points
-        #TODO
         if data['target_player_id'] == self.instance.id:
             raise serializers.ValidationError("Cannot target self for action.")
+        if not self.instance.avail_action_points():
+            raise serializers.ValidationError("No action points available.")
         if data['action'] == 'spy' or data['action'] == 'attack':
             try:
                 data['target_player'] = self.instance.game.player_set.get(id=data['target_player_id'])
             except ObjectDoesNotExist:
                 raise serializers.ValidationError("Invalid target player.")
             if data['target_player'].is_protected():
-                raise serializers.ValidationError("Invalid target player; that player is protected.")
+                raise serializers.ValidationError("Target player is protected by the Guardians.")
         return data
 
         
 class PlayerSerializer(serializers.ModelSerializer):
     game = BriefGameSerializer()
-    ll = LeaderLevelSerializer()
+    ll = BriefLeaderLevelSerializer()
     technologies = BriefTechnologySerializer(many=True)
     structures = BriefStructureSerializer(many=True)
     battalions = BriefBattalionSerializer(many=True)
@@ -226,7 +226,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Player
-        fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp',
+        fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp', 'avail_action_points', 'spy_attempts', 'battles_fought',
                   'technologies', 'structures', 'battalions', 'calc',
                   'up_opt_ll', 'up_opts_structure', 'up_opts_technology')
                   

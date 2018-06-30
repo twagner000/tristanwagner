@@ -1,12 +1,13 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<span class="pull-right"><a [routerLink]="" (click)="openModal(moreInfo)" title="More info on Actions"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
+		<span class="badge">{{player.avail_action_points}}</span>
 		Actions
 	</div>
 	<table class="table">
 		<tr>
 			<td>
-				<a class="btn btn-success" [class.disabled]="!action_available" title="Work" (click)="openModal(actionWork)"><span class="fas fa-briefcase" aria-hidden="true"></span></a>
+				<button type="button" class="btn btn-success" [disabled]="!player.avail_action_points" title="Work" (click)="openModal(actionWork)"><span class="fas fa-briefcase" aria-hidden="true"></span></button>
 			</td>
 			<td>
 				Earnings per Turn
@@ -20,24 +21,21 @@
 		</tr>
 		<tr>
 			<td>
-				<a class="btn btn-warning" [class.disabled]="!action_available" title="Spy" (click)="openModal(actionSpy)"><span class="fas fa-user-secret" aria-hidden="true"></span></a>
+				<button type="button" class="btn btn-warning" [disabled]="!player.avail_action_points" title="Spy" (click)="openModal(actionSpy)"><span class="fas fa-user-secret" aria-hidden="true"></span></button>
 			</td>
 			<td>
 				Spy Attempts
 			</td>
-			<td colspan="2" class="text-right">TBD</td>
+			<td colspan="2" class="text-right">{{player.spy_attempts | number}}</td>
 		</tr>
 		<tr>
 			<td>
-				<a class="btn btn-danger" [class.disabled]="!action_available" title="Attack" (click)="openModal(actionAttack)"><span class="fas fa-bullseye" aria-hidden="true"></span></a>
+				<button type="button" class="btn btn-danger" [disabled]="!player.avail_action_points" title="Attack" (click)="openModal(actionAttack)"><span class="fas fa-bullseye" aria-hidden="true"></span></button>
 			</td>
 			<td>
 				Battles Fought
 			</td>
-			<td colspan="2" class="text-right">
-				<span *ngIf="player.battles_fought">{{player.battles_fought.length}}</span>
-				<span *ngIf="!player.battles_fought">0</span>
-			</td>
+			<td colspan="2" class="text-right">{{player.battles_fought | number}}</td>
 		</tr>
 	</table>
 </div>
@@ -50,6 +48,7 @@
 		</div>
 		<div class="modal-body">
 			<p>You may only complete <b>one</b> of the following actions <b>per day</b>.</p>
+			<p>New players are protected from being spied on or attacked until they have completed their first 3 actions.</p>
 			<h4><span class="fas fa-briefcase" aria-hidden="true"></span> Work</h4>
 			<p>An easy way to increase your gold and experience reserves is to put your creatures to work. The amount you earn is largely determined by creature type and number of creatures, though there are also several other factors which can increase your earnings.</p>
 			<h4><span class="fas fa-user-secret" aria-hidden="true"></span> Spy</h4>
@@ -72,8 +71,8 @@
 		<p>Are you sure you want to use your daily action to put your creatures to work?</p>
 	</div>
 	<div class="modal-footer">
-		<button type="button" class="btn btn-default" (click)="closeModal()" [class.disabled]="processing">Cancel</button>
-		<button type="button" class="btn btn-primary" (click)="saveWork()" [class.disabled]="processing">
+		<button type="button" class="btn btn-default" (click)="closeModal()" [disabled]="processing">Cancel</button>
+		<button type="button" class="btn btn-primary" (click)="save('work')" [disabled]="processing || !player.avail_action_points">
 			<span *ngIf="processing">Submitting...</span>
 			<span *ngIf="!processing">Submit</span>
 		</button>
@@ -98,8 +97,8 @@
 		<p>Are you sure you want to use your daily action to spy?</p>
 	</div>
 	<div class="modal-footer">
-		<button type="button" class="btn btn-default" (click)="closeModal()" [class.disabled]="processing">Cancel</button>
-		<button type="button" class="btn btn-primary" (click)="saveSpy()" [class.disabled]="processing || !targetPlayer">
+		<button type="button" class="btn btn-default" (click)="closeModal()" [disabled]="processing">Cancel</button>
+		<button type="button" class="btn btn-primary" (click)="save('spy')" [disabled]="processing || !targetPlayer || !player.avail_action_points">
 			<span *ngIf="processing">Submitting...</span>
 			<span *ngIf="!processing">Submit</span>
 		</button>
@@ -114,7 +113,6 @@
 		<h4 class="modal-title"><span class="fas fa-bullseye" aria-hidden="true"></span> Attack</h4>
 	</div>
 	<div class="modal-body">
-		<p>Attack</p>
 		<div class="form-group">
 			<label for="targetPlayer">Target player</label>	
 			<select class="form-control" id="targetPlayer" name="targetPlayer" [(ngModel)]="targetPlayer">
@@ -123,10 +121,11 @@
 				</ng-container>
 			</select>
 		</div>
+		<p>Are you sure you want to use your daily action to attack?</p>
 	</div>
 	<div class="modal-footer">
-		<button type="button" class="btn btn-default" (click)="closeModal()" [class.disabled]="processing">Cancel</button>
-		<button type="button" class="btn btn-primary" (click)="saveAttack()" [class.disabled]="processing">
+		<button type="button" class="btn btn-default" (click)="closeModal()" [disabled]="processing">Cancel</button>
+		<button type="button" class="btn btn-primary" (click)="save('attack')" [disabled]="processing || !targetPlayer || !player.avail_action_points">
 			<span *ngIf="processing">Submitting...</span>
 			<span *ngIf="!processing">Submit</span>
 		</button>

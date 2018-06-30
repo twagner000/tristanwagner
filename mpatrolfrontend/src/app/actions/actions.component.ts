@@ -39,36 +39,12 @@ export class ActionsComponent implements OnInit {
 			this.modalRef.hide();
 	}
 	
-	saveWork(): void {
+	save(action: string): void {
 		this.processing = true;
-		this.mps.playerAction(
-				this.player.id,
-				new PlayerAction(
-					'work',
-					null
-				)
-			).subscribe(() => {
+		this.mps.playerAction(this.player.id, new PlayerAction(action, (action == 'spy' || action == 'attack') ? this.targetPlayer.id : null))
+			.subscribe(() => {
 				this.processing = false;
 				this.closeModal();
 			});
-	}
-	
-	saveSpy(): void {
-		this.processing = true;
-		this.mps.playerAction(
-				this.player.id,
-				new PlayerAction(
-					'spy',
-					this.targetPlayer.id
-				)
-			).subscribe(() => {
-				this.processing = false;
-				this.closeModal();
-			});
-	}
-	
-	saveAttack(): void {
-		this.mps.addMessage('warning','Attack feature TBD',false);
-		this.closeModal();
 	}
 }

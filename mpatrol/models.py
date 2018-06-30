@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Sum
 from django.core.exceptions import ObjectDoesNotExist
 import collections
 from datetime import datetime
@@ -302,16 +302,22 @@ class Player(models.Model):
         return r
         
     def battles_fought(self):
-        return self.attacker_set.all() | self.defender_set.all()
+        return self.logs.filter(action__in=('attack','was-attacked')).count()
         
-    def unread_message_count(self):
-        return self.recipient_set.filter(unread=True).count()
+    def spy_attempts(self):
+        return self.logs.filter(action='spy').count()
         
     def is_protected(self):
-        player_time = datetime.now().astimezone(constants.pacific).date() - self.started_date.astimezone(constants.pacific).date()
-        if player_time.days < 3:
+        ap_sum = self.logs.aggregate(Sum('action_points'))['action_points__sum']
+        if not ap_sum or ap_sum < 3:
             return True
         return False
+        
+    def avail_action_points(self):
+        return 1
+        today = datetime.now().astimezone(constants.pacific).date()
+        ap_sum = self.logs.filter(date__gte=today).aggregate(Sum('action_points'))['action_points__sum']
+        return max(0,1-(ap_sum if ap_sum else 0))
         
     def up_opt_ll(self):
         try:
@@ -431,35 +437,6 @@ class Battalion(models.Model):
         q = q.filter(tech_req__isnull=True) | q.filter(tech_req__in=self.player.technologies.values_list('pk'))
         q = q.filter(struct_req__isnull=True) | q.filter(struct_req__in=self.player.structures.values_list('pk'))
         return q
-    
-
-class Message(models.Model):
-    #see messages.e.txt
-    sender = models.ForeignKey(Player, models.PROTECT, related_name='sender_set', null=True)
-    recipient = models.ForeignKey(Player, models.PROTECT, related_name='recipient_set')
-    sent_date = models.DateTimeField(auto_now_add=True)
-    subject = models.TextField()
-    message = models.TextField(blank=True)
-    unread = models.BooleanField(default=True)
-    
-    class Meta:
-        ordering = ['-sent_date']
-    
-    def __str__(self):
-        return 'Message "{0}" from {1} to {2}'.format(self.subject, self.sender, self.recipient)
-    
-    
-class Battle(models.Model):
-    attacker = models.ForeignKey(Player, models.PROTECT, related_name='attacker_set')
-    defender = models.ForeignKey(Player, models.PROTECT, related_name='defender_set')
-    battle_date = models.DateTimeField(auto_now_add=True)
-    successful_attack = models.BooleanField(default=False)
-    
-    class Meta:
-        ordering = ['-battle_date']
-    
-    def __str__(self):
-        return 'Battle {0} attacked {1} on {2}'.format(self.attacker, self.defender, self.battle_date)
 
 
 class PlayerLog(models.Model):
@@ -468,6 +445,7 @@ class PlayerLog(models.Model):
         ('spy','Spy'),
         ('attack','Attack'),
         ('spied-on','Spied on'),
+        ('was-attacked','Was Attacked'),
     )
     player = models.ForeignKey(Player, models.PROTECT, related_name='logs')
     target_player = models.ForeignKey(Player, models.PROTECT, blank=True, null=True, related_name='targeted_logs')
@@ -475,8 +453,9 @@ class PlayerLog(models.Model):
     action = models.CharField(max_length=20)
     action_points = models.PositiveSmallIntegerField(default=0)
     description = models.TextField(blank=True)
-    json_data = models.TextField(blank=True)
-    #for json_data, use json.dumps(pyvar) or pyvar = json.loads(self.json_data)
+    success = models.BooleanField(default=False)
+    acknowledged = models.BooleanField(default=True)
+    json_data = models.TextField(blank=True) #for json_data, use json.dumps(pyvar) or pyvar = json.loads(self.json_data)
     
     class Meta:
         ordering = ['-date']

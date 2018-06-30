@@ -13,7 +13,7 @@
 		</tr>
 		<tr *ngFor="let b of player.battalions">
 			<td>
-				<div class="visible-xs visible-sm btn-group">
+				<div class="btn-group">
 					<button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						{{b.battalion_number}} <span class="caret"></span>
 					</button>
@@ -23,14 +23,7 @@
 						<li *ngIf="b.creature"><a routerLink="/battalion/{{b.battalion_number}}/arm"><span class="fas fa-bolt"></span> Arm</a></li>
 					</ul>
 				</div>
-				<div class="hidden-xs hidden-sm btn-group btn-group-xs" role="group">
-					<a class="btn btn-default">{{b.battalion_number}}</a>
-					<a class="btn btn-default" routerLink="/battalion/{{b.battalion_number}}/hire" [class.btn-primary]="!b.creature"><span class="fas fa-users"></span></a>
-					<a class="btn btn-default" routerLink="/battalion/{{b.battalion_number}}/train" [class.disabled]="!b.creature"><span class="fas fa-arrow-up"></span></a>
-					<a class="btn btn-default" routerLink="/battalion/{{b.battalion_number}}/arm" [class.disabled]="!b.creature"><span class="fas fa-bolt"></span></a>
-				</div>
 			</td>
-			<!--td><span class="label label-default">{{b.battalion_number}}</span></td-->
 			<td><span *ngIf="b.creature">{{b.creature.name}}</span></td>
 			<td class="text-right"><span *ngIf="b.creature">{{b.count}}</span></td>
 			<td class="text-right"><span *ngIf="b.creature">{{b.level}}</span></td>
