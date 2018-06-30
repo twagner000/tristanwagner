@@ -200,6 +200,17 @@ class PlayerActionSerializer(serializers.ModelSerializer):
         fields = ('id', 'action', 'target_player_id')
     
     def validate(self, data):
+        #check for action points
+        #TODO
+        if data['target_player_id'] == self.instance.id:
+            raise serializers.ValidationError("Cannot target self for action.")
+        if data['action'] == 'spy' or data['action'] == 'attack':
+            try:
+                data['target_player'] = self.instance.game.player_set.get(id=data['target_player_id'])
+            except ObjectDoesNotExist:
+                raise serializers.ValidationError("Invalid target player.")
+            if data['target_player'].is_protected():
+                raise serializers.ValidationError("Invalid target player; that player is protected.")
         return data
 
         
@@ -218,3 +229,18 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp',
                   'technologies', 'structures', 'battalions', 'calc',
                   'up_opt_ll', 'up_opts_structure', 'up_opts_technology')
+                  
+
+class PublicPlayerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Player
+        fields = ('id', 'character_name', 'is_protected')
+                  
+
+class PlayerScoreSerializer(PublicPlayerSerializer):
+    ll__level = serializers.SerializerMethodField()
+    class Meta(PublicPlayerSerializer.Meta):
+        fields = PublicPlayerSerializer.Meta.fields + ('ll__level', 'static_score')
+        
+    def get_ll__level(self, obj):
+        return obj.ll.level

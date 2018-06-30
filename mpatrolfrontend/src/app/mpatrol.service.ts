@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Player, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial } from './mpatrol';
+import { Player, PublicPlayer, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial } from './mpatrol';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 //import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -129,6 +129,14 @@ export class MpatrolService {
 			.pipe(
 				tap(leaderlevels => this.addMessage('info',`fetched leaderlevels`)),
 				catchError(this.handleError('getLeaderLevels', []))
+			);
+	}
+	
+	getPlayers (game_id: number): Observable<PublicPlayer[]> {
+		return this.http.get<PublicPlayer[]>(`${this.url}game/${game_id}/player/`)
+			.pipe(
+				tap(players => this.addMessage('info',`fetched players`)),
+				catchError(this.handleError('getPlayers', []))
 			);
 	}
 	

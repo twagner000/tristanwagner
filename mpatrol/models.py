@@ -10,7 +10,7 @@ from . import constants
 
 class Game(models.Model):
     name = models.CharField(blank=True, null=True, max_length=200)
-    started_date = models.DateTimeField(auto_now_add=True, editable=True)
+    started_date = models.DateTimeField(auto_now_add=True) #, editable=True
     #started_date.editable=True #for testing only
     ended_date = models.DateTimeField(blank=True,null=True)
     
@@ -255,6 +255,7 @@ class Player(models.Model):
     user = models.ForeignKey(User, models.PROTECT)
     character_name = models.CharField(max_length=50)
     started_date = models.DateTimeField(auto_now_add=True)
+    #started_date.editable=True #for testing only
     #last_action_date = models.DateTimeField(blank=True, null=True)
     
     ll = models.ForeignKey(LeaderLevel, models.PROTECT, verbose_name='Leader Level')
@@ -262,11 +263,13 @@ class Player(models.Model):
     xp = models.PositiveIntegerField(default=0, verbose_name='Experience')
     technologies = models.ManyToManyField(Technology, blank=True)
     structures = models.ManyToManyField(Structure, blank=True)
+    static_score = models.PositiveIntegerField(default=0)
     
     #medals, missions_completed, Special Abilities, Allies (Up to 10)
     
     class Meta:
-        unique_together = ('game', 'user',)
+        ordering = ['game','character_name']
+        unique_together = (('game', 'user',), ('game','character_name'))
         
     def __str__(self):
         return str(self.user)
@@ -303,6 +306,12 @@ class Player(models.Model):
         
     def unread_message_count(self):
         return self.recipient_set.filter(unread=True).count()
+        
+    def is_protected(self):
+        player_time = datetime.now().astimezone(constants.pacific).date() - self.started_date.astimezone(constants.pacific).date()
+        if player_time.days < 3:
+            return True
+        return False
         
     def up_opt_ll(self):
         try:
@@ -458,6 +467,7 @@ class PlayerLog(models.Model):
         ('work','Work'),
         ('spy','Spy'),
         ('attack','Attack'),
+        ('spied-on','Spied on'),
     )
     player = models.ForeignKey(Player, models.PROTECT, related_name='logs')
     target_player = models.ForeignKey(Player, models.PROTECT, blank=True, null=True, related_name='targeted_logs')

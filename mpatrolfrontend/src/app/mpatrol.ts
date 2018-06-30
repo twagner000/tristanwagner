@@ -101,8 +101,20 @@ export class Battalion extends BriefBattalion {
 	new_count_delta: number;
 }
 
+export class BriefGame {
+	id: number;
+	name: string;
+}
+
+export class PublicPlayer {
+	id: number;
+	character_name: string;
+	is_protected: boolean;
+}
+
 export class Player {
 	id: number;
+	game: BriefGame;
 	character_name: string;
 	ll: LeaderLevel;
 	gold: number;

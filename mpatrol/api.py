@@ -6,6 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework_extensions.mixins import NestedViewSetMixin
 from datetime import datetime
+import random
+import json
 
 from . import serializers, models
     
@@ -101,8 +103,32 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+class GameViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = models.Game.objects.filter(ended_date__isnull=True)
+    serializer_class = serializers.BriefGameSerializer
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
+        
+        
+class PublicPlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = models.Player.objects.all()
+    serializer_class = serializers.PublicPlayerSerializer
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
+        
+        
+class Top5PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = models.Player.objects.all()
+    serializer_class = serializers.PlayerScoreSerializer
+    if not settings.DEBUG:
+        permission_classes = [IsAuthenticated]
     
-    
+    def get_queryset(self):
+        return super().get_queryset().order_by('-static_score')[:5]
+        
+        
 class PlayerLogViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.PlayerLog.objects.all()
     serializer_class = serializers.PlayerLogSerializer
@@ -141,6 +167,44 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             return Response({'message':msg}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(methods=['post'], detail=True)
+    def spy(self, request, pk=None):
+        player = self.get_object()
+        serializer = serializers.PlayerActionSerializer(player, data=request.data)
+        if serializer.is_valid():
+            target_player = serializer.validated_data['target_player']
+            calc = target_player.calc()
+            json_data = {'discovered': False}
+            msg = "<p>Your spies have reported back with the following information on {0}:</p><ul>".format(target_player.character_name)
+            msg += "<li>This Patrol Master has {0} creatures in their patrol.</li>".format(sum(b.count for b in target_player.battalions.all()))
+            if random.random() < 0.5:
+                json_data['work_gold'] = calc['work_gold']
+                msg += "<li>This Patrol Master earns {0} gold per turn.</li>".format(calc['work_gold'])
+            if random.random() < 0.5:
+                json_data['work_xp'] = calc['work_xp']
+                msg += "<li>This Patrol Master earns {0} experience per turn.</li>".format(calc['work_xp'])
+            if random.random() < 0.33:
+                json_data['ll__level'] = target_player.ll.level
+                msg += "<li>This Patrol Master has a leader level of {0}.</li>".format(target_player.ll.level)
+            if random.random() < 0.33:
+                json_data['attack'] = calc['attack']
+                msg += "<li>This Patrol Master has an attack rating of {0}.</li>".format(round(calc['attack'],1))
+            if random.random() < 0.33:
+                json_data['defense'] = calc['defense']
+                msg += "<li>This Patrol Master has a defense rating of {0}.</li>".format(round(calc['defense'],1))
+            msg += "</ul>"
+            if random.random() < 0.25:
+                json_data['discovered'] = True
+                msg += "<p>Sir! We have also received word from the spy that our espionage activities were discovered!</p>"
+                msg2 = "<p>{0} has spied on you, sir. They came away with information on our numbers. Attack rating, defense rating, or other data may also be missing.</p>".format(player.character_name)
+                log2 = models.PlayerLog(player=target_player, action='spied-on', action_points=0, description=msg2, target_player=player, json_data=json.dumps(json_data))
+                log2.save()
+            log = models.PlayerLog(player=player, action='spy', action_points=1, description=msg, target_player=target_player, json_data=json.dumps(json_data))
+            log.save()
+            return Response({'message':msg}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
         
     @action(methods=['post'], detail=True)
     def upgrade(self, request, pk=None):

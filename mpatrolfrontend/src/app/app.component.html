@@ -1,4 +1,7 @@
 <div *ngFor="let message of mps.messages">
-	<alert *ngIf="!message.hide" [type]="message.type" [dismissOnTimeout]="message.debug ? 3000 : null" dismissible="true"><span *ngIf="message.debug" class="fas fa-clock" aria-hidden="true"></span> {{message.message}}</alert>
+	<alert *ngIf="!message.hide" [type]="message.type" [dismissOnTimeout]="message.debug ? 3000 : null" dismissible="true">
+		<span *ngIf="message.debug" class="fas fa-clock" aria-hidden="true"></span>
+		<span [innerHTML]="message.message"></span>
+	</alert>
 </div>
 <router-outlet></router-outlet>

@@ -9,6 +9,9 @@ from . import api
 app_name = 'mpatrol'
 
 router = ExtendedDefaultRouter()
+game = router.register('game', api.GameViewSet, base_name='game')
+game.register('player', api.PublicPlayerViewSet, base_name='game-player', parents_query_lookups=['game_id'])
+game.register('top5', api.Top5PlayerViewSet, base_name='game-top5', parents_query_lookups=['game_id'])
 player = router.register('player', api.PlayerViewSet, base_name='player')
 player.register('battalion', api.BattalionViewSet, base_name='player-battalion', parents_query_lookups=['player_id'])
 player.register('log', api.PlayerLogViewSet, base_name='player-log', parents_query_lookups=['player_id'])
