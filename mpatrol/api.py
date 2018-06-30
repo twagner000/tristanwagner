@@ -76,6 +76,25 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(methods=['post'], detail=True)
+    def fire(self, request, parent_lookup_player_id, battalion_number):
+        battalion = self.get_object()
+        request.data.update({'action':'fire'})
+        serializer = serializers.BattalionUpdateSerializer(battalion, data=request.data)
+        if serializer.is_valid():
+            battalion.player.gold += serializer.validated_data['count_delta']*battalion.refund_gold()
+            battalion.count -= serializer.validated_data['count_delta']
+            if not battalion.count: #make sure other fields are reset if firing entire battalion
+                battalion.creature = None
+                battalion.level = 1
+                battalion.weapon_base = None
+                battalion.weapon_material = None
+            battalion.player.save()
+            battalion.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+    @action(methods=['post'], detail=True)
     def train(self, request, parent_lookup_player_id, battalion_number):
         battalion = self.get_object()
         request.data.update({'action':'train'})
@@ -249,8 +268,8 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             
             msg += "<p>Winner: {0}".format(winner.character_name)
             msg += "<p>Experience: {0}</p>".format(xp_won)
-            msg += "<p>Gold: {0}</p>".format(xp_won)
-            msg += "<p>The winner has lost {0}% of their troops.</p>".format(100*(1-winner_troop_retain_ratio))
+            msg += "<p>Gold: {0}</p>".format(gold_won)
+            msg += "<p>The winner has lost {0}% of their troops.</p>".format(round(100*(1-winner_troop_retain_ratio),1))
             msg += "<p>The loser has lost 50% of their troops.</p>"
     
             #newfile2 = newfile2 + "\nMessage "+int(messages+1)+" (Sender/Date/Subject/Status/Message): Mossflower HQ/"+szday+", "+year+" A.F./"+usrname+" Has Attacked You and Won!/Unread/"+replace(replace("<p align='center'>You have lost a battle to "+usrname+". You lost "+gwon+" Gold and the following troops: </p>"+troopslost+"<p align='center'>They have lost: </p>"+troopslostw+"<p align='center'>Here is a table with the battle stats: </p>"+battletable$, "/", "!(s)")$, "\"", "'")$
