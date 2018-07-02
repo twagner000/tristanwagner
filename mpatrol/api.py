@@ -5,11 +5,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework_extensions.mixins import NestedViewSetMixin
-from datetime import datetime
+import datetime
 import random
 import json
 
-from . import serializers, models
+from . import serializers, models, constants
     
     
 class LeaderLevelViewSet(viewsets.ReadOnlyModelViewSet):
@@ -126,7 +126,7 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         
 class GameViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Game.objects.filter(ended_date__isnull=True)
-    serializer_class = serializers.BriefGameSerializer
+    serializer_class = serializers.GamePlayerSerializer
     if not settings.DEBUG:
         permission_classes = [IsAuthenticated]
         
@@ -145,7 +145,12 @@ class Top5PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return super().get_queryset().order_by('-static_score')[:5]
+        q = super().get_queryset().order_by('-static_score')
+        n = q.count()
+        cut = 5
+        while n > cut and q[cut].static_score == q[cut-1].static_score:
+            cut += 1
+        return q[:cut]
         
         
 class PlayerLogViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
@@ -170,6 +175,14 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         if settings.DEBUG:
             return models.Player.objects.filter(game__ended_date__isnull=True)
         return models.Player.objects.filter(user=self.request.user, game__ended_date__isnull=True)
+        
+    def retrieve(self, request, pk=None):
+        player = self.get_object()
+        now = datetime.datetime.now().astimezone(constants.pacific)
+        if not player.score_last_updated or (now - player.score_last_updated.astimezone(constants.pacific)) > constants.refresh_score_timedelta:
+            player.score_last_updated = now #dummy value to trigger refresh in model save()
+            player.save()
+        return super().retrieve(request,pk)
         
     @action(methods=['post'], detail=True)
     def work(self, request, pk=None):

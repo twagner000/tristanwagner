@@ -10,7 +10,7 @@ class BattalionInline(admin.TabularInline):
 
     
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'game', 'character_name', 'll', 'gold', 'xp')
+    list_display = ('user', 'game', 'character_name', 'll', 'static_score', 'gold', 'xp')
     list_filter = ['game']
     inlines = [BattalionInline]
 

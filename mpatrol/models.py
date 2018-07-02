@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 from django.db.models import Exists, OuterRef, Sum
 from django.core.exceptions import ObjectDoesNotExist
 import collections
-from datetime import datetime
+import datetime
 import json
+import math
 
 from . import constants
 
@@ -256,7 +257,6 @@ class Player(models.Model):
     character_name = models.CharField(max_length=50)
     started_date = models.DateTimeField(auto_now_add=True)
     #started_date.editable=True #for testing only
-    #last_action_date = models.DateTimeField(blank=True, null=True)
     
     ll = models.ForeignKey(LeaderLevel, models.PROTECT, verbose_name='Leader Level')
     gold = models.PositiveIntegerField(default=100)
@@ -264,6 +264,7 @@ class Player(models.Model):
     technologies = models.ManyToManyField(Technology, blank=True)
     structures = models.ManyToManyField(Structure, blank=True)
     static_score = models.PositiveIntegerField(default=0)
+    score_last_updated = models.DateTimeField(null=True,blank=True)
     
     #medals, missions_completed, Special Abilities, Allies (Up to 10)
     
@@ -279,12 +280,14 @@ class Player(models.Model):
             self.ll
         except:
             self.ll = LeaderLevel.objects.get(level=1)
+        self.static_score = self.calc_score()
+        self.score_last_updated = datetime.datetime.now()
         super().save(*args, **kwargs)
     
     def calc(self):
         r = {}
         start = self.game.started_date.astimezone(constants.pacific).date()
-        today = datetime.now().astimezone(constants.pacific).date()
+        today = datetime.datetime.now().astimezone(constants.pacific).date()
         days = (today-start).days
         r['turn'] = days
         r['month'] = constants.months[days%6]
@@ -299,12 +302,6 @@ class Player(models.Model):
         #payday variable can also add +100 gold, but doesn't show up anywhere?
         return r
         
-    def battles_fought(self):
-        return self.logs.filter(action__in=('attack','was-attacked')).count()
-        
-    def spy_attempts(self):
-        return self.logs.filter(action='spy').count()
-        
     def is_protected(self):
         ap_sum = self.logs.aggregate(Sum('action_points'))['action_points__sum']
         if not ap_sum or ap_sum < 3:
@@ -312,10 +309,17 @@ class Player(models.Model):
         return False
         
     def avail_action_points(self):
-        today = datetime.now().astimezone(constants.pacific).date()
+        today = datetime.datetime.now().astimezone(constants.pacific).date()
         ap_sum = self.logs.filter(date__gte=today).aggregate(Sum('action_points'))['action_points__sum']
         return max(0,1-(ap_sum if ap_sum else 0))
         
+    def calc_score(self):
+        calc = self.calc()
+        return int(100*self.ll.level + 80*math.log(max(1,calc['attack'])) + 60*math.log(max(1,calc['defense'])))
+        
+    def score_rank(self):
+        return self.game.player_set.filter(static_score__gt=self.static_score).count()+1
+    
     def up_opt_ll(self):
         try:
             return LeaderLevel.objects.get(level=self.ll.level+1, cost_xp__lte=self.xp)

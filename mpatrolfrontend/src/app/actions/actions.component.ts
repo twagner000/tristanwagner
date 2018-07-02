@@ -2,7 +2,7 @@ import { Component, OnInit, Input, TemplateRef } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { MpatrolService, PlayerAction } from '../mpatrol.service';
-import { Player, PublicPlayer } from '../mpatrol';
+import { Player, PublicPlayer, PlayerScore } from '../mpatrol';
 
 @Component({
   selector: 'app-actions',
@@ -14,6 +14,7 @@ export class ActionsComponent implements OnInit {
 	modalRef: BsModalRef;
 	processing: boolean = false;
 	playerList: PublicPlayer[];
+	top5: PlayerScore[];
 	targetPlayer: PublicPlayer;
 	
 	constructor(
@@ -24,10 +25,8 @@ export class ActionsComponent implements OnInit {
 	ngOnInit() {
 		this.mps.getPlayers(this.player.game.id)
 			.subscribe(playerList => this.playerList = playerList);
-	}
-	
-	get action_available() : boolean {
-		return true;
+		this.mps.getTop5(this.player.game.id)
+			.subscribe(top5 => this.top5 = top5);
 	}
 	
 	openModal(template: TemplateRef<any>) {

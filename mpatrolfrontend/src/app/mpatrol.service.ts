@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Player, PublicPlayer, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial } from './mpatrol';
+import { Router } from '@angular/router';
+import { Player, PublicPlayer, PlayerScore, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial, GamePlayer } from './mpatrol';
 import { Observable, BehaviorSubject, of } from 'rxjs';
-//import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 
 export class PlayerUpgrade {
 	constructor(
-		public player_id: number,
 		public upgrade_type: string,
 		public upgrade_id: number
 	) { }
@@ -49,10 +48,12 @@ const httpOptions = {
 export class MpatrolService {
 	private url = 'http://localhost:8000/mpatrol/api/';
 	private player = new BehaviorSubject<Player>(null);
+	private player_id: number = null;
 	messages: Message[] = [];
 	
 	constructor(
-		private http: HttpClient
+		private http: HttpClient,
+		private router: Router
 	) { }
 
 	addMessage(type: string, msg: string, debug: boolean = true) {
@@ -62,17 +63,25 @@ export class MpatrolService {
 	clearMessages() {
 		this.messages = [];
 	}
+	
+	setPlayer(player_id: number): Observable<Player> {
+		this.clearPlayer();
+		this.player_id = player_id;
+		return this.getPlayer();
+	}
 
 	getPlayer(): Observable<Player> {
-		if (!this.player.getValue()) {
+		if (!this.player_id) {
+			this.router.navigate(['/choose-player']);
+		} else if (!this.player.getValue()) {
 			this.refreshPlayer();
 		}
 		return this.player.asObservable();
 	}
 	
 	refreshPlayer() {
-		this.http.get<Player>(`${this.url}player/11/`).pipe(
-			tap(_ => this.addMessage('info',`fetched player`)),
+		this.http.get<Player>(`${this.url}player/${this.player_id}/`).pipe(
+			tap(_ => this.addMessage('info',`fetched player_id=${this.player_id}`)),
 			catchError(this.handleError<Player>(`refreshPlayer`))
 		).subscribe(
 			player => this.player.next(player)
@@ -84,10 +93,10 @@ export class MpatrolService {
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {
-		return this.http.post(`${this.url}player/11/upgrade/`, upgrade, httpOptions)
+		return this.http.post(`${this.url}player/${this.player_id}/upgrade/`, upgrade, httpOptions)
 			.pipe(
 				tap(_ => {
-					this.addMessage('info',`upgraded player_id=${upgrade.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`);
+					this.addMessage('info',`upgraded player_id=${this.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`);
 					this.refreshPlayer();
 				}),
 				catchError(this.handleError<any>('upgradePlayer'))
@@ -132,11 +141,27 @@ export class MpatrolService {
 			);
 	}
 	
+	getGames (): Observable<GamePlayer[]> {
+		return this.http.get<GamePlayer[]>(`${this.url}game/`)
+			.pipe(
+				tap(games => this.addMessage('info',`fetched games`)),
+				catchError(this.handleError('getGames', []))
+			);
+	}
+	
 	getPlayers (game_id: number): Observable<PublicPlayer[]> {
 		return this.http.get<PublicPlayer[]>(`${this.url}game/${game_id}/player/`)
 			.pipe(
 				tap(players => this.addMessage('info',`fetched players`)),
 				catchError(this.handleError('getPlayers', []))
+			);
+	}
+	
+	getTop5 (game_id: number): Observable<PlayerScore[]> {
+		return this.http.get<PlayerScore[]>(`${this.url}game/${game_id}/top5/`)
+			.pipe(
+				tap(top5 => this.addMessage('info',`fetched top5`)),
+				catchError(this.handleError('getTop5', []))
 			);
 	}
 	
@@ -194,6 +219,10 @@ export class MpatrolService {
 
 			// TODO: better job of transforming error for user consumption
 			this.addMessage('danger',`${operation} failed: ${error.message}\n${JSON.stringify(error.error)}`,false);
+			
+			if (error.status == 403) {
+				this.router.navigate(['/forbidden']);
+			}
 
 			// Let the app keep running by returning an empty result.
 			return of(result as T);

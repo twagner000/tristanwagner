@@ -27,7 +27,6 @@ export class UpgradeStructureComponent implements OnInit {
 	
 	save(): void {
 		this.mps.upgradePlayer(new PlayerUpgrade(
-				this.player.id,
 				'structure',
 				this.selectedUpgrade.id)
 			).subscribe(() => this.router.navigate(['/dashboard']));

@@ -20,6 +20,8 @@ import { UpgradeTechnologyComponent } from './upgrade-technology/upgrade-technol
 import { BattalionHireComponent } from './battalion-hire/battalion-hire.component';
 import { BattalionTrainComponent } from './battalion-train/battalion-train.component';
 import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
+import { ChoosePlayerComponent } from './choose-player/choose-player.component';
+import { ForbiddenComponent } from './forbidden/forbidden.component';
 
     @NgModule({
     declarations: [
@@ -36,6 +38,8 @@ import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
         BattalionHireComponent,
         BattalionTrainComponent,
         BattalionArmComponent,
+        ChoosePlayerComponent,
+        ForbiddenComponent,
     ],
     imports: [
         BrowserModule ,
@@ -45,7 +49,7 @@ import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
 		ModalModule.forRoot(),
 		AlertModule.forRoot()
     ],
-    providers: [{provide: APP_BASE_HREF, useValue : '/mpatrol/a' }],
+    providers: [{provide: APP_BASE_HREF, useValue : '/mpatrol' }],
     bootstrap: [AppComponent]
     })
     export class AppModule { }

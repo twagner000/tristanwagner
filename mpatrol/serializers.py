@@ -1,4 +1,5 @@
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.conf import settings
 from rest_framework import serializers
 import json
 from . import models
@@ -163,12 +164,29 @@ class BattalionUpdateSerializer(serializers.ModelSerializer):
 class BriefGameSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Game
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'started_date')
+        
+        
+class GamePlayerSerializer(BriefGameSerializer):
+    player = serializers.SerializerMethodField()
+    
+    class Meta(BriefGameSerializer.Meta):
+        fields = BriefGameSerializer.Meta.fields + ('player',)
+        
+    def get_player(self,obj):
+        try:
+            if settings.DEBUG:
+                player = obj.player_set.get(user__username='tristan')
+            else:
+                player = obj.player_set.get(user=self.context['request'].user)
+            serializer = PublicPlayerSerializer(player, read_only=True)
+            return serializer.data
+        except ObjectDoesNotExist:
+            return None
         
         
 class PlayerUpgradeSerializer(serializers.ModelSerializer):
     UPGRADES = ('leaderlevel', 'structure', 'technology')
-    
     upgrade_type = serializers.ChoiceField(UPGRADES, write_only=True)
     upgrade_id = serializers.IntegerField(write_only=True)
     
@@ -226,7 +244,7 @@ class PlayerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Player
-        fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp', 'avail_action_points', 'spy_attempts', 'battles_fought',
+        fields = ('id', 'game', 'character_name', 'll', 'gold', 'xp', 'avail_action_points', 'static_score', 'score_rank',
                   'technologies', 'structures', 'battalions', 'calc',
                   'up_opt_ll', 'up_opts_structure', 'up_opts_technology')
                   
@@ -235,12 +253,22 @@ class PublicPlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
         fields = ('id', 'character_name', 'is_protected')
-                  
 
-class PlayerScoreSerializer(PublicPlayerSerializer):
-    ll__level = serializers.SerializerMethodField()
+
+class ChoosePlayerSerializer(PublicPlayerSerializer):
+    game__name = serializers.SerializerMethodField()
+    game__started_date = serializers.SerializerMethodField()
+    
     class Meta(PublicPlayerSerializer.Meta):
-        fields = PublicPlayerSerializer.Meta.fields + ('ll__level', 'static_score')
+        fields = PublicPlayerSerializer.Meta.fields + ('game__name', 'game__started_date')
         
-    def get_ll__level(self, obj):
-        return obj.ll.level
+    def get_game__name(self,obj):
+        return obj.game.name
+        
+    def get_game__started_date(self,obj):
+        return obj.game.started_date
+
+        
+class PlayerScoreSerializer(PublicPlayerSerializer):
+    class Meta(PublicPlayerSerializer.Meta):
+        fields = PublicPlayerSerializer.Meta.fields + ('score_rank', 'static_score')

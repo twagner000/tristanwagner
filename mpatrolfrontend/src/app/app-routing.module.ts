@@ -2,6 +2,8 @@ import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent }   from './dashboard/dashboard.component';
+import { ChoosePlayerComponent }   from './choose-player/choose-player.component';
+import { ForbiddenComponent }   from './forbidden/forbidden.component';
 import { UpgradeLeaderlevelComponent }   from './upgrade-leaderlevel/upgrade-leaderlevel.component';
 import { UpgradeTechnologyComponent }   from './upgrade-technology/upgrade-technology.component';
 import { UpgradeStructureComponent }   from './upgrade-structure/upgrade-structure.component';
@@ -12,6 +14,8 @@ import { BattalionArmComponent }   from './battalion-arm/battalion-arm.component
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
+  { path: 'choose-player', component: ChoosePlayerComponent },
+  { path: 'forbidden', component: ForbiddenComponent },
   { path: 'upgrade', children: [
 	  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
 	  { path: 'leaderlevel', component: UpgradeLeaderlevelComponent },

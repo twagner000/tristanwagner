@@ -1,51 +1,24 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
-		Overview
-		<span class="pull-right"><a [routerLink]="" (click)="openModal(moreInfo)" title="More info on Actions"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
+		<span class="badge">{{player.avail_action_points}}</span> Actions
+		<span class="pull-right"><a [routerLink]="" (click)="openModal(actionInfo)" title="More info on Actions"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
 	</div>
-	<table class="table">
-		<tr>
-			<td>
-				Actions
-			</td>
-			<td colspan="3" class="text-right">
-				<span class="badge">{{player.avail_action_points}}</span>&nbsp;
-				<div class="btn-group">
-					<button type="button" class="btn btn-success" [disabled]="!player.avail_action_points" title="Work" (click)="openModal(actionWork)"><span class="fas fa-briefcase" aria-hidden="true"></span></button>
-					<button type="button" class="btn btn-warning" [disabled]="!player.avail_action_points" title="Spy" (click)="openModal(actionSpy)"><span class="fas fa-user-secret" aria-hidden="true"></span></button>
-					<button type="button" class="btn btn-danger" [disabled]="!player.avail_action_points" title="Attack" (click)="openModal(actionAttack)"><span class="fas fa-bullseye" aria-hidden="true"></span></button>
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Inventory
-			</td>
-			<td>
-				<a class="btn">&nbsp;</a>
-			</td>
-			<td class="text-right">
-				{{player.gold | number}} <span class="fas fa-coins"></span>
-			</td>
-			<td class="text-right">
-				{{player.xp | number}} <span class="fas fa-angle-double-up"></span>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Player Rank
-			</td>
-			<td colspan="2">
-				<a class="btn">&nbsp;</a>
-			</td>
-			<td class="text-right">
-				(TBD) #3
-			</td>
-		</tr>
-	</table>
+	<table class="table"><tr><td>
+		
+		<div class="btn-group">
+			<button type="button" class="btn btn-success" [disabled]="!player.avail_action_points" title="Work" (click)="openModal(actionWork)"><span class="fas fa-briefcase" aria-hidden="true"></span></button>
+			<button type="button" class="btn btn-warning" [disabled]="!player.avail_action_points" title="Spy" (click)="openModal(actionSpy)"><span class="fas fa-user-secret" aria-hidden="true"></span></button>
+			<button type="button" class="btn btn-danger" [disabled]="!player.avail_action_points" title="Attack" (click)="openModal(actionAttack)"><span class="fas fa-bullseye" aria-hidden="true"></span></button>
+		</div>
+		<span class="pull-right">
+			{{player.gold | number}} <span class="fas fa-coins"></span>&nbsp;&nbsp;&nbsp;
+			{{player.xp | number}} <span class="fas fa-angle-double-up"></span>&nbsp;&nbsp;&nbsp;
+			<a [routerLink]="" (click)="openModal(highScores)" title="High Scores">{{player.static_score}} <span class="fas fa-star"></span></a>
+		</span>
+	</td></tr></table>
 </div>
 
-<ng-template #moreInfo>
+<ng-template #actionInfo>
 	<div class="modal-content">
 		<div class="modal-header">
 			<button type="button" class="close" aria-label="Close" (click)="closeModal()"><span aria-hidden="true">&times;</span></button>
@@ -61,6 +34,40 @@
 			<h4><span class="fas fa-bullseye" aria-hidden="true"></span> Attack</h4>
 			<p>You can demonstrate your patrol's abilities by challenging another player. The winner will receive gold and experience.</p>
 		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" (click)="closeModal()">Close</button>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #highScores>
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" aria-label="Close" (click)="closeModal()"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title"><span class="fas fa-star"></span> High Scores</h4>
+		</div>
+		<div class="modal-body">
+			<p>Scores are based on leader level, attack strength, and defense strength.</p>
+		</div>
+		<table *ngIf="top5" class="table" style="margin-bottom: 0; border-bottom: none;">
+			<tr>
+				<th>Player</th>
+				<th class="text-right">Rank</th>
+				<th class="text-right">Score</th>
+			</tr>
+			<ng-container *ngFor="let p of top5">
+				<tr [class.active]="p.id == player.id">
+					<td>{{p.character_name}}</td>
+					<td class="text-right">{{p.score_rank}}</td>
+					<td class="text-right">{{p.static_score}}</td>
+				</tr>
+			</ng-container>
+			<tr *ngIf="player.score_rank > 5" class="active">
+				<td>{{player.character_name}}</td>
+				<td class="text-right">{{player.score_rank}}</td>
+				<td class="text-right">{{player.static_score}}</td>
+			</tr>
+		</table>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-default" (click)="closeModal()">Close</button>
 		</div>
@@ -93,7 +100,7 @@
 	</div>
 	<div class="modal-body">
 		<div class="form-group">
-			<label for="targetPlayer">Target player</label>	
+			<label for="targetPlayer">Target player</label>
 			<select class="form-control" id="targetPlayer" name="targetPlayer" [(ngModel)]="targetPlayer">
 				<ng-container *ngFor="let p of playerList">
 					<option *ngIf="p.id != player.id && !p.is_protected" [ngValue]="p">{{p.character_name}}</option>
@@ -120,7 +127,7 @@
 	</div>
 	<div class="modal-body">
 		<div class="form-group">
-			<label for="targetPlayer">Target player</label>	
+			<label for="targetPlayer">Target player</label>
 			<select class="form-control" id="targetPlayer" name="targetPlayer" [(ngModel)]="targetPlayer">
 				<ng-container *ngFor="let p of playerList">
 					<option *ngIf="p.id != player.id && !p.is_protected" [ngValue]="p">{{p.character_name}}</option>

@@ -1,0 +1,37 @@
+<div class="row">
+	<div class="col-sm-4">
+		<div *ngIf="resumeGames.length" class="panel panel-primary">
+			<div class="panel-body">
+				<form>
+					<div class="form-group">
+						<label for="game" hidden>Resume Game</label>
+						<select class="form-control" id="resume" name="resume" [(ngModel)]="resume">
+							<option *ngFor="let g of resumeGames" [ngValue]="g">{{g.player.character_name}}, game "{{g.name}}" started {{g.started_date | date:'shortDate'}}</option>
+						</select>
+					</div>
+					<button type="button" class="btn btn-primary pull-right" (click)="resumeGame()" [disabled]="!resume">Resume</button>
+				</form>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<form *ngIf="joinGames.length">
+					<div class="form-group">
+						<label for="game" hidden>Join Game</label>
+						<select class="form-control" id="join" name="join" [(ngModel)]="join">
+							<option *ngFor="let g of joinGames" [ngValue]="g">"{{g.name}}" started {{g.started_date | date:'shortDate'}}</option>
+						</select>
+					</div>
+					<button type="button" class="btn btn-default pull-right" (click)="joinGame()" [disabled]="!join">Join</button>
+				</form>
+				<a *ngIf="!joinGames.length" class="btn btn-default btn-block disabled">No new games available to join <span class="far fa-frown"></span></a>
+			</div>
+		</div>			
+	</div>
+	<div class="col-sm-8">
+		<h4>The Mossflower Patrol Game</h4>
+		<p>blah blah</p>
+		<p>blah blah</p>
+		<p>This stuff should be put into a component that can be dropped into the forbidden page as well.</p>
+	</div>
+</div>

@@ -104,12 +104,22 @@ export class Battalion extends BriefBattalion {
 export class BriefGame {
 	id: number;
 	name: string;
+	started_date: Date;
+}
+
+export class GamePlayer extends BriefGame {
+	player: PublicPlayer;
 }
 
 export class PublicPlayer {
 	id: number;
 	character_name: string;
 	is_protected: boolean;
+}
+
+export class PlayerScore extends PublicPlayer {
+	score_rank: number;
+	static_score: number;
 }
 
 export class Player {
