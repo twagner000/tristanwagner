@@ -235,15 +235,14 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             contestants = [player, target_player]
             life = [p.ll.life for p in contestants]
             calc = [p.calc() for p in contestants]
-            msg = ""
             battle = []
             for turn in range(200):
                 if min(life) <= 0:
                     break
-                attack = round(calc[turn%2]['attack'] * ranfac(),0)
-                defense = round(calc[turn%2+1]['defense'] * ranfac(),0)
-                damage = min(life[turn%2+1],max(1,attack-defense)) #always do at least 1 damage
-                life[turn%2+1] -= damage
+                attack = int(calc[turn%2]['attack'] * ranfac())
+                defense = int(calc[(turn+1)%2]['defense'] * ranfac())
+                damage = min(life[(turn+1)%2],max(1,attack-defense)) #always do at least 1 damage
+                life[(turn+1)%2] -= damage
                 battle.append({
                     'leader':contestants[turn%2].character_name,
                     'action':'Attack',
@@ -253,27 +252,46 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
                     'attacker_life': life[0],
                     'defender_life': life[1]
                     })
-                print(battle[-1])
-            
-            if life[1] <= 0:
-                winner, loser = contestants[0],contestants[1]
-                wlife, llife = life[0], life[1]
+            if min(life) <= 0:
+                winner_index = 0 if life[1] <= 0 else 1
+                winner, loser = contestants[winner_index],contestants[1-winner_index]
+                xp_won = random.randint(1,1000) #only winner gains xp
+                gold_won = max(0,loser.gold - loser.ll.level*100) #loser keeps 100 gold per leader level; winner steals the rest
+                winner_troop_retain_ratio = .5 + life[winner_index]/(2*winner.ll.life) #take % life lost and lose half that many troops
+                winner_troops = []
+                loser_troops = []
+                winner.xp += xp_won
+                winner.gold += gold_won
+                loser.gold -= gold_won
+                for b in winner.battalions.filter(count__gt=0):
+                    new_count = max(1,int(round(b.count*winner_troop_retain_ratio,0)))
+                    winner_troops.append({'battalion_number': b.battalion_number, 'creature_id': b.creature.id if b.creature else None, 'creature_name': b.creature.name if b.creature else None, 'initial_count':b.count, 'final_count':new_count})
+                    b.count = new_count
+                    b.save()
+                    print("{0} battalion {1} count={2}".format(winner.character_name,b.battalion_number,b.count))
+                for b in loser.battalions.filter(count__gt=0):
+                    new_count = max(1,int(round(b.count*.5,0)))
+                    loser_troops.append({'battalion_number': b.battalion_number, 'creature_id': b.creature.id if b.creature else None, 'creature_name': b.creature.name if b.creature else None, 'initial_count':b.count, 'final_count':new_count})
+                    b.count = new_count
+                    b.save()
+                    print("{0} battalion {1} count={2}".format(winner.character_name,b.battalion_number,b.count))
+                json_data = {'battle': battle, 'attacker_id': player.id, 'xp_won': xp_won, 'gold_won': gold_won,
+                            'winner_id': winner.id, 'winner_character_name': winner.character_name, 'winner_life': life[winner_index], 'winner_attack':calc[winner_index]['attack'], 'winner_defense':calc[winner_index]['defense'], 'winner_troops':winner_troops,
+                            'loser_id': loser.id, 'loser_character_name': loser.character_name, 'loser_life': life[1-winner_index], 'loser_attack':calc[1-winner_index]['attack'], 'loser_defense':calc[1-winner_index]['defense'], 'loser_troops':loser_troops}
+                common_msg = "<p>{0} ended the battle with {1} life remaining; {2} ended with {3} life remaining.".format(winner.character_name,life[winner_index],loser.character_name,life[1-winner_index])
+                common_msg += "<p>{0} gained {1} experience and {2} gold, with {3}% troop attrition. {4} lost {2} gold with 50% troop attrition.</p>".format(winner.character_name, xp_won, gold_won, round(100*(1-winner_troop_retain_ratio),1), loser.character_name)
+                common_msg += "<p>{0} lost the following troops: {1}.</p>".format(winner.character_name,", ".join(["{0} {1}".format((b['initial_count']-b['final_count']),b['creature_name']) for b in winner_troops]))
+                common_msg += "<p>{0} lost the following troops: {1}.</p>".format(loser.character_name,", ".join(["{0} {1}".format((b['initial_count']-b['final_count']),b['creature_name']) for b in loser_troops]))
+                msg = "<p>You attacked {0} and {1}!<p>".format(target_player.character_name,['won','lost'][winner_index])+common_msg
+                msg2 = "<p>{0} attacked you and {1}!<p>".format(player.character_name,['won','lost'][winner_index])+common_msg
+                log = models.PlayerLog(player=player, action='attack', action_points=1, description=msg, target_player=target_player, json_data=json.dumps(json_data), success=player==winner)
+                log2 = models.PlayerLog(player=target_player, action='was-attacked', action_points=0, description=msg2, target_player=player, json_data=json.dumps(json_data), success=target_player==winner, acknowledged=False)
+                log.save()
+                log2.save()
+                winner.save()
+                loser.save()
             else:
-                winner,loser = contestants[1], contestants[0]
-                wlife, llife = life[1], life[0]
-            xp_won = random.randint(1,1000) #only winner gains xp
-            gold_won = max(0,loser.gold - loser.ll.level*100) #loser keeps 100 gold per leader level; winner steals the rest
-            winner_troop_retain_ratio = .5 + wlife/(2*winner.ll.life) #take % life lost and lose half that many troops
-            loser_troop_retain_ratio = .5
-            
-            msg += "<p>Winner: {0}".format(winner.character_name)
-            msg += "<p>Experience: {0}</p>".format(xp_won)
-            msg += "<p>Gold: {0}</p>".format(gold_won)
-            msg += "<p>The winner has lost {0}% of their troops.</p>".format(round(100*(1-winner_troop_retain_ratio),1))
-            msg += "<p>The loser has lost 50% of their troops.</p>"
-    
-            #newfile2 = newfile2 + "\nMessage "+int(messages+1)+" (Sender/Date/Subject/Status/Message): Mossflower HQ/"+szday+", "+year+" A.F./"+usrname+" Has Attacked You and Won!/Unread/"+replace(replace("<p align='center'>You have lost a battle to "+usrname+". You lost "+gwon+" Gold and the following troops: </p>"+troopslost+"<p align='center'>They have lost: </p>"+troopslostw+"<p align='center'>Here is a table with the battle stats: </p>"+battletable$, "/", "!(s)")$, "\"", "'")$
-            
+                msg = "<p>The battle was a stalemate. Your daily action was not consumed.<p>"
             return Response({'message':msg}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

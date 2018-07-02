@@ -216,7 +216,7 @@ class PlayerActionSerializer(serializers.ModelSerializer):
         
 class PlayerSerializer(serializers.ModelSerializer):
     game = BriefGameSerializer()
-    ll = BriefLeaderLevelSerializer()
+    ll = LeaderLevelSerializer()
     technologies = BriefTechnologySerializer(many=True)
     structures = BriefStructureSerializer(many=True)
     battalions = BriefBattalionSerializer(many=True)

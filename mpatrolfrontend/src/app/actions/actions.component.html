@@ -1,41 +1,46 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
+		Overview
 		<span class="pull-right"><a [routerLink]="" (click)="openModal(moreInfo)" title="More info on Actions"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
-		<span class="badge">{{player.avail_action_points}}</span>
-		Actions
 	</div>
 	<table class="table">
 		<tr>
 			<td>
-				<button type="button" class="btn btn-success" [disabled]="!player.avail_action_points" title="Work" (click)="openModal(actionWork)"><span class="fas fa-briefcase" aria-hidden="true"></span></button>
+				Actions
 			</td>
-			<td>
-				Earnings per Turn
-			</td>
-			<td class="text-right">
-				{{player.calc.work_gold}} <span class="fas fa-coins"></span>
-			</td>
-			<td class="text-right">
-				{{player.calc.work_xp}} <span class="fas fa-angle-double-up"></span>
+			<td colspan="3" class="text-right">
+				<span class="badge">{{player.avail_action_points}}</span>&nbsp;
+				<div class="btn-group">
+					<button type="button" class="btn btn-success" [disabled]="!player.avail_action_points" title="Work" (click)="openModal(actionWork)"><span class="fas fa-briefcase" aria-hidden="true"></span></button>
+					<button type="button" class="btn btn-warning" [disabled]="!player.avail_action_points" title="Spy" (click)="openModal(actionSpy)"><span class="fas fa-user-secret" aria-hidden="true"></span></button>
+					<button type="button" class="btn btn-danger" [disabled]="!player.avail_action_points" title="Attack" (click)="openModal(actionAttack)"><span class="fas fa-bullseye" aria-hidden="true"></span></button>
+				</div>
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<button type="button" class="btn btn-warning" [disabled]="!player.avail_action_points" title="Spy" (click)="openModal(actionSpy)"><span class="fas fa-user-secret" aria-hidden="true"></span></button>
+				Inventory
 			</td>
 			<td>
-				Spy Attempts
+				<a class="btn">&nbsp;</a>
 			</td>
-			<td colspan="2" class="text-right">{{player.spy_attempts | number}}</td>
+			<td class="text-right">
+				{{player.gold | number}} <span class="fas fa-coins"></span>
+			</td>
+			<td class="text-right">
+				{{player.xp | number}} <span class="fas fa-angle-double-up"></span>
+			</td>
 		</tr>
 		<tr>
 			<td>
-				<button type="button" class="btn btn-danger" [disabled]="!player.avail_action_points" title="Attack" (click)="openModal(actionAttack)"><span class="fas fa-bullseye" aria-hidden="true"></span></button>
+				Player Rank
 			</td>
-			<td>
-				Battles Fought
+			<td colspan="2">
+				<a class="btn">&nbsp;</a>
 			</td>
-			<td colspan="2" class="text-right">{{player.battles_fought | number}}</td>
+			<td class="text-right">
+				(TBD) #3
+			</td>
 		</tr>
 	</table>
 </div>
@@ -69,6 +74,7 @@
 	</div>
 	<div class="modal-body">
 		<p>Are you sure you want to use your daily action to put your creatures to work?</p>
+		<p>You will earn {{player.calc.work_gold}} <span class="fas fa-coins"></span> and {{player.calc.work_xp}} <span class="fas fa-angle-double-up"></span>.</p>
 	</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-default" (click)="closeModal()" [disabled]="processing">Cancel</button>

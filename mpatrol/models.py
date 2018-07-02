@@ -285,12 +285,10 @@ class Player(models.Model):
         r = {}
         start = self.game.started_date.astimezone(constants.pacific).date()
         today = datetime.now().astimezone(constants.pacific).date()
-        #last_action = self.last_action_date.astimezone(constants.pacific).date() if self.last_action_date else None
         days = (today-start).days
         r['turn'] = days
         r['month'] = constants.months[days%6]
         r['year'] = days//6+1
-        #r['action_taken'] = last_action==today
         r['cp_avail'] = self.ll.cp-sum(b.cost_cp() for b in self.battalions.all())
         r['attack'] = (1+self.ll.level/10)*sum(b.attack() for b in self.battalions.all())
         r['defense'] = (1+self.ll.level/10)*sum(b.defense() for b in self.battalions.all())
@@ -314,7 +312,6 @@ class Player(models.Model):
         return False
         
     def avail_action_points(self):
-        return 1
         today = datetime.now().astimezone(constants.pacific).date()
         ap_sum = self.logs.filter(date__gte=today).aggregate(Sum('action_points'))['action_points__sum']
         return max(0,1-(ap_sum if ap_sum else 0))
