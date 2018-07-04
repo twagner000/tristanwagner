@@ -21,7 +21,6 @@ import { BattalionHireComponent } from './battalion-hire/battalion-hire.componen
 import { BattalionTrainComponent } from './battalion-train/battalion-train.component';
 import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
 import { ChoosePlayerComponent } from './choose-player/choose-player.component';
-import { ForbiddenComponent } from './forbidden/forbidden.component';
 import { JukeboxComponent } from './jukebox/jukebox.component';
 
     @NgModule({
@@ -40,7 +39,6 @@ import { JukeboxComponent } from './jukebox/jukebox.component';
         BattalionTrainComponent,
         BattalionArmComponent,
         ChoosePlayerComponent,
-        ForbiddenComponent,
         JukeboxComponent,
     ],
     imports: [

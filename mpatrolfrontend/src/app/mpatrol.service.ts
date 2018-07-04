@@ -55,6 +55,7 @@ export class MpatrolService {
 	private playlist = [];
 	private playlist_index = -1;
 	audio = new Audio();
+	forbidden: boolean = false;
 	
 	constructor(
 		private http: HttpClient,
@@ -193,6 +194,8 @@ export class MpatrolService {
 	}
 	
 	getGames (): Observable<GamePlayer[]> {
+		if (this.forbidden)
+			return new BehaviorSubject<GamePlayer[]>([]).asObservable();
 		return this.http.get<GamePlayer[]>(`${this.url}game/`)
 			.pipe(
 				tap(games => this.addMessage('info',`fetched games`)),
@@ -271,12 +274,11 @@ export class MpatrolService {
 			// TODO: better job of transforming error for user consumption
 			if (error.status == 400 && error.error) {
 				this.errors.next({'operation':operation, 'errors':error.error, 'error_keys':Object.keys(error.error)});
+			} else if (error.status == 403) {
+				this.forbidden = true;
+				this.router.navigate(['/']);
 			} else {
 				this.addMessage('danger',`${operation} failed: ${error.message}\n${JSON.stringify(error.error)}`,false);
-			}
-			
-			if (error.status == 403) {
-				this.router.navigate(['/forbidden']);
 			}
 
 			// Let the app keep running by returning an empty result.
