@@ -12,7 +12,7 @@
 						<option *ngFor="let g of resumeGames" [ngValue]="g">{{g.player.character_name}}, game "{{g.name}}" started {{g.started_date | date:'shortDate'}}</option>
 					</select>
 					<span class="input-group-btn">
-						<button type="button" class="btn btn-success" (click)="resumeGame()" [disabled]="!resume">Resume</button>
+						<button type="button" class="btn btn-success" (click)="resumeGame()" [disabled]="!resume" title="Resume"><i class="fas fa-play"></i></button>
 					</span>
 				</div>&nbsp;
 			</form>
@@ -22,7 +22,7 @@
 </div>
 <div class="row">
 	<div *ngIf="!mps.forbidden" class="col-sm-4">
-		<div class="panel panel-default">
+		<div class="panel panel-success">
 			<div class="panel-heading">
 				<h4 class="panel-title">Join a Game</h4>
 			</div>
@@ -40,7 +40,7 @@
 					<div class="input-group">
 						<input type="text" class="form-control" id="character_name" name="character_name" [(ngModel)]="character_name" placeholder="Character name"/>
 						<span class="input-group-btn">
-							<button type="button" class="btn btn-primary" (click)="joinGame()" [disabled]="!join || !character_name || joining">Join</button>
+							<button type="button" class="btn btn-success" (click)="joinGame()" [disabled]="!join || !character_name || joining" title="Join"><i class="fas fa-user-plus"></i></button>
 						</span>
 					</div>
 				</form>
@@ -49,8 +49,9 @@
 		</div>
 	</div>
 	<div [class]="mps.forbidden ? 'col-sm-12' : 'col-sm-8'">
-		<h4>History</h4>
-		<p>blah blah</p>
-		<p>blah blah</p>
+		<h4>History of the Game</h4>
+		<p>The original Mossflower Patrol Game was created by a group of friends in middle school in the 1990s, inspired by author Brian Jacques's <a href="https://www.redwallabbey.com/">Redwall</a> book series. It was coded in a highly inefficient manner using a programming language called <a href="http://www.aptilis.com/">Aptilis</a>. At its peak, several hundred players would regularly log in to play the game.</p>
+		<p>Just for fun, approximately 20 years later, I've decided to recreate a version of the game using <a href="https://www.djangoproject.com/">django</a> and <a href="https://angular.io/">Angular</a>. Enjoy!</p>
+		<p></p>
 	</div>
 </div>
