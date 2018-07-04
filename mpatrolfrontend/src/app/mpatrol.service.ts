@@ -52,11 +52,43 @@ export class MpatrolService {
 	private refreshingPlayer: boolean = false;
 	messages: Message[] = [];
 	private errors = new BehaviorSubject<any>(null);
+	private playlist = [];
+	private playlist_index = -1;
+	audio = new Audio();
 	
 	constructor(
 		private http: HttpClient,
 		private router: Router
-	) { }
+	) {
+		for (var i=1; i<=10; i++)
+			this.playlist.push(`../assets/${i}.mp3`);
+		this.nextSong(false);
+		this.audio.onended = () => this.nextSong();
+	}
+	
+	nextSong(autoplay: boolean = true) {
+		this.playlist_index += 1;
+		this.playlist_index %= this.playlist.length;
+		this.audio.src = this.playlist[this.playlist_index];
+		this.audio.load();
+		if (autoplay) this.audio.play();
+	}
+	
+	previousSong(autoplay: boolean = true) {
+		this.playlist_index += this.playlist.length-1;
+		this.playlist_index %= this.playlist.length;
+		this.audio.src = this.playlist[this.playlist_index];
+		this.audio.load();
+		if (autoplay) this.audio.play();
+	}
+	
+	toggleAudio(): boolean {
+		if (this.audio.paused)
+			this.audio.play();
+		else
+			this.audio.pause();
+		return this.audio.paused;
+	}
 
 	addMessage(type: string, msg: string, debug: boolean = true) {
 		this.messages.push(new Message(type,msg,debug));

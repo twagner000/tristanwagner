@@ -22,6 +22,7 @@ import { BattalionTrainComponent } from './battalion-train/battalion-train.compo
 import { BattalionArmComponent } from './battalion-arm/battalion-arm.component';
 import { ChoosePlayerComponent } from './choose-player/choose-player.component';
 import { ForbiddenComponent } from './forbidden/forbidden.component';
+import { JukeboxComponent } from './jukebox/jukebox.component';
 
     @NgModule({
     declarations: [
@@ -40,6 +41,7 @@ import { ForbiddenComponent } from './forbidden/forbidden.component';
         BattalionArmComponent,
         ChoosePlayerComponent,
         ForbiddenComponent,
+        JukeboxComponent,
     ],
     imports: [
         BrowserModule ,
