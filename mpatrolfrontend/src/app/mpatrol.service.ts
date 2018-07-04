@@ -49,7 +49,9 @@ export class MpatrolService {
 	private url = 'http://localhost:8000/mpatrol/api/';
 	private player = new BehaviorSubject<Player>(null);
 	private player_id: number = null;
+	private refreshingPlayer: boolean = false;
 	messages: Message[] = [];
+	private errors = new BehaviorSubject<any>(null);
 	
 	constructor(
 		private http: HttpClient,
@@ -63,32 +65,49 @@ export class MpatrolService {
 	clearMessages() {
 		this.messages = [];
 	}
+
+	getErrors(): Observable<any> {
+		return this.errors.asObservable();
+	}
 	
-	setPlayer(player_id: number): Observable<Player> {
+	setPlayer(player_id: number) {
 		this.clearPlayer();
 		this.player_id = player_id;
-		return this.getPlayer();
+		this.getPlayer();
+	}
+	
+	joinGame(game_id: number, character_name: string): Observable<any> {
+		return this.http.post(`${this.url}game/${game_id}/player/`, {'character_name': character_name}, httpOptions)
+			.pipe(
+				tap(result => {
+					this.addMessage('info',`joined game_id=${game_id}`);
+				}),
+				catchError(this.handleError<any>(`joinGame`))
+			);
 	}
 
 	getPlayer(): Observable<Player> {
 		if (!this.player_id) {
-			this.router.navigate(['/choose-player']);
-		} else if (!this.player.getValue()) {
+			this.router.navigate(['/choose']);
+		} else if (!this.player.getValue() && !this.refreshingPlayer) {
 			this.refreshPlayer();
 		}
 		return this.player.asObservable();
 	}
 	
 	refreshPlayer() {
+		this.refreshingPlayer = true;
 		this.http.get<Player>(`${this.url}player/${this.player_id}/`).pipe(
 			tap(_ => this.addMessage('info',`fetched player_id=${this.player_id}`)),
 			catchError(this.handleError<Player>(`refreshPlayer`))
-		).subscribe(
-			player => this.player.next(player)
-		);
+		).subscribe(player => {
+				this.player.next(player);
+				this.refreshingPlayer = false;
+			});
 	}
 	
 	clearPlayer() {
+		this.player_id = null;
 		this.player.next(null);
 	}
 
@@ -107,7 +126,7 @@ export class MpatrolService {
 		return this.http.post(`${this.url}player/${player_id}/${playerAction.action}/`, playerAction, httpOptions)
 			.pipe(
 				tap(result => {
-					this.addMessage('success',result.message,false);
+					this.addMessage('success',result['message'],false);
 					this.refreshPlayer();
 				}),
 				catchError(this.handleError<any>('playerAction'))
@@ -218,7 +237,11 @@ export class MpatrolService {
 			console.error(error); // log to console instead
 
 			// TODO: better job of transforming error for user consumption
-			this.addMessage('danger',`${operation} failed: ${error.message}\n${JSON.stringify(error.error)}`,false);
+			if (error.status == 400 && error.error) {
+				this.errors.next({'operation':operation, 'errors':error.error, 'error_keys':Object.keys(error.error)});
+			} else {
+				this.addMessage('danger',`${operation} failed: ${error.message}\n${JSON.stringify(error.error)}`,false);
+			}
 			
 			if (error.status == 403) {
 				this.router.navigate(['/forbidden']);

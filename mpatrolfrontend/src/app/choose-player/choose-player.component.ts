@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MpatrolService } from '../mpatrol.service';
-import { GamePlayer } from '../mpatrol';
+import { Player, GamePlayer } from '../mpatrol';
 
 @Component({
   selector: 'app-choose-player',
@@ -14,6 +14,9 @@ export class ChoosePlayerComponent implements OnInit {
 	joinGames: GamePlayer[] = [];
 	resume: GamePlayer;
 	join: GamePlayer;
+	character_name: string;
+	joining: boolean = false;
+	errors = null;
 	
 	constructor(
 		private mps: MpatrolService,
@@ -21,6 +24,7 @@ export class ChoosePlayerComponent implements OnInit {
 	) { }
 
 	ngOnInit() {
+		this.mps.clearPlayer();
 		this.mps.getGames()
 			.subscribe(games => {
 				for (let g of games) {
@@ -34,27 +38,24 @@ export class ChoosePlayerComponent implements OnInit {
 				if (this.joinGames)
 					this.join = this.joinGames[0];
 			});
+		this.mps.getPlayer()
+			.subscribe(player => { if (player) this.router.navigate(['/']); });
+		this.mps.getErrors()
+			.subscribe(errors => this.errors = errors);
 	}
 	
 	resumeGame() {
-		this.mps.setPlayer(this.resume.player.id)
-			.subscribe((player) => this.router.navigate(['/']));
+		this.mps.setPlayer(this.resume.player.id);
 	}
 	
 	joinGame() {
-		console.log('Not yet implemented');
-	}
-	
-	get diagnostic() {
-		return JSON.stringify(this.games);
-	}
-	
-	/*save(): void {
-		this.processing = true;
-		this.mps.playerAction(this.player.id, new PlayerAction(action, (action == 'spy' || action == 'attack') ? this.targetPlayer.id : null))
-			.subscribe(() => {
-				this.processing = false;
-				this.closeModal();
+		this.joining = true;
+		this.mps.joinGame(this.join.id, this.character_name)
+			.subscribe(result => {
+				if (result)
+					this.mps.setPlayer(result["player_id"]);
+				else
+					this.joining = false;
 			});
-	}*/
+	}
 }

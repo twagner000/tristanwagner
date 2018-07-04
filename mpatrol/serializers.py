@@ -232,6 +232,17 @@ class PlayerActionSerializer(serializers.ModelSerializer):
         return data
 
         
+"""class JoinGameSerializer(serializers.ModelSerializer):
+    character_name = serializers.CharField(max_length=50, write_only=True)
+    
+    class Meta:
+        model = models.Game
+        fields = ('id', 'character_name')
+        validators = [
+            serializers.UniqueTogetherValidator(queryset=models.Player.objects.all(), fields=('id', 'character_name'))
+        ]"""
+
+        
 class PlayerSerializer(serializers.ModelSerializer):
     game = BriefGameSerializer()
     ll = LeaderLevelSerializer()
@@ -250,9 +261,11 @@ class PlayerSerializer(serializers.ModelSerializer):
                   
 
 class PublicPlayerSerializer(serializers.ModelSerializer):
+    game = serializers.PrimaryKeyRelatedField(queryset=models.Game.objects.all())
     class Meta:
         model = models.Player
-        fields = ('id', 'character_name', 'is_protected')
+        fields = ('game', 'id', 'character_name', 'is_protected')
+        read_only_fields = ('id', 'is_protected',)
 
 
 class ChoosePlayerSerializer(PublicPlayerSerializer):

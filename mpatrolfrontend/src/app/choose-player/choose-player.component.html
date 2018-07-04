@@ -16,13 +16,20 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<form *ngIf="joinGames.length">
+					<alert *ngIf="errors && errors.operation == 'joinGame' && errors.errors.non_field_errors" type="warning">
+						<ul><li *ngFor="let e of errors.errors.non_field_errors">{{e}}</li></ul>
+					</alert>
 					<div class="form-group">
 						<label for="game" hidden>Join Game</label>
 						<select class="form-control" id="join" name="join" [(ngModel)]="join">
 							<option *ngFor="let g of joinGames" [ngValue]="g">"{{g.name}}" started {{g.started_date | date:'shortDate'}}</option>
 						</select>
 					</div>
-					<button type="button" class="btn btn-default pull-right" (click)="joinGame()" [disabled]="!join">Join</button>
+					<div class="form-group">
+						<label for="character_name" hidden>Character Name</label>
+						<input type="text" class="form-control" id="character_name" name="character_name" [(ngModel)]="character_name" placeholder="Character name"/>
+					</div>
+					<button type="button" class="btn btn-default pull-right" (click)="joinGame()" [disabled]="!join || !character_name || joining">Join</button>
 				</form>
 				<a *ngIf="!joinGames.length" class="btn btn-default btn-block disabled">No new games available to join <span class="far fa-frown"></span></a>
 			</div>

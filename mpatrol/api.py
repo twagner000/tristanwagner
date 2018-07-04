@@ -8,6 +8,7 @@ from rest_framework_extensions.mixins import NestedViewSetMixin
 import datetime
 import random
 import json
+import sys
 
 from . import serializers, models, constants
     
@@ -130,12 +131,29 @@ class GameViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     if not settings.DEBUG:
         permission_classes = [IsAuthenticated]
         
-        
-class PublicPlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class PublicPlayerViewSet(NestedViewSetMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Player.objects.all()
     serializer_class = serializers.PublicPlayerSerializer
     if not settings.DEBUG:
         permission_classes = [IsAuthenticated]
+        
+    def create(self, request, parent_lookup_game_id):
+        user = self.request.user if not settings.DEBUG else models.Player.objects.filter(user__username='tristan').first().user
+        request.data.update({'game':parent_lookup_game_id}) #models.Game.objects.get(id=parent_lookup_game_id)
+        
+        print(request.data)
+        serializer = serializers.PublicPlayerSerializer(data=request.data)
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            p = models.Player(game=serializer.validated_data['game'], user=user, character_name=serializer.validated_data['character_name'])
+            p.save()
+            for i in range(1,9):
+                p.battalions.create(battalion_number=i)
+            p.save()
+            msg = 'Successfully joined game {0}'.format(p.game)
+            return Response({'message':msg, 'player_id':p.id}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         
 class Top5PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):

@@ -14,7 +14,7 @@ import { BattalionArmComponent }   from './battalion-arm/battalion-arm.component
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'choose-player', component: ChoosePlayerComponent },
+  { path: 'choose', component: ChoosePlayerComponent },
   { path: 'forbidden', component: ForbiddenComponent },
   { path: 'upgrade', children: [
 	  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
