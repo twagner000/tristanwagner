@@ -1,0 +1,156 @@
+<div class="panel panel-default">
+	<div class="panel-heading">
+		Logs
+		<span class="pull-right"><a [routerLink]="" (click)="openModal(logInfo)" title="More info on Logs"><span class="far fa-question-circle" aria-hidden="true"></span></a></span>
+	</div>
+	<div class="panel-body">
+		<div class="btn-group">
+			<label class="btn btn-default" [(ngModel)]="logType" btnRadio="attack" tabindex="0" role="button"><i class="fas fa-bullseye"></i> Battles</label>
+			<label class="btn btn-default" [(ngModel)]="logType" btnRadio="spy" tabindex="0" role="button"><i class="fas fa-user-secret"></i> Espionage</label>
+			<label class="btn btn-default" [(ngModel)]="logType" btnRadio="work" tabindex="0" role="button"><i class="fas fa-briefcase"></i> Work</label>
+		</div>
+	</div>
+	<ng-container *ngIf="logType == 'attack'">
+		<div *ngIf="!battleLogs?.length" class="panel-body">No battles fought yet</div>
+		<div *ngIf="battleLogs?.length" class="table-responsive">
+			<table class="table">
+				<tr>
+					<th></th>
+					<th>Date</th>
+					<th>Attacker</th>
+					<th>Defender</th>
+					<th class="text-right">Gold</th>
+					<th class="text-right">XP</th>
+				</tr>
+				<tr *ngFor="let log of battleLogs">
+					<td><button class="btn btn-default btn-xs" (click)="openModal(attackDetail,log)"><i class="fas fa-search-plus"></i></button></td>
+					<td>{{log.date | date:'shortDate'}}</td>
+					<ng-container *ngIf="log.action == 'attack'">
+						<td><i *ngIf="log.json_data?.winner_id == log.json_data?.attacker_id" class="fas fa-trophy"></i> {{player.character_name}}</td>
+						<td><i *ngIf="log.json_data?.winner_id != log.json_data?.attacker_id" class="fas fa-trophy"></i> {{log.target_player?.character_name}}</td>
+					</ng-container>
+					<ng-container *ngIf="log.action == 'was-attacked'">
+						<td><i *ngIf="log.json_data?.winner_id == log.json_data?.attacker_id" class="fas fa-trophy"></i> {{log.target_player?.character_name}}</td>
+						<td><i *ngIf="log.json_data?.winner_id != log.json_data?.attacker_id" class="fas fa-trophy"></i> {{player.character_name}}</td>
+					</ng-container>
+					<ng-container *ngIf="log.json_data?.winner_id == player.id">
+						<td class="text-right">+{{log.json_data?.gold_won|number}} <i class="fas fa-coins"></i></td>
+						<td class="text-right">+{{log.json_data?.xp_won|number}} <i class="fas fa-angle-double-up"></i></td>
+					</ng-container>
+					<ng-container *ngIf="log.json_data?.winner_id != player.id">
+						<td class="text-right text-danger">-{{log.json_data?.gold_won|number}} <i class="fas fa-coins"></i></td>
+						<td class="text-right">-</td>
+					</ng-container>
+				</tr>
+			</table>
+		</div>
+	</ng-container>
+	<ng-container *ngIf="logType == 'spy'">
+		<div *ngIf="!espionageLogs?.length" class="panel-body">No espionage events yet.</div>
+		<div *ngIf="espionageLogs?.length" class="table-responsive">
+			<table class="table">
+				<tr>
+					<th></th>
+					<th>Date</th>
+					<th>Spy</th>
+					<th>Target</th>
+				</tr>
+				<tr *ngFor="let log of espionageLogs">
+					<td><button class="btn btn-default btn-xs" (click)="openModal(spyDetail,log)"><i class="fas fa-search-plus"></i></button></td>
+					<td>{{log.date | date:'shortDate'}}</td>
+					<ng-container *ngIf="log.action == 'spy'">
+						<td>{{player.character_name}}</td>
+						<td><i *ngIf="!log.success" class="fas fa-eye"></i> {{log.target_player?.character_name}}</td>
+					</ng-container>
+					<ng-container *ngIf="log.action == 'spied-on'">
+						<td>{{log.target_player?.character_name}}</td>
+						<td><i class="fas fa-eye"></i> {{player.character_name}}</td>
+					</ng-container>
+				</tr>
+			</table>
+		</div>
+	</ng-container>
+	<ng-container *ngIf="logType == 'work'">
+		<div *ngIf="!workLogs?.length" class="panel-body">No work history yet.</div>
+		<table *ngIf="workLogs?.length" class="table">
+			<tr>
+				<th>Date</th>
+				<th class="text-right">Gold</th>
+				<th class="text-right">XP</th>
+			</tr>
+			<tr *ngFor="let log of workLogs">
+				<td>{{log.date | date:'shortDate'}}</td>
+				<td class="text-right">+{{log.json_data['work_gold']|number}} <i class="fas fa-coins"></i></td>
+				<td class="text-right">+{{log.json_data['work_xp']|number}} <i class="fas fa-angle-double-up"></i></td>
+			</tr>
+		</table>
+	</ng-container>
+
+
+</div>
+
+<ng-template #logInfo>
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" aria-label="Close" (click)="closeModal()"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">Logs</h4>
+		</div>
+		<div class="modal-body">
+			<p>Records of some of your most important actions are retained in the logs.</p>
+			<p>You can check details from battles you have fought, results from previous spy actions, or your earnings history from putting your creatures to work.</p>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" (click)="closeModal()">Close</button>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #attackDetail>
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" aria-label="Close" (click)="closeModal()"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">Battle Detail</h4>
+		</div>
+		<div class="modal-body">
+			<div [innerHTML]="selectedLog?.description"></div>
+		</div>
+		<div class="table-responsive">
+			<table class="table">
+				<tr>
+					<th>Leader</th>
+					<th class="text-right">Attack</th>
+					<th class="text-right">Blocked</th>
+					<th class="text-right">Damage</th>
+					<th class="text-right">Attacker Life</th>
+					<th class="text-right">Defender Life</th>
+				</tr>
+				<tr *ngFor="let t of selectedLog?.json_data?.battle">
+					<td>{{t.leader}}</td>
+					<td class="text-right">{{t.attack|number}}</td>
+					<td class="text-right">{{t.blocked|number}}</td>
+					<td class="text-right">{{t.damage|number}}</td>
+					<td class="text-right">{{t.attacker_life|number}}</td>
+					<td class="text-right">{{t.defender_life|number}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" (click)="closeModal()">Close</button>
+		</div>
+	</div>
+</ng-template>
+
+<ng-template #spyDetail>
+	<div class="modal-content">
+		<div class="modal-header">
+			<button type="button" class="close" aria-label="Close" (click)="closeModal()"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">Espionage Event Detail</h4>
+		</div>
+		<div class="modal-body">
+			<div [innerHTML]="selectedLog?.description"></div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" (click)="closeModal()">Close</button>
+		</div>
+	</div>
+</ng-template>

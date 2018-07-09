@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Player, PublicPlayer, PlayerScore, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial, GamePlayer } from './mpatrol';
+import { Player, PublicPlayer, PlayerScore, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial, GamePlayer, PlayerLog } from './mpatrol';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -48,6 +48,7 @@ const httpOptions = {
 export class MpatrolService {
 	private url = 'http://localhost:8000/mpatrol/api/';
 	private player = new BehaviorSubject<Player>(null);
+	private playerLogs = new BehaviorSubject<PlayerLog[]>(null);
 	private player_id: number = null;
 	private refreshingPlayer: boolean = false;
 	messages: Message[] = [];
@@ -107,6 +108,7 @@ export class MpatrolService {
 		this.clearPlayer();
 		this.player_id = player_id;
 		this.getPlayer();
+		this.getPlayerLogs();
 	}
 	
 	joinGame(game_id: number, character_name: string): Observable<any> {
@@ -128,6 +130,10 @@ export class MpatrolService {
 		return this.player.asObservable();
 	}
 	
+	getPlayerLogs (): Observable<PlayerLog[]> {
+		return this.playerLogs.asObservable();
+	}
+	
 	refreshPlayer() {
 		this.refreshingPlayer = true;
 		this.http.get<Player>(`${this.url}player/${this.player_id}/`).pipe(
@@ -137,11 +143,16 @@ export class MpatrolService {
 				this.player.next(player);
 				this.refreshingPlayer = false;
 			});
+		this.http.get<PlayerLog[]>(`${this.url}player/${this.player_id}/log/`).pipe(
+			tap(_ => this.addMessage('info',`fetched playerlogs`)),
+			catchError(this.handleError('refreshPlayer', []))
+		).subscribe(logs => this.playerLogs.next(logs));
 	}
 	
 	clearPlayer() {
 		this.player_id = null;
 		this.player.next(null);
+		this.playerLogs.next(null);
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {

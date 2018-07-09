@@ -122,6 +122,16 @@ export class PlayerScore extends PublicPlayer {
 	static_score: number;
 }
 
+export class PlayerLog {
+	player: number;
+	target_player: PublicPlayer;
+	date: Date;
+	action: string;
+	action_points: number;
+	description: string;
+	json_data: Object;
+}
+
 export class Player {
 	id: number;
 	game: BriefGame;

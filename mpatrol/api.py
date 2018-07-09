@@ -211,7 +211,8 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
             player.gold += calc['work_gold']
             player.xp += calc['work_xp']
             msg = 'You worked for one day and earned {0} gold and {1} xp. You will not be able to attack or earn money again this turn.'.format(calc['work_gold'],calc['work_xp'])
-            log = models.PlayerLog(player=player, action='work', action_points=1, description=msg)
+            json_data = {'work_gold':calc['work_gold'], 'work_xp':calc['work_xp']}
+            log = models.PlayerLog(player=player, action='work', action_points=1, description=msg, json_data=json.dumps(json_data))
             player.save()
             log.save()
             return Response({'message':msg}, status=status.HTTP_200_OK)
@@ -225,9 +226,9 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         if serializer.is_valid():
             target_player = serializer.validated_data['target_player']
             calc = target_player.calc()
-            json_data = {'discovered': False}
+            json_data = {'discovered': False, 'num_creatures':sum(b.count for b in target_player.battalions.all())}
             msg = "<p>Your spies have reported back with the following information on {0}:</p><ul>".format(target_player.character_name)
-            msg += "<li>This Patrol Master has {0} creatures in their patrol.</li>".format(sum(b.count for b in target_player.battalions.all()))
+            msg += "<li>This Patrol Master has {0} creatures in their patrol.</li>".format(json_data['num_creatures'])
             if random.random() < 0.5:
                 json_data['work_gold'] = calc['work_gold']
                 msg += "<li>This Patrol Master earns {0} gold per turn.</li>".format(calc['work_gold'])

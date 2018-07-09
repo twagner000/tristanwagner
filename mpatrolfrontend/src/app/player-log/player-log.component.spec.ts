@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MailComponent } from './mail.component';
+import { PlayerLogComponent } from './player-log.component';
 
-describe('MailComponent', () => {
-  let component: MailComponent;
-  let fixture: ComponentFixture<MailComponent>;
+describe('PlayerLogComponent', () => {
+  let component: PlayerLogComponent;
+  let fixture: ComponentFixture<PlayerLogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MailComponent ]
+      declarations: [ PlayerLogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MailComponent);
+    fixture = TestBed.createComponent(PlayerLogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -108,14 +108,6 @@ class BattalionSerializer(BriefBattalionSerializer):
     class Meta(BriefBattalionSerializer.Meta):
         fields = BriefBattalionSerializer.Meta.fields + ('training_cost_xp_ea', 'up_opts_creature', 'up_opt_level', 'up_opts_weapon_base', 'up_opts_weapon_material')
         
-        
-class PlayerLogSerializer(serializers.ModelSerializer):
-    json_data = JSONTextField()
-    
-    class Meta:
-        model = models.PlayerLog
-        fields = ('player', 'target_player', 'date', 'action', 'action_points', 'description', 'json_data')
-
 
 class BattalionUpdateSerializer(serializers.ModelSerializer):
     ACTIONS = ('hire','fire','train','arm')
@@ -232,17 +224,6 @@ class PlayerActionSerializer(serializers.ModelSerializer):
         return data
 
         
-"""class JoinGameSerializer(serializers.ModelSerializer):
-    character_name = serializers.CharField(max_length=50, write_only=True)
-    
-    class Meta:
-        model = models.Game
-        fields = ('id', 'character_name')
-        validators = [
-            serializers.UniqueTogetherValidator(queryset=models.Player.objects.all(), fields=('id', 'character_name'))
-        ]"""
-
-        
 class PlayerSerializer(serializers.ModelSerializer):
     game = BriefGameSerializer()
     ll = LeaderLevelSerializer()
@@ -285,3 +266,13 @@ class ChoosePlayerSerializer(PublicPlayerSerializer):
 class PlayerScoreSerializer(PublicPlayerSerializer):
     class Meta(PublicPlayerSerializer.Meta):
         fields = PublicPlayerSerializer.Meta.fields + ('score_rank', 'static_score')
+        
+        
+class PlayerLogSerializer(serializers.ModelSerializer):
+    json_data = JSONTextField()
+    target_player = PublicPlayerSerializer()
+    
+    class Meta:
+        model = models.PlayerLog
+        fields = ('player', 'target_player', 'date', 'action', 'action_points', 'description', 'json_data', 'success')
+
