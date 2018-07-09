@@ -2,29 +2,12 @@
 {% load staticfiles %}
 
 {% block content %}
-	<div class="row">
-        <div class="col-sm-4">
-			{% if resume_form.fields.player.queryset %}
-				<div class="panel panel-primary">
-					<div class="panel-body">{% include "mpatrol/resume_form.html" with form=resume_form %}</div>
-				</div>
-			{% endif %}
-			<div class="panel panel-default">
-				<div class="panel-body">
-					{% if not request.user.is_authenticated %}
-						<a class="btn btn-default btn-block disabled">Must be logged in to play</a>
-					{% elif join_form.fields.game.queryset %}
-						{% include "mpatrol/join_form.html" with form=join_form %}
-					{% else %}
-						<a class="btn btn-default btn-block disabled">No games currently available to join <span class="far fa-frown"></span></a>
-					{% endif %}
-				</div>
-			</div>			
-        </div>
-		<div class="col-sm-8">
-			<h4>The Mossflower Patrol Game</h4>
-			<p>{% lorem %}</p>
-			<p>{% lorem %}</p>
-		</div>
-    </div>
+	<div>
+		<app-root></app-root>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/runtime.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/polyfills.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/styles.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/vendor.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/main.js' %}"></script>
+	</div>
 {% endblock %}

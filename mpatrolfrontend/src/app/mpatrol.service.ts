@@ -63,7 +63,7 @@ export class MpatrolService {
 		private router: Router
 	) {
 		for (var i=1; i<=10; i++)
-			this.playlist.push(`../assets/${i}.mp3`);
+			this.playlist.push(`/static/mpatrolfrontend/assets/${i}.mp3`);
 		this.nextSong(false);
 		this.audio.onended = () => this.nextSong();
 	}

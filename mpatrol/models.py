@@ -309,7 +309,6 @@ class Player(models.Model):
         return False
         
     def avail_action_points(self):
-        return 1
         today = datetime.datetime.now().astimezone(constants.pacific).date()
         ap_sum = self.logs.filter(date__gte=today).aggregate(Sum('action_points'))['action_points__sum']
         return max(0,1-(ap_sum if ap_sum else 0))
