@@ -23,6 +23,7 @@ THIRD_PARTY_APPS = (
     'widget_tweaks',
     'crispy_forms',  # Form layouts
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders', #for Angular + Django development
     #'allauth',  # registration
     #'allauth.account',  # registration
@@ -35,7 +36,9 @@ LOCAL_APPS = (
     'games',
     'deveconsim',
     'puzzles',
+    'mpatrol_api',
     'mpatrol',
+    'accounts',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -169,3 +172,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Your common stuff: Below this line define 3rd party library settings
 BGG_USER = env('BGG_USER')
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}

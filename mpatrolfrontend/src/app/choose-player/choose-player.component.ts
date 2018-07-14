@@ -19,7 +19,7 @@ export class ChoosePlayerComponent implements OnInit {
 	errors = null;
 	
 	constructor(
-		private mps: MpatrolService,
+		public mps: MpatrolService,
 		private router: Router
 	) { }
 

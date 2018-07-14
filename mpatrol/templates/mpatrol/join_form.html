@@ -1,9 +1,0 @@
-{% load widget_tweaks %}
-
-<form role="form" action="{% url 'mpatrol:join' %}" method="post">
-	{% csrf_token %}
-	{% for field in form %}
-	<div class="form-group">{{field|add_class:"form-control"}}</div>
-	{% endfor %}
-	<button type="submit" class="btn btn-default btn-block">Join</button>
-</form>

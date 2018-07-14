@@ -1,5 +1,7 @@
 export class Calc {
 	cp_avail: number;
+	attack: number;
+	defense: number;
 }
 
 export class BriefCreature {
@@ -146,4 +148,6 @@ export class Player {
 	up_opt_ll: BriefLeaderLevel;
 	up_opts_structure: BriefStructure[];
 	up_opts_technology: BriefTechnology[];
+	avail_action_points: number;
+	static_score: number;
 }

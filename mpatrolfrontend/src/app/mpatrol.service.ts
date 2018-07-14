@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { Router } from '@angular/router';
 import { Player, PublicPlayer, PlayerScore, Battalion, LeaderLevel, Structure, Technology, Creature, WeaponBase, WeaponMaterial, GamePlayer, PlayerLog } from './mpatrol';
 import { Observable, BehaviorSubject, of } from 'rxjs';
@@ -46,7 +46,8 @@ const httpOptions = {
 })
 
 export class MpatrolService {
-	private url = 'http://localhost:8000/mpatrol/api/';
+	private url = '/mpatrol-api/';
+	private token = new BehaviorSubject<string>(null);
 	private player = new BehaviorSubject<Player>(null);
 	private playerLogs = new BehaviorSubject<PlayerLog[]>(null);
 	private player_id: number = null;
@@ -62,10 +63,34 @@ export class MpatrolService {
 		private http: HttpClient,
 		private router: Router
 	) {
+		if (isDevMode())
+			this.url = 'http://127.0.0.1:8000' + this.url;
 		for (var i=1; i<=10; i++)
 			this.playlist.push(`/static/mpatrolfrontend/assets/${i}.mp3`);
 		this.nextSong(false);
 		this.audio.onended = () => this.nextSong();
+		this.getToken()
+			.subscribe(result => {
+				console.log('service constructor getToken');
+				console.log(result);
+				if (result && result['token'])
+					this.token.next(result['token']);
+				else
+					this.token.next(null);
+			});
+	}
+	
+	getToken() {
+		if (isDevMode()) {
+			return this.http.post(`${this.url}auth-token/`, { 'username': 'luke', 'password': 'password' }, httpOptions)
+				.pipe(
+					catchError(this.handleError<any>(`getToken(post)`))
+				);
+		}
+		return this.http.get<Object>(`${this.url}auth-token/`)
+			.pipe(
+				catchError(this.handleError<any>(`getToken(get)`))
+			);
 	}
 	
 	nextSong(autoplay: boolean = true) {

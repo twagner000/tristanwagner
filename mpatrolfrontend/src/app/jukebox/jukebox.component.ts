@@ -13,7 +13,7 @@ export class JukeboxComponent implements OnInit {
 	modalRef: BsModalRef;
 	
 	constructor(
-		private mps: MpatrolService,
+		public mps: MpatrolService,
 		private modalService: BsModalService
 	) { }
 

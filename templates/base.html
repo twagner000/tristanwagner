@@ -42,7 +42,16 @@
               <ul class="nav navbar-nav">
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <!--li><a href="#">Blog</a></li-->
-                <li><a href="{% url 'games:index' %}">Games</a></li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" id="navGamesLabel" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						Games <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" aria-labelledby="navGamesLabel">
+						<li><a href="{% url 'games:index' %}">Board Games</a></li>
+						<li><a href="{% url 'deveconsim:index' %}">Developing Economy Simulation</a></li>
+						<li><a href="{% url 'mpatrol:index' %}">Mossfower Patrol Game</a></li>
+					</ul>
+				</li>
                 <li><a href="{% url 'puzzles:index' %}">Puzzles</a></li>
                 <li><a href="{% url 'checklist:index' %}">Checklists</a></li>
                 <!--li><a href="#">About</a></li-->

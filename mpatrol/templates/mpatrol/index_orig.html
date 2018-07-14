@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block extracss %}
+<link rel="stylesheet" href="{% static 'mpatrolfrontend/styles.34c57ab7888ec1573f9c.css' %}">
+{% endblock %}
+
+{% block content %}
+	<div>
+		<app-root></app-root>
+		
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/runtime.a66f828dca56eeb90e02.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/polyfills.2f4a59095805af02bd79.js' %}"></script>
+		<script type="text/javascript" src="{% static 'mpatrolfrontend/main.ed4bb78bb490cf1a37b6.js' %}"></script>
+	</div>
+{% endblock %}

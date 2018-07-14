@@ -1,59 +1,88 @@
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from rest_framework import generics, viewsets, views, mixins, status
+from django.contrib.auth import authenticate
+from rest_framework import generics, viewsets, views, mixins, status, permissions, authentication
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework_extensions.mixins import NestedViewSetMixin
+from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 import datetime
 import random
 import json
 import sys
 
 from . import serializers, models, constants
+
+class AuthTokenViewSet(viewsets.ViewSet):
+    authentication_classes = (authentication.SessionAuthentication,)
     
+    def list(self, request, format=None):
+        token, created = Token.objects.get_or_create(user=self.request.user)
+        return Response({'token': token.key})
+        
+    def create(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if user:
+                print(user)
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({'token': token.key}) 
+        return Response()
+        
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [permissions.AllowAny]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
     
 class LeaderLevelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.LeaderLevel.objects.all()
     serializer_class = serializers.LeaderLevelSerializer
+    permission_classes = [permissions.AllowAny]
         
 
 class TechnologyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Technology.objects.all()
     serializer_class = serializers.TechnologySerializer
+    permission_classes = [permissions.AllowAny]
 
     
 class StructureViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Structure.objects.all()
     serializer_class = serializers.StructureSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class CreatureViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.Creature.objects.all()
     serializer_class = serializers.CreatureSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class WeaponBaseViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.WeaponBase.objects.all()
     serializer_class = serializers.WeaponBaseSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class WeaponMaterialViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.WeaponMaterial.objects.all()
     serializer_class = serializers.WeaponMaterialSerializer
+    permission_classes = [permissions.AllowAny]
 
 
 class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Battalion.objects.all()
     serializer_class = serializers.BattalionSerializer
     lookup_field = 'battalion_number'
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         q = super().get_queryset()
-        if settings.DEBUG:
-            return q.filter(player__game__ended_date__isnull=True)
         return q.filter(player__user=self.request.user, player__game__ended_date__isnull=True)
         
     @action(methods=['post'], detail=True)
@@ -128,17 +157,13 @@ class BattalionViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
 class GameViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Game.objects.filter(ended_date__isnull=True)
     serializer_class = serializers.GamePlayerSerializer
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
         
 class PublicPlayerViewSet(NestedViewSetMixin, mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Player.objects.all()
     serializer_class = serializers.PublicPlayerSerializer
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
         
     def create(self, request, parent_lookup_game_id):
-        user = self.request.user if not settings.DEBUG else models.Player.objects.filter(user__username='tristan').first().user
+        user = self.request.user #if not settings.DEBUG else models.Player.objects.filter(user__username='tristan').first().user
         request.data.update({'game':parent_lookup_game_id}) #models.Game.objects.get(id=parent_lookup_game_id)
         
         print(request.data)
@@ -159,8 +184,6 @@ class PublicPlayerViewSet(NestedViewSetMixin, mixins.CreateModelMixin, viewsets.
 class Top5PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.Player.objects.all()
     serializer_class = serializers.PlayerScoreSerializer
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         q = super().get_queryset().order_by('-static_score')
@@ -174,24 +197,16 @@ class Top5PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
 class PlayerLogViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     queryset = models.PlayerLog.objects.all()
     serializer_class = serializers.PlayerLogSerializer
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         q = super().get_queryset()
-        if settings.DEBUG:
-            return q.filter(player__game__ended_date__isnull=True)
         return q.filter(player__user=self.request.user, player__game__ended_date__isnull=True)
             
             
 class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.PlayerSerializer
-    if not settings.DEBUG:
-        permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        if settings.DEBUG:
-            return models.Player.objects.filter(game__ended_date__isnull=True)
         return models.Player.objects.filter(user=self.request.user, game__ended_date__isnull=True)
         
     def retrieve(self, request, pk=None):
