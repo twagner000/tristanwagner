@@ -37,10 +37,6 @@ export class Message {
 	) { }
 }
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
-
 @Injectable({
 	providedIn: 'root'
 })
@@ -48,6 +44,10 @@ const httpOptions = {
 export class MpatrolService {
 	private url = '/mpatrol-api/';
 	private token = new BehaviorSubject<string>(null);
+	private httpOptions = {headers: new HttpHeaders({
+		'Content-Type': 'application/json',
+		'Authorization': ''
+		})};
 	private player = new BehaviorSubject<Player>(null);
 	private playerLogs = new BehaviorSubject<PlayerLog[]>(null);
 	private player_id: number = null;
@@ -57,7 +57,6 @@ export class MpatrolService {
 	private playlist = [];
 	private playlist_index = -1;
 	audio = new Audio();
-	forbidden: boolean = false;
 	
 	constructor(
 		private http: HttpClient,
@@ -69,28 +68,28 @@ export class MpatrolService {
 			this.playlist.push(`/static/mpatrolfrontend/assets/${i}.mp3`);
 		this.nextSong(false);
 		this.audio.onended = () => this.nextSong();
-		this.getToken()
-			.subscribe(result => {
-				console.log('service constructor getToken');
-				console.log(result);
-				if (result && result['token'])
-					this.token.next(result['token']);
-				else
-					this.token.next(null);
-			});
+		this.refreshToken().subscribe(token => {
+			if (!token) this.router.navigate(['/']);
+		});
 	}
 	
 	getToken() {
-		if (isDevMode()) {
-			return this.http.post(`${this.url}auth-token/`, { 'username': 'luke', 'password': 'password' }, httpOptions)
-				.pipe(
-					catchError(this.handleError<any>(`getToken(post)`))
-				);
-		}
-		return this.http.get<Object>(`${this.url}auth-token/`)
+		return this.token.asObservable();
+	}
+	
+	refreshToken() {
+		(isDevMode() ? this.http.post(`${this.url}auth-token/`, { 'username': 'luke', 'password': 'password' }, this.httpOptions) : this.http.get<Object>(`${this.url}auth-token/`))
 			.pipe(
-				catchError(this.handleError<any>(`getToken(get)`))
-			);
+				catchError(this.handleError<any>(`refreshToken`))
+			)
+			.subscribe(result => {
+				let new_token = null;
+				if (result && result['token'])
+					new_token = result['token'];
+				this.httpOptions.headers = this.httpOptions.headers.set('Authorization', `Token ${new_token}`);
+				this.token.next(new_token);
+			});
+		return this.token.asObservable();
 	}
 	
 	nextSong(autoplay: boolean = true) {
@@ -137,7 +136,7 @@ export class MpatrolService {
 	}
 	
 	joinGame(game_id: number, character_name: string): Observable<any> {
-		return this.http.post(`${this.url}game/${game_id}/player/`, {'character_name': character_name}, httpOptions)
+		return this.http.post(`${this.url}game/${game_id}/player/`, {'character_name': character_name}, this.httpOptions)
 			.pipe(
 				tap(result => {
 					this.addMessage('info',`joined game_id=${game_id}`);
@@ -161,14 +160,14 @@ export class MpatrolService {
 	
 	refreshPlayer() {
 		this.refreshingPlayer = true;
-		this.http.get<Player>(`${this.url}player/${this.player_id}/`).pipe(
+		this.http.get<Player>(`${this.url}player/${this.player_id}/`, this.httpOptions).pipe(
 			tap(_ => this.addMessage('info',`fetched player_id=${this.player_id}`)),
 			catchError(this.handleError<Player>(`refreshPlayer`))
 		).subscribe(player => {
 				this.player.next(player);
 				this.refreshingPlayer = false;
 			});
-		this.http.get<PlayerLog[]>(`${this.url}player/${this.player_id}/log/`).pipe(
+		this.http.get<PlayerLog[]>(`${this.url}player/${this.player_id}/log/`, this.httpOptions).pipe(
 			tap(_ => this.addMessage('info',`fetched playerlogs`)),
 			catchError(this.handleError('refreshPlayer', []))
 		).subscribe(logs => this.playerLogs.next(logs));
@@ -181,7 +180,7 @@ export class MpatrolService {
 	}
 
 	upgradePlayer (upgrade: PlayerUpgrade): Observable<any> {
-		return this.http.post(`${this.url}player/${this.player_id}/upgrade/`, upgrade, httpOptions)
+		return this.http.post(`${this.url}player/${this.player_id}/upgrade/`, upgrade, this.httpOptions)
 			.pipe(
 				tap(_ => {
 					this.addMessage('info',`upgraded player_id=${this.player_id} type=${upgrade.upgrade_type} upgrade_id=${upgrade.upgrade_id}`);
@@ -192,7 +191,7 @@ export class MpatrolService {
 	}
 	
 	playerAction (player_id: number, playerAction: PlayerAction): Observable<any> {
-		return this.http.post(`${this.url}player/${player_id}/${playerAction.action}/`, playerAction, httpOptions)
+		return this.http.post(`${this.url}player/${player_id}/${playerAction.action}/`, playerAction, this.httpOptions)
 			.pipe(
 				tap(result => {
 					this.addMessage('success',result['message'],false);
@@ -203,7 +202,7 @@ export class MpatrolService {
 	}
 	
 	getBattalion (player_id: number, battalion_number: number): Observable<Battalion> {
-		return this.http.get<Battalion>(`${this.url}player/${player_id}/battalion/${battalion_number}/`)
+		return this.http.get<Battalion>(`${this.url}player/${player_id}/battalion/${battalion_number}/`, this.httpOptions)
 			.pipe(
 				tap(battalion => this.addMessage('info',`fetched player ${player_id} battalion number ${battalion_number}`)),
 				catchError(this.handleError<Battalion>(`getBattalion`))
@@ -211,7 +210,7 @@ export class MpatrolService {
 	}
 	
 	updateBattalion (player_id: number, battalion_number: number, action: string, update: BattalionUpdate): Observable<any> {
-		return this.http.post(`${this.url}player/${player_id}/battalion/${battalion_number}/${action}/`, update, httpOptions)
+		return this.http.post(`${this.url}player/${player_id}/battalion/${battalion_number}/${action}/`, update, this.httpOptions)
 			.pipe(
 				tap(_ => {
 					this.addMessage('info',`updated action ${action} player ${player_id} battalion number ${battalion_number}`);
@@ -230,9 +229,7 @@ export class MpatrolService {
 	}
 	
 	getGames (): Observable<GamePlayer[]> {
-		if (this.forbidden)
-			return new BehaviorSubject<GamePlayer[]>([]).asObservable();
-		return this.http.get<GamePlayer[]>(`${this.url}game/`)
+		return this.http.get<GamePlayer[]>(`${this.url}game/`, this.httpOptions)
 			.pipe(
 				tap(games => this.addMessage('info',`fetched games`)),
 				catchError(this.handleError('getGames', []))
@@ -240,7 +237,7 @@ export class MpatrolService {
 	}
 	
 	getPlayers (game_id: number): Observable<PublicPlayer[]> {
-		return this.http.get<PublicPlayer[]>(`${this.url}game/${game_id}/player/`)
+		return this.http.get<PublicPlayer[]>(`${this.url}game/${game_id}/player/`, this.httpOptions)
 			.pipe(
 				tap(players => this.addMessage('info',`fetched players`)),
 				catchError(this.handleError('getPlayers', []))
@@ -248,7 +245,7 @@ export class MpatrolService {
 	}
 	
 	getTop5 (game_id: number): Observable<PlayerScore[]> {
-		return this.http.get<PlayerScore[]>(`${this.url}game/${game_id}/top5/`)
+		return this.http.get<PlayerScore[]>(`${this.url}game/${game_id}/top5/`, this.httpOptions)
 			.pipe(
 				tap(top5 => this.addMessage('info',`fetched top5`)),
 				catchError(this.handleError('getTop5', []))
@@ -311,8 +308,7 @@ export class MpatrolService {
 			if (error.status == 400 && error.error) {
 				this.errors.next({'operation':operation, 'errors':error.error, 'error_keys':Object.keys(error.error)});
 			} else if (error.status == 403) {
-				this.forbidden = true;
-				this.router.navigate(['/']);
+				
 			} else {
 				this.addMessage('danger',`${operation} failed: ${error.message}\n${JSON.stringify(error.error)}`,false);
 			}

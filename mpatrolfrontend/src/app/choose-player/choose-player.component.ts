@@ -17,27 +17,35 @@ export class ChoosePlayerComponent implements OnInit {
 	character_name: string;
 	joining: boolean = false;
 	errors = null;
+	hasToken: boolean = false;
 	
 	constructor(
-		public mps: MpatrolService,
+		private mps: MpatrolService,
 		private router: Router
 	) { }
 
 	ngOnInit() {
 		this.mps.clearPlayer();
-		this.mps.getGames()
-			.subscribe(games => {
-				for (let g of games) {
-					if (g.player)
-						this.resumeGames.push(g);
-					else
-						this.joinGames.push(g);
-				}
-				if (this.resumeGames)
-					this.resume = this.resumeGames[0];
-				if (this.joinGames)
-					this.join = this.joinGames[0];
-			});
+		this.mps.getToken().subscribe(token => {
+			if (token) {
+				this.mps.getGames()
+					.subscribe(games => {
+						for (let g of games) {
+							if (g.player)
+								this.resumeGames.push(g);
+							else
+								this.joinGames.push(g);
+						}
+						if (this.resumeGames)
+							this.resume = this.resumeGames[0];
+						if (this.joinGames)
+							this.join = this.joinGames[0];
+					});
+				this.hasToken = true;
+			} else {
+				this.hasToken = false;
+			}
+		});
 		this.mps.getPlayer()
 			.subscribe(player => { if (player) this.router.navigate(['/']); });
 		this.mps.getErrors()

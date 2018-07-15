@@ -1,5 +1,4 @@
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.conf import settings
 from rest_framework import serializers
 import json
 from . import models
@@ -167,10 +166,7 @@ class GamePlayerSerializer(BriefGameSerializer):
         
     def get_player(self,obj):
         try:
-            if settings.DEBUG:
-                player = obj.player_set.get(user__username='tristan')
-            else:
-                player = obj.player_set.get(user=self.context['request'].user)
+            player = obj.player_set.get(user=self.context['request'].user)
             serializer = PublicPlayerSerializer(player, read_only=True)
             return serializer.data
         except ObjectDoesNotExist:

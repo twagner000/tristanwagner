@@ -16,12 +16,12 @@
 					</span>
 				</div>&nbsp;
 			</form>
-			<a *ngIf="mps.forbidden" class="btn btn-default btn-block disabled">Must be logged in to play</a>
+			<a *ngIf="!hasToken" class="btn btn-default btn-block disabled">Must be logged in to play</a>
 		</div>
 	</div>
 </div>
 <div class="row">
-	<div *ngIf="!mps.forbidden" class="col-sm-4">
+	<div *ngIf="hasToken" class="col-sm-4">
 		<div class="panel panel-success">
 			<div class="panel-heading">
 				<h4 class="panel-title">Join a Game</h4>
@@ -48,7 +48,7 @@
 			</div>
 		</div>
 	</div>
-	<div [class]="mps.forbidden ? 'col-sm-12' : 'col-sm-8'">
+	<div [class]="!hasToken ? 'col-sm-12' : 'col-sm-8'">
 		<h4>History of the Game</h4>
 		<p>The original Mossflower Patrol Game was created with some friends in 1998. It was inspired by Brian Jacques's <a href="https://www.redwallabbey.com/">Redwall</a> book series and was coded in <a href="http://www.aptilis.com/">Aptilis</a>. At its peak, several hundred players would regularly log in.</p>
 		<p>I've recreated this "20th Anniversary" version of the game for fun, using <a href="https://www.djangoproject.com/">django</a> and <a href="https://angular.io/">Angular</a>. Enjoy!</p>

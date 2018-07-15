@@ -12,3 +12,5 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # See https://docs.djangoproject.com/en/1.6/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [".tristanwagner.com"]
 # END SITE CONFIGURATION
+
+SECURE_SSL_REDIRECT = True

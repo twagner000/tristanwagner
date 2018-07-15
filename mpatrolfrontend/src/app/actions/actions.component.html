@@ -59,13 +59,13 @@
 				<tr [class.active]="p.id == player.id">
 					<td>{{p.character_name}}</td>
 					<td class="text-right">{{p.score_rank}}</td>
-					<td class="text-right">{{p.static_score}}</td>
+					<td class="text-right">{{p.static_score|number}}</td>
 				</tr>
 			</ng-container>
 			<tr *ngIf="player.score_rank > 5" class="active">
 				<td>{{player.character_name}}</td>
 				<td class="text-right">{{player.score_rank}}</td>
-				<td class="text-right">{{player.static_score}}</td>
+				<td class="text-right">{{player.static_score|number}}</td>
 			</tr>
 		</table>
 		<div class="modal-footer">
@@ -81,7 +81,7 @@
 	</div>
 	<div class="modal-body">
 		<p>Are you sure you want to use your daily action to put your creatures to work?</p>
-		<p>You will earn {{player.calc.work_gold}} <span class="fas fa-coins"></span> and {{player.calc.work_xp}} <span class="fas fa-angle-double-up"></span>.</p>
+		<p>You will earn {{player.calc.work_gold|number}} <span class="fas fa-coins"></span> and {{player.calc.work_xp|number}} <span class="fas fa-angle-double-up"></span>.</p>
 	</div>
 	<div class="modal-footer">
 		<button type="button" class="btn btn-default" (click)="closeModal()" [disabled]="processing">Cancel</button>

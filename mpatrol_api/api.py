@@ -27,7 +27,6 @@ class AuthTokenViewSet(viewsets.ViewSet):
         if username and password:
             user = authenticate(username=username, password=password)
             if user:
-                print(user)
                 token, created = Token.objects.get_or_create(user=user)
                 return Response({'token': token.key}) 
         return Response()

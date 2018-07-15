@@ -11,10 +11,10 @@
 				{{player.ll.level}} <span class="fas fa-user" aria-hidden="true"></span>
 			</td>
 			<td>
-				<span title="{{player.calc.cp_avail}} Creature Points">{{player.calc.cp_avail}}/{{player.ll.cp}} <span class="fas fa-bullhorn" aria-hidden="true"></span></span>
+				<span title="{{player.calc.cp_avail}} Creature Points">{{player.calc.cp_avail|number}}/{{player.ll.cp|number}} <span class="fas fa-bullhorn" aria-hidden="true"></span></span>
 			</td>
 			<td>
-				<span title="{{player.ll.life}} Life">{{player.ll.life}} <span class="fas fa-heart" aria-hidden="true"></span></span>
+				<span title="{{player.ll.life}} Life">{{player.ll.life|number}} <span class="fas fa-heart" aria-hidden="true"></span></span>
 			</td>
 		</tr>
 		<tr>

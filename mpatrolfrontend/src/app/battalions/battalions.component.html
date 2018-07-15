@@ -25,7 +25,7 @@
 				</div>
 			</td>
 			<td><span *ngIf="b.creature">{{b.creature.name}}</span></td>
-			<td class="text-right"><span *ngIf="b.creature">{{b.count}}</span></td>
+			<td class="text-right"><span *ngIf="b.creature">{{b.count|number}}</span></td>
 			<td class="text-right"><span *ngIf="b.creature">{{b.level}}</span></td>
 			<td class="text-right"><span *ngIf="b.creature && b.weapon_material && b.weapon_base">{{b.weapon_material.name}} {{b.weapon_base.name}}</span></td>
 		</tr>
