@@ -159,9 +159,9 @@ class Player(models.Model):
         r['attack'] = (1+self.ll.level/10)*sum(b.attack() for b in self.battalions.all())
         r['defense'] = (1+self.ll.level/10)*sum(b.defense() for b in self.battalions.all())
         r['oversee'] = sum(b.oversee() for b in self.battalions.all())
-        r['work_xp'] = sum(b.work_xp() for b in self.battalions.all())
+        r['work_xp'] = int(sum(b.work_xp() for b in self.battalions.all()))
         gold_mult = max(1,2-(sum(b.count for b in self.battalions.all())/r['oversee']) if r['oversee']>0 else 1)
-        r['work_gold'] = gold_mult*sum(b.work_gold() for b in self.battalions.all())
+        r['work_gold'] = int(gold_mult*sum(b.work_gold() for b in self.battalions.all()))
         #payday variable can also add +100 gold, but doesn't show up anywhere?
         return r
         

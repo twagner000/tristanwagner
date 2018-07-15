@@ -29,7 +29,7 @@
 					<tr>
 						<td colspan="2" class="text-right">
 							<a routerLink="/" class="btn btn-default">Cancel</a>&nbsp;
-							<a class="btn btn-primary" (click)="save()" [class.disabled]="!battalion.up_opt_level" >Train</a>
+							<a class="btn btn-primary" (click)="save()" [class.disabled]="!battalion.up_opt_level || battalion.count*battalion.training_cost_xp_ea > player.xp" >Train</a>
 						</td>
 					</tr>
 				</table>

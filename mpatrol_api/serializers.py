@@ -133,9 +133,11 @@ class BattalionUpdateSerializer(serializers.ModelSerializer):
             if not data['count_delta'] or data['count_delta'] < 1 or data['count_delta'] > self.instance.count:
                 raise serializers.ValidationError("invalid count_delta")
         if data['action'] == 'train':
-            data['cost_xp'] = self.instance.count*self.instance.training_cost_xp_ea()
             if not self.instance.count:
                 raise serializers.ValidationError("must have creatures in battalion")
+            data['cost_xp'] = self.instance.count*self.instance.training_cost_xp_ea()
+            if data['cost_xp'] > self.instance.player.xp:
+                raise serializers.ValidationError("insufficient xp")
             if data['level'] != self.instance.level+1:
                 raise serializers.ValidationError("invalid level")
         if data['action'] == 'arm':
