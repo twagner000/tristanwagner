@@ -25,6 +25,7 @@ THIRD_PARTY_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders', #for Angular + Django development
+    'django_cron',
     #'allauth',  # registration
     #'allauth.account',  # registration
     #'allauth.socialaccount',  # registration
@@ -169,6 +170,10 @@ ROOT_URLCONF = 'config.urls'
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = 'config.wsgi.application'
+
+CRON_CLASSES = [
+    'mpatrol_api.cron.StructureInterestCronJob',
+]
 
 # Your common stuff: Below this line define 3rd party library settings
 BGG_USER = env('BGG_USER')

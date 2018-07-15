@@ -9,6 +9,7 @@ import math
 
 from . import constants
 
+
 class Game(models.Model):
     name = models.CharField(blank=True, null=True, max_length=200)
     started_date = models.DateTimeField(auto_now_add=True)
