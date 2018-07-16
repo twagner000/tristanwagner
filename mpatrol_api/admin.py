@@ -28,7 +28,7 @@ class TechnologyAdmin(admin.ModelAdmin):
     
     
 class StructureAdmin(admin.ModelAdmin):
-    list_display = ('name', 'cost_gold', 'cost_xp', 'tech_req', 'struct_req', 'effects')
+    list_display = ('name', 'cost_gold', 'cost_xp', 'tech_req', 'struct_req', 'interest_gold', 'interest_xp', 'effects')
     
     
 class WeaponBaseAdmin(admin.ModelAdmin):

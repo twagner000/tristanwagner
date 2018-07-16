@@ -7,7 +7,7 @@
 		<div class="btn-group">
 			<label class="btn btn-default" [(ngModel)]="logType" btnRadio="attack" tabindex="0" role="button"><i class="fas fa-bullseye"></i> Battles</label>
 			<label class="btn btn-default" [(ngModel)]="logType" btnRadio="spy" tabindex="0" role="button"><i class="fas fa-user-secret"></i> Espionage</label>
-			<label class="btn btn-default" [(ngModel)]="logType" btnRadio="work" tabindex="0" role="button"><i class="fas fa-briefcase"></i> Work</label>
+			<label class="btn btn-default" [(ngModel)]="logType" btnRadio="income" tabindex="0" role="button"><i class="fas fa-briefcase"></i> Income</label>
 		</div>
 	</div>
 	<ng-container *ngIf="logType == 'attack'">
@@ -70,16 +70,18 @@
 			</table>
 		</div>
 	</ng-container>
-	<ng-container *ngIf="logType == 'work'">
-		<div *ngIf="!workLogs?.length" class="panel-body">No work history yet.</div>
-		<table *ngIf="workLogs?.length" class="table">
+	<ng-container *ngIf="logType == 'income'">
+		<div *ngIf="!incomeLogs?.length" class="panel-body">No income history yet.</div>
+		<table *ngIf="incomeLogs?.length" class="table">
 			<tr>
 				<th>Date</th>
+				<th>Action</th>
 				<th class="text-right">Gold</th>
 				<th class="text-right">XP</th>
 			</tr>
-			<tr *ngFor="let log of workLogs">
+			<tr *ngFor="let log of incomeLogs">
 				<td>{{log.date | date:'shortDate'}}</td>
+				<td>{{log.action|titlecase}}</td>
 				<td class="text-right">+{{log.json_data['work_gold']|number}} <i class="fas fa-coins"></i></td>
 				<td class="text-right">+{{log.json_data['work_xp']|number}} <i class="fas fa-angle-double-up"></i></td>
 			</tr>
@@ -97,7 +99,7 @@
 		</div>
 		<div class="modal-body">
 			<p>Records of some of your most important actions are retained in the logs.</p>
-			<p>You can check details from battles you have fought, results from previous spy actions, or your earnings history from putting your creatures to work.</p>
+			<p>You can check details from battles you have fought, results from previous spy actions, or your income history from creature work or structure interest.</p>
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-default" (click)="closeModal()">Close</button>

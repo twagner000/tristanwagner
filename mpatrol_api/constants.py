@@ -12,6 +12,7 @@ BATTALION_TRAINING_XP_COST = 10
 
 refresh_score_timedelta = datetime.timedelta(minutes=1)
 
+
 def base_rules():
     LEADER_LEVELS = collections.OrderedDict([
         (1,collections.OrderedDict([('life',20),('cp',5),('cost_xp',0)])),
@@ -89,13 +90,13 @@ def base_rules():
         models.Technology.objects.get(name=t).prereq.add(models.Technology.objects.get(name=p))
         
     STRUCTURES = collections.OrderedDict([
-        ('Armory',collections.OrderedDict([('cost_gold',300),('cost_xp',500),('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows construction of armor')])),
-        ('Training Grounds',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows training of battalions')])),
-        ('Workshop',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Woodworking')),('struct_req',None),('effects','Allows construction of basic weapons')])),
-        ('Blacksmith',collections.OrderedDict([('cost_gold',700),('cost_xp',1000),('tech_req',models.Technology.objects.get(name='Iron Working')),('struct_req',None),('effects','Allows construction of advanced weapons')])),
-        ('Treasury',collections.OrderedDict([('cost_gold',500),('cost_xp',100),('tech_req',models.Technology.objects.get(name='Currency')),('struct_req',None),('effects','5% interest on gold every year')])),
-        ('Library',collections.OrderedDict([('cost_gold',700),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Writing')),('struct_req',None),('effects','10% interest on experience every year')])),
-        ('Marketplace',collections.OrderedDict([('cost_gold',1000),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Trade')),('struct_req',None),('effects','10% interest on gold every year (stacks with Treasury)')])),
+        ('Armory',collections.OrderedDict([('cost_gold',300),('cost_xp',500),('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows construction of armor'),('interest_gold',0),('interest_xp',0)])),
+        ('Training Grounds',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows training of battalions'),('interest_gold',0),('interest_xp',0)])),
+        ('Workshop',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Woodworking')),('struct_req',None),('effects','Allows construction of basic weapons'),('interest_gold',0),('interest_xp',0)])),
+        ('Blacksmith',collections.OrderedDict([('cost_gold',700),('cost_xp',1000),('tech_req',models.Technology.objects.get(name='Iron Working')),('struct_req',None),('effects','Allows construction of advanced weapons'),('interest_gold',0),('interest_xp',0)])),
+        ('Treasury',collections.OrderedDict([('cost_gold',500),('cost_xp',100),('tech_req',models.Technology.objects.get(name='Currency')),('struct_req',None),('effects','5% interest on gold every year'),('interest_gold',5),('interest_xp',0)])),
+        ('Library',collections.OrderedDict([('cost_gold',700),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Writing')),('struct_req',None),('effects','10% interest on experience every year'),('interest_gold',0),('interest_xp',10)])),
+        ('Marketplace',collections.OrderedDict([('cost_gold',1000),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Trade')),('struct_req',None),('effects','10% interest on gold every year (stacks with Treasury)'),('interest_gold',10),('interest_xp',0)])),
         ])
     for k,v in STRUCTURES.items():
         r,created = models.Structure.objects.get_or_create(name=k)

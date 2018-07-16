@@ -14,7 +14,7 @@ export class PlayerLogComponent implements OnInit {
 	modalRef: BsModalRef;
 	battleLogs: PlayerLog[];
 	espionageLogs: PlayerLog[];
-	workLogs: PlayerLog[];
+	incomeLogs: PlayerLog[];
 	selectedLog: PlayerLog;
 	logType: string = 'attack';
 	
@@ -28,15 +28,15 @@ export class PlayerLogComponent implements OnInit {
 			.subscribe(logs => {				
 				this.battleLogs = [];
 				this.espionageLogs = [];
-				this.workLogs = [];
+				this.incomeLogs = [];
 				if (logs != null) {
 					for (let l of logs) {
 						if (l.action == 'attack' || l.action == 'was-attacked')
 							this.battleLogs.push(l);
 						if (l.action == 'spy' || l.action == 'spied-on')
 							this.espionageLogs.push(l);
-						if (l.action == 'work')
-							this.workLogs.push(l);
+						if (l.action == 'work' || l.action == 'interest')
+							this.incomeLogs.push(l);
 					}
 				}
 			});
@@ -50,13 +50,4 @@ export class PlayerLogComponent implements OnInit {
 	closeModal() {
 		this.modalRef.hide();
 	}
-	
-	/*save(action: string): void {
-		this.processing = true;
-		this.mps.playerAction(this.player.id, new PlayerAction(action, (action == 'spy' || action == 'attack') ? this.targetPlayer.id : null))
-			.subscribe(() => {
-				this.processing = false;
-				this.closeModal();
-			});
-	}*/
 }

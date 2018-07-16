@@ -15,6 +15,7 @@ class Game(models.Model):
     started_date = models.DateTimeField(auto_now_add=True)
     #started_date.editable=True #for testing only
     ended_date = models.DateTimeField(blank=True,null=True)
+    last_interest_date = models.DateTimeField(blank=True,null=True)
     
     def __str__(self):
         return '{1} (started {0:%m}/{0:%d}/{0:%y})'.format(self.started_date, self.name)
@@ -78,6 +79,8 @@ class Structure(models.Model):
     tech_req = models.ForeignKey(Technology, models.PROTECT, null=True, blank=True, verbose_name='Required Technology')
     struct_req = models.ForeignKey('self', models.PROTECT, null=True, blank=True, verbose_name='Required Structure')
     effects = models.TextField(blank=True)
+    interest_gold = models.PositiveSmallIntegerField(default=0)
+    interest_xp = models.PositiveSmallIntegerField(default=0)
     
     class Meta:
         ordering = ['cost_gold','cost_xp','name']
@@ -311,6 +314,7 @@ class PlayerLog(models.Model):
         ('attack','Attack'),
         ('spied-on','Spied on'),
         ('was-attacked','Was Attacked'),
+        ('interest','Interest Paid'),
     )
     player = models.ForeignKey(Player, models.PROTECT, related_name='logs')
     target_player = models.ForeignKey(Player, models.PROTECT, blank=True, null=True, related_name='targeted_logs')
