@@ -14,3 +14,10 @@ ALLOWED_HOSTS = [".tristanwagner.com"]
 # END SITE CONFIGURATION
 
 SECURE_SSL_REDIRECT = True
+
+EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "tristanwagner.noreply@gmail.com"
+EMAIL_HOST_PASSWORD = env("DJANGO_EMAIL_PASSWORD")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

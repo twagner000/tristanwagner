@@ -4,7 +4,9 @@
 {% block content %}
 <div class="row">
 	<div class="col-md-4 col-md-offset-4">
+		<h4>Log in</h4>
 		{% crispy form %}
+		<small><a href="{% url 'password_reset' %}">Forgot password?</a></small>
 	</div>
 </div>
 {% endblock %}
