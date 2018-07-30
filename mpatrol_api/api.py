@@ -211,7 +211,7 @@ class PlayerViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, pk=None):
         player = self.get_object()
         now = datetime.datetime.now()
-        if not player.score_last_updated or (now - constants.pacific.localize(player.score_last_updated)) > constants.refresh_score_timedelta:
+        if not player.score_last_updated or (now - player.score_last_updated) > constants.refresh_score_timedelta:
             player.score_last_updated = now #dummy value to trigger refresh in model save()
             player.save()
         return super().retrieve(request,pk)

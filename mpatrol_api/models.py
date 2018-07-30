@@ -153,7 +153,7 @@ class Player(models.Model):
     
     def calc(self):
         r = {}
-        start = constants.pacific.localize(self.game.started_date).date()
+        start = self.game.started_date
         today = datetime.datetime.now().date()
         days = (today-start).days
         r['turn'] = days
