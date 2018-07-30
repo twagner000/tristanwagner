@@ -180,6 +180,7 @@ CRON_CLASSES = [
 
 # Your common stuff: Below this line define 3rd party library settings
 BGG_USER = env('BGG_USER')
+PROJECT_EULER_USER = env('PROJECT_EULER_USER')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
