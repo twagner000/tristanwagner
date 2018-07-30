@@ -154,7 +154,7 @@ class Player(models.Model):
     def calc(self):
         r = {}
         start = constants.pacific.localize(self.game.started_date).date()
-        today = constants.pacific.localize(datetime.datetime.now()).date()
+        today = datetime.datetime.now().date()
         days = (today-start).days
         r['turn'] = days
         r['month'] = constants.months[days%6]
@@ -176,7 +176,7 @@ class Player(models.Model):
         return False
         
     def avail_action_points(self):
-        today = constants.pacific.localize(datetime.datetime.now()).date()
+        today = datetime.datetime.now().date()
         ap_sum = self.logs.filter(date__gte=today).aggregate(Sum('action_points'))['action_points__sum']
         return max(0,1-(ap_sum if ap_sum else 0))
         
