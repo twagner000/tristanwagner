@@ -2,7 +2,7 @@ import datetime
 import collections
 from pytz import timezone
 
-from . import models
+from . import models as api_models
 
 pacific = timezone('US/Pacific')
 months = {0:'January',1:'March',2:'May',3:'July',4:'September',5:'November'}
@@ -32,7 +32,7 @@ def base_rules():
         (15,collections.OrderedDict([('life',32000),('cp',32000),('cost_xp',320000)]))
         ])
     for k,v in LEADER_LEVELS.items():
-        r,created = models.LeaderLevel.objects.get_or_create(level=k)
+        r,created = api_models.LeaderLevel.objects.get_or_create(level=k)
         for k2,v2 in v.items():
             setattr(r,k2,v2)
         r.save()
@@ -51,7 +51,7 @@ def base_rules():
         ('Badger',collections.OrderedDict([('plural_name','Badgers'),('min_ll',6),('attack',12),('defense',10),('cost_cp',10),('cost_gold',200),('work_gold',80),('work_xp',80),('oversee',0)]))
         ])
     for k,v in CREATURES.items():
-        r,created = models.Creature.objects.get_or_create(name=k)
+        r,created = api_models.Creature.objects.get_or_create(name=k)
         for k2,v2 in v.items():
             setattr(r,k2,v2)
         r.save()
@@ -69,7 +69,7 @@ def base_rules():
         ('Map Making',collections.OrderedDict([('min_ll',4),('cost',1000)]))
         ])
     for k,v in TECHS.items():
-        r,created = models.Technology.objects.get_or_create(name=k)
+        r,created = api_models.Technology.objects.get_or_create(name=k)
         for k2,v2 in v.items():
             setattr(r,k2,v2)
         r.prereq.clear()
@@ -87,54 +87,54 @@ def base_rules():
         ('Map Making','Trade')
         ]
     for (t,p) in PREREQS:
-        models.Technology.objects.get(name=t).prereq.add(models.Technology.objects.get(name=p))
+        api_models.Technology.objects.get(name=t).prereq.add(api_models.Technology.objects.get(name=p))
         
     STRUCTURES = collections.OrderedDict([
-        ('Armory',collections.OrderedDict([('cost_gold',300),('cost_xp',500),('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows construction of armor'),('interest_gold',0),('interest_xp',0)])),
-        ('Training Grounds',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows training of battalions'),('interest_gold',0),('interest_xp',0)])),
-        ('Workshop',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Woodworking')),('struct_req',None),('effects','Allows construction of basic weapons'),('interest_gold',0),('interest_xp',0)])),
-        ('Blacksmith',collections.OrderedDict([('cost_gold',700),('cost_xp',1000),('tech_req',models.Technology.objects.get(name='Iron Working')),('struct_req',None),('effects','Allows construction of advanced weapons'),('interest_gold',0),('interest_xp',0)])),
-        ('Treasury',collections.OrderedDict([('cost_gold',500),('cost_xp',100),('tech_req',models.Technology.objects.get(name='Currency')),('struct_req',None),('effects','5% interest on gold every year'),('interest_gold',5),('interest_xp',0)])),
-        ('Library',collections.OrderedDict([('cost_gold',700),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Writing')),('struct_req',None),('effects','10% interest on experience every year'),('interest_gold',0),('interest_xp',10)])),
-        ('Marketplace',collections.OrderedDict([('cost_gold',1000),('cost_xp',300),('tech_req',models.Technology.objects.get(name='Trade')),('struct_req',None),('effects','10% interest on gold every year (stacks with Treasury)'),('interest_gold',10),('interest_xp',0)])),
+        ('Armory',collections.OrderedDict([('cost_gold',300),('cost_xp',500),('tech_req',api_models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows construction of armor'),('interest_gold',0),('interest_xp',0)])),
+        ('Training Grounds',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',api_models.Technology.objects.get(name='Bronze Working')),('struct_req',None),('effects','Allows training of battalions'),('interest_gold',0),('interest_xp',0)])),
+        ('Workshop',collections.OrderedDict([('cost_gold',200),('cost_xp',300),('tech_req',api_models.Technology.objects.get(name='Woodworking')),('struct_req',None),('effects','Allows construction of basic weapons'),('interest_gold',0),('interest_xp',0)])),
+        ('Blacksmith',collections.OrderedDict([('cost_gold',700),('cost_xp',1000),('tech_req',api_models.Technology.objects.get(name='Iron Working')),('struct_req',None),('effects','Allows construction of advanced weapons'),('interest_gold',0),('interest_xp',0)])),
+        ('Treasury',collections.OrderedDict([('cost_gold',500),('cost_xp',100),('tech_req',api_models.Technology.objects.get(name='Currency')),('struct_req',None),('effects','5% interest on gold every year'),('interest_gold',5),('interest_xp',0)])),
+        ('Library',collections.OrderedDict([('cost_gold',700),('cost_xp',300),('tech_req',api_models.Technology.objects.get(name='Writing')),('struct_req',None),('effects','10% interest on experience every year'),('interest_gold',0),('interest_xp',10)])),
+        ('Marketplace',collections.OrderedDict([('cost_gold',1000),('cost_xp',300),('tech_req',api_models.Technology.objects.get(name='Trade')),('struct_req',None),('effects','10% interest on gold every year (stacks with Treasury)'),('interest_gold',10),('interest_xp',0)])),
         ])
     for k,v in STRUCTURES.items():
-        r,created = models.Structure.objects.get_or_create(name=k)
+        r,created = api_models.Structure.objects.get_or_create(name=k)
         for k2,v2 in v.items():
             setattr(r,k2,v2)
         r.save()
-    r = models.Structure.objects.get(name='Blacksmith')
-    r.struct_req = models.Structure.objects.get(name='Workshop')
+    r = api_models.Structure.objects.get(name='Blacksmith')
+    r.struct_req = api_models.Structure.objects.get(name='Workshop')
     r.save()
-    r = models.Structure.objects.get(name='Marketplace')
-    r.struct_req = models.Structure.objects.get(name='Treasury')
+    r = api_models.Structure.objects.get(name='Marketplace')
+    r.struct_req = api_models.Structure.objects.get(name='Treasury')
     r.save()
     
     WEAPON_BASES = collections.OrderedDict([
-        ('Slingshot',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Woodworking')),('struct_req',models.Structure.objects.get(name='Workshop')),('attack_mult',1.5),('cost_gold',10)])),
-        ('Dagger',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',models.Structure.objects.get(name='Workshop')),('attack_mult',2),('cost_gold',20)])),
-        ('Bow',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Woodworking')),('struct_req',models.Structure.objects.get(name='Workshop')),('attack_mult',2.5),('cost_gold',30)])),
-        ('Javelin',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Carpentry')),('struct_req',models.Structure.objects.get(name='Blacksmith')),('attack_mult',3),('cost_gold',40)])),
-        ('Longbow & Arrows',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Carpentry')),('struct_req',models.Structure.objects.get(name='Blacksmith')),('attack_mult',4),('cost_gold',50)])),
-        ('Sword',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Iron Working')),('struct_req',models.Structure.objects.get(name='Blacksmith')),('attack_mult',5),('cost_gold',60)])),
-        ('Armor',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_gold',10)]))
+        ('Slingshot',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Woodworking')),('struct_req',api_models.Structure.objects.get(name='Workshop')),('attack_mult',1.5),('cost_gold',10)])),
+        ('Dagger',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Bronze Working')),('struct_req',api_models.Structure.objects.get(name='Workshop')),('attack_mult',2),('cost_gold',20)])),
+        ('Bow',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Woodworking')),('struct_req',api_models.Structure.objects.get(name='Workshop')),('attack_mult',2.5),('cost_gold',30)])),
+        ('Javelin',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Carpentry')),('struct_req',api_models.Structure.objects.get(name='Blacksmith')),('attack_mult',3),('cost_gold',40)])),
+        ('Longbow & Arrows',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Carpentry')),('struct_req',api_models.Structure.objects.get(name='Blacksmith')),('attack_mult',4),('cost_gold',50)])),
+        ('Sword',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Iron Working')),('struct_req',api_models.Structure.objects.get(name='Blacksmith')),('attack_mult',5),('cost_gold',60)])),
+        ('Armor',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Bronze Working')),('struct_req',api_models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_gold',10)]))
         ])
     for k,v in WEAPON_BASES.items():
-        r,created = models.WeaponBase.objects.get_or_create(name=k)
+        r,created = api_models.WeaponBase.objects.get_or_create(name=k)
         for k2,v2 in v.items():
             setattr(r,k2,v2)
         r.save()
     
     WEAPON_MATERIALS = collections.OrderedDict([
-        ('Wood',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Woodworking')),('struct_req',models.Structure.objects.get(name='Workshop')),('attack_mult',1),('cost_mult',1),('armor',0)])),
-        ('Bronze',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',models.Structure.objects.get(name='Workshop')),('attack_mult',2),('cost_mult',1.5),('armor',2)])),
-        ('Iron',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Iron Working')),('struct_req',models.Structure.objects.get(name='Blacksmith')),('attack_mult',3),('cost_mult',2),('armor',4)])),
-        ('Leather',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Bronze Working')),('struct_req',models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_mult',10),('armor',5)])),
-        ('Chainmail',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Iron Working')),('struct_req',models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_mult',20),('armor',8)])),
-        ('Plate',collections.OrderedDict([('tech_req',models.Technology.objects.get(name='Iron Working')),('struct_req',models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_mult',30),('armor',10)]))
+        ('Wood',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Woodworking')),('struct_req',api_models.Structure.objects.get(name='Workshop')),('attack_mult',1),('cost_mult',1),('armor',0)])),
+        ('Bronze',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Bronze Working')),('struct_req',api_models.Structure.objects.get(name='Workshop')),('attack_mult',2),('cost_mult',1.5),('armor',2)])),
+        ('Iron',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Iron Working')),('struct_req',api_models.Structure.objects.get(name='Blacksmith')),('attack_mult',3),('cost_mult',2),('armor',4)])),
+        ('Leather',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Bronze Working')),('struct_req',api_models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_mult',10),('armor',5)])),
+        ('Chainmail',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Iron Working')),('struct_req',api_models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_mult',20),('armor',8)])),
+        ('Plate',collections.OrderedDict([('tech_req',api_models.Technology.objects.get(name='Iron Working')),('struct_req',api_models.Structure.objects.get(name='Armory')),('attack_mult',1),('cost_mult',30),('armor',10)]))
         ])
     for k,v in WEAPON_MATERIALS.items():
-        r,created = models.WeaponMaterial.objects.get_or_create(name=k)
+        r,created = api_models.WeaponMaterial.objects.get_or_create(name=k)
         for k2,v2 in v.items():
             setattr(r,k2,v2)
         r.save()  
