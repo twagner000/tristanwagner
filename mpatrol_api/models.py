@@ -178,7 +178,7 @@ class Player(models.Model):
     def avail_action_points(self):
         today = datetime.datetime.now().date()
         ap_sum = self.logs.filter(date__gte=today).aggregate(Sum('action_points'))['action_points__sum']
-        return max(0,3-(ap_sum if ap_sum else 0))
+        return max(0,constants.ACTION_POINTS_PER_DAY-(ap_sum if ap_sum else 0))
         
     def calc_score(self):
         calc = self.calc()

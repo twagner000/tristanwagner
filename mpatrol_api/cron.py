@@ -11,7 +11,7 @@ class StructureInterestCronJob(CronJobBase):
     code = 'mpatrol_api.structure_interest'
     
     def do(self):
-        today = datetime.datetime.now().astimezone(constants.pacific).date()
+        today = constants.pacific.localize(datetime.datetime.now()).replace(hour=0, minute=0, second=0, microsecond=0)
         for game in models.Game.objects.filter(ended_date__isnull=True).exclude(last_interest_date__gte=today):
             players = game.player_set.annotate(interest_gold=Sum('structures__interest_gold'), interest_xp=Sum('structures__interest_xp'))
             for p in players.filter(interest_gold__gt=0) | players.filter(interest_xp__gt=0):
