@@ -176,6 +176,7 @@ LOGOUT_REDIRECT_URL = 'home'
 
 CRON_CLASSES = [
     'mpatrol_api.cron.StructureInterestCronJob',
+    'games.cron.RecentBGGPlaysCronJob',
 ]
 
 # Your common stuff: Below this line define 3rd party library settings

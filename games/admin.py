@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BGGUserSearch, BGGGame, BGGUser, BGGUserRating
+from .models import BGGUserSearch, BGGGame, BGGUser, BGGUserRating, BGGPlay
 
 class BGGUserSearchAdmin(admin.ModelAdmin):
     model = BGGUserSearch
@@ -14,3 +14,4 @@ admin.site.register(BGGUserSearch, BGGUserSearchAdmin)
 admin.site.register(BGGGame)
 admin.site.register(BGGUser)
 admin.site.register(BGGUserRating, BGGUserRatingAdmin)
+admin.site.register(BGGPlay)

@@ -43,3 +43,17 @@ class BGGUserRating(models.Model):
     numplays = models.IntegerField(null=True, blank=True)
     date_created = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(default=timezone.now)
+
+class BGGPlay(models.Model):
+    bgg_play_id = models.IntegerField(primary_key=True)
+    bgg_game_id = models.IntegerField(null=True, blank=True)
+    game_name = models.CharField(max_length=250)
+    date = models.DateTimeField(default=timezone.now)
+    quantity = models.IntegerField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-date','game_name']
+    
+    def __str__(self):
+        return '{0}: {1:%Y}-{1:%m}-{1:%d} {2}'.format(self.bgg_play_id, self.date, self.game_name)
+    

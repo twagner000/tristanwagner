@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 import re
 from .models import BGGUserSearch, BGGGame, BGGUserRating, BGGUser
+from . import models
 import time
 
 def usersearch(q,page=1):
@@ -114,6 +115,10 @@ def getuserratings(request):
         
     return render(request, 'games/getuserratings.html', {'user':user, 'ratings':ratings})
 
+    
+def plays(request):
+    return render(request, 'games/plays.html', {'play_list': models.BGGPlay.objects.all()})
+    
 def index(request):
     #recent plays data
     xml = requests.get("https://boardgamegeek.com/xmlapi2/plays", params={
