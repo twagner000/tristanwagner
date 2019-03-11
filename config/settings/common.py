@@ -26,6 +26,7 @@ THIRD_PARTY_APPS = (
     'rest_framework.authtoken',
     'corsheaders', #for Angular + Django development
     'django_cron',
+    'djangobower',
     #'allauth',  # registration
     #'allauth.account',  # registration
     #'allauth.socialaccount',  # registration
@@ -154,12 +155,15 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder',
 )
 
 # MEDIA CONFIGURATION
 # ------------------------------------------------------------------------------
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = str(APPS_DIR('media'))
+
+BOWER_COMPONENTS_ROOT = str(APPS_DIR('components'))
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
@@ -182,6 +186,11 @@ CRON_CLASSES = [
 # Your common stuff: Below this line define 3rd party library settings
 BGG_USER = env('BGG_USER')
 PROJECT_EULER_USER = env('PROJECT_EULER_USER')
+
+BOWER_INSTALLED_APPS = (
+    #'calendar-heatmap',
+    'calendar-heatmap-graph',
+)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

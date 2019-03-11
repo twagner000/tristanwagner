@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+import datetime
 
 class BGGUserSearch(models.Model):
     q = models.CharField(max_length=50)
@@ -56,4 +57,13 @@ class BGGPlay(models.Model):
     
     def __str__(self):
         return '{0}: {1:%Y}-{1:%m}-{1:%d} {2}'.format(self.bgg_play_id, self.date, self.game_name)
+        
+class BGGPlayDate(models.Model):
+    date = models.DateField(primary_key=True)
+    
+    class Meta:
+        ordering = ['date']
+        
+    def plays(self):
+        return BGGPlay.objects.filter(date__gte=self.date, date__lt=self.date+datetime.timedelta(days=1))
     

@@ -2,10 +2,39 @@
 {% load staticfiles %}
 
 {% block content %}
-	<table class="table">
+	<link rel="stylesheet" type="text/css" href="{% static 'calendar-heatmap-graph/dist/calendar-heatmap.min.css' %}" />
+	
+	<div id="calendar"></div>
+	<script type="text/javascript" src="{% static 'moment/min/moment.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'calendar-heatmap-graph/dist/calendar-heatmap.min.js' %}"></script>
+
+<script>
+    (function () {
+	  var data = [
+		{% for p in play_dates %}
+			{{openbrace}} "date": "{{p.date|date:'c'}}", "total": {{p.total}}, "details": [] {{closebrace}},
+		{% endfor %}
+		];
+      // Set the div target id
+      var div_id = 'calendar';
+      // Set custom color for the calendar heatmap
+      var color = '#cd2327';
+      // Set overview type (choices are year, month and day)
+      var overview = 'year';
+      // Handler function
+      var print = function (val) {
+        console.log(val);
+      };
+      // Initialize calendar heatmap
+      calendarHeatmap.init(data, div_id, color, overview, print);
+    })();
+</script>
+
+	<!--table class="table">
 		<tr><th>id</th><th>game_id</th><th>name</th><th>date</th><th>qty</th></tr>
 	{% for p in play_list %}
 		<tr><td>{{p.bgg_play_id}}</td><td>{{p.bgg_game_id}}</td><td>{{p.game_name}}</td><td>{{p.date}}</td><td>{{p.quantity}}</td></tr>
 	{% endfor %}
-	</table>
+	</table-->
 {% endblock %}

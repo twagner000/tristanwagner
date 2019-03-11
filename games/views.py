@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import requests
 import xml.etree.ElementTree as ET
 import datetime
@@ -9,6 +9,12 @@ import re
 from .models import BGGUserSearch, BGGGame, BGGUserRating, BGGUser
 from . import models
 import time
+
+from rest_framework import generics
+from collections import defaultdict
+from . import serializers
+
+
 
 def usersearch(q,page=1):
     r = requests.get("http://boardgamegeek.com/geeksearch.php", params={
@@ -117,7 +123,32 @@ def getuserratings(request):
 
     
 def plays(request):
-    return render(request, 'games/plays.html', {'play_list': models.BGGPlay.objects.all()})
+    d2 = datetime.date.today() # end date
+    d1 = datetime.date(d2.year,1,1) # start date
+    dates = dict((d1 + datetime.timedelta(i),{'total':0,'details':[]}) for i in range((d2-d1).days + 1))
+    
+    plays = models.BGGPlay.objects.filter(date__gte=d1)
+    for p in plays:
+        dates[p.date.date()]['total'] += 1
+    
+    dates = [{'date':k,'total':v['total'],'details':v['details']} for k,v in dates.items()]
+    return render(request, 'games/plays.html', {'play_dates': dates, 'play_list': models.BGGPlay.objects.all(), 'openbrace':'{', 'closebrace':'}'})  
+    
+class PlayDateList(generics.ListAPIView):
+    queryset = models.BGGPlayDate.objects.filter(date__gte=datetime.date(datetime.date.today().year,1,1), date__lte=datetime.date.today())
+    serializer_class = serializers.PlayDateSerializer
+    permission_classes = tuple()
+        
+def populate_play_dates(request):
+    models.BGGPlayDate.objects.all().delete()
+    curdate = datetime.date(datetime.date.today().year-5,1,1)
+    enddate = datetime.date(curdate.year+30,1,1)
+    bulk_dates = []
+    while curdate < enddate:
+        bulk_dates.append(models.BGGPlayDate(date=curdate))
+        curdate += datetime.timedelta(days=1)
+    models.BGGPlayDate.objects.bulk_create(bulk_dates)
+    return redirect('games:index')
     
 def index(request):
     #recent plays data

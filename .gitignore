@@ -57,6 +57,9 @@ docs/_build/
 # PyBuilder
 target/
 
+components/*
+!components/.gitkeep
+
 # =========================
 # Operating System Files
 # =========================
