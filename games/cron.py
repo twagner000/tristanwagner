@@ -14,8 +14,8 @@ class RecentBGGPlaysCronJob(CronJobBase):
         xml = requests.get("https://boardgamegeek.com/xmlapi2/plays", params={
             'username':settings.BGG_USER,
             #'mindate':(datetime.date.today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
-            'mindate':'2018-01-01',
-            'maxdate':'2018-07-01'
+            'mindate':'2018-07-01',
+            'maxdate':'2019-01-01'
             })
         root = ET.fromstring(xml.text.encode('utf8'))
         for p in root.iter('play'):
