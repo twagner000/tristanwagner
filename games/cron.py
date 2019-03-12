@@ -5,6 +5,7 @@ from . import models
 from django.conf import settings
 import requests
 import xml.etree.ElementTree as ET
+import pytz
 
 class RecentBGGPlaysCronJob(CronJobBase):
     schedule = Schedule(run_every_mins=60)
@@ -22,7 +23,8 @@ class RecentBGGPlaysCronJob(CronJobBase):
             item = p.find('item')
             play.bgg_game_id = item.attrib['objectid']
             play.game_name = item.attrib['name']
-            play.date = datetime.datetime.strptime(p.attrib['date'], '%Y-%m-%d')
+            play.date = datetime.datetime.strptime(p.attrib['date'], '%Y-%m-%d').date()
+            play.date.replace(tzinfo=pytz.UTC)
             play.quantity = int(p.attrib['quantity'])
             play.save()
         
