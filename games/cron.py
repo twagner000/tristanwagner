@@ -24,7 +24,7 @@ class RecentBGGPlaysCronJob(CronJobBase):
             play.bgg_game_id = item.attrib['objectid']
             play.game_name = item.attrib['name']
             d = datetime.datetime.strptime(p.attrib['date'], '%Y-%m-%d').date()
-            play.date = datetime.datetime(d.year, d.month, d.day)#, tzinfo=pytz.UTC)
+            play.date = datetime.datetime(d.year, d.month, d.day, tzinfo=pytz.UTC)
             play.quantity = int(p.attrib['quantity'])
             play.save()
         
