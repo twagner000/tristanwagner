@@ -189,7 +189,8 @@ PROJECT_EULER_USER = env('PROJECT_EULER_USER')
 
 BOWER_INSTALLED_APPS = (
     #'calendar-heatmap',
-    'calendar-heatmap-graph',
+    #'calendar-heatmap-graph',
+    'cal-heatmap',
 )
 
 REST_FRAMEWORK = {

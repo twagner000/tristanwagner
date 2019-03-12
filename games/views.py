@@ -120,23 +120,15 @@ def getuserratings(request):
     ratings = BGGUserRating.objects.filter(user=user)
         
     return render(request, 'games/getuserratings.html', {'user':user, 'ratings':ratings})
-
-    
-def plays(request):
-    d2 = datetime.date.today() # end date
-    d1 = datetime.date(d2.year,1,1) # start date
-    dates = dict((d1 + datetime.timedelta(i),{'total':0,'details':[]}) for i in range((d2-d1).days + 1))
-    
-    plays = models.BGGPlay.objects.filter(date__gte=d1)
-    for p in plays:
-        dates[p.date.date()]['total'] += 1
-    
-    dates = [{'date':k,'total':v['total'],'details':v['details']} for k,v in dates.items()]
-    return render(request, 'games/plays.html', {'play_dates': dates, 'play_list': models.BGGPlay.objects.all(), 'openbrace':'{', 'closebrace':'}'})  
     
 class PlayDateList(generics.ListAPIView):
     queryset = models.BGGPlayDate.objects.filter(date__gte=datetime.date(datetime.date.today().year,1,1), date__lte=datetime.date.today())
     serializer_class = serializers.PlayDateSerializer
+    permission_classes = tuple()
+    
+class PlayList(generics.ListAPIView):
+    queryset = models.BGGPlay.objects.filter(date__gte=datetime.date(datetime.date.today().year,1,1), date__lte=datetime.date.today())
+    serializer_class = serializers.PlaySerializer
     permission_classes = tuple()
         
 def populate_play_dates(request):

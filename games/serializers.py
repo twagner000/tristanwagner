@@ -4,7 +4,7 @@ from . import models
 class PlaySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.BGGPlay
-        fields = ('game_name',)
+        fields = ('date', 'timestamp', 'game_name', 'quantity')
         
 class PlayDateSerializer(serializers.ModelSerializer):
     plays = PlaySerializer(many=True)

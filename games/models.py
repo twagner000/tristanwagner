@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 import datetime
+import random
 
 class BGGUserSearch(models.Model):
     q = models.CharField(max_length=50)
@@ -57,6 +58,9 @@ class BGGPlay(models.Model):
     
     def __str__(self):
         return '{0}: {1:%Y}-{1:%m}-{1:%d} {2}'.format(self.bgg_play_id, self.date, self.game_name)
+        
+    def timestamp(self):
+        return int(self.date.timestamp())+random.randint(0, 999)
         
 class BGGPlayDate(models.Model):
     date = models.DateField(primary_key=True)
