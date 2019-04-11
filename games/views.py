@@ -196,5 +196,17 @@ def index(request):
     for g in favs:
         item = root.find("item[@objectid='%s']" % g['id'])
         g['numplays'] = item.find('numplays').text if item else ''
+        
+    #weekly plays
+    weeks = []
+    cur_week_start = datetime.date.today()
+    cur_week_start -= datetime.timedelta(days=cur_week_start.weekday())
+    cur_week_start -= datetime.timedelta(days=52*7)
+    for i in range(52):
+        next_week_start = cur_week_start + datetime.timedelta(days=7)
+        weeks.append({'week':cur_week_start, 'count':models.BGGPlay.objects.filter(date__gte=cur_week_start, date__lt=next_week_start).count()})
+        cur_week_start = next_week_start
+        
+    
 
-    return render(request, 'games/index.html', {'plays':plays, 'favs':favs, 'bgg_user':settings.BGG_USER})
+    return render(request, 'games/index.html', {'plays':plays, 'favs':favs, 'bgg_user':settings.BGG_USER, 'weeks': weeks, 'weeks_sum':sum(v['count'] for v in weeks)})

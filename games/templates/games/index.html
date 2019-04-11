@@ -2,33 +2,49 @@
 {% load staticfiles %}
 
 {% block content %}
-	<link rel="stylesheet" type="text/css" href="{% static 'cal-heatmap/cal-heatmap.css' %}" />
+
+<style>
+#chart1 svg {
+	height: 180px;
+	}
 	
-	<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
-	<script type="text/javascript" src="{% static 'cal-heatmap/cal-heatmap.min.js' %}"></script>
-	
-	<p><div id="cal-heatmap"></div></p>
-	<script type="text/javascript">
-		var parser = function(data) {
-			var stats = {};
-			for (var d in data) {
-				stats[data[d].timestamp] = data[d].quantity;
-			}
-			return stats;
-		};
-	
-		var cal = new CalHeatMap();
-		cal.init({
-			domain: "year",
-			subDomain: "week",
-			range: 1,
-			data: "{% url 'games:api-play-list' %}",
-			afterLoadData: parser,
-			legend: [1,2,4,8],
-			displayLegend: false,
-			domainLabelFormat: ""
-		});
-	</script>
+#chart1 path {
+	stroke: #fff;
+	stroke-width: 1;
+	}
+</style>
+<div style="position: relative;">
+	<div id="chart1"></div>
+	<div style="position:absolute; margin: -70px 0 0 -70px; width: 140px; height: 140px; top: 70px; left: 70px; text-align: center;">
+		<p style="position: absolute; top: 50%; width: 100%; margin-top: -24%; font-size: 30px;">{{weeks_sum}}</p>
+		<p style="position: absolute; top: 50%; width: 100%; margin-top: 3%; font-size: 9px; text-transform: uppercase;">games played<br/>in past 52 weeks</p>
+	</div>
+</div>
+
+<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
+<script src="{% static 'd3-circularheat/js/circularHeatChart.js' %}"></script>
+<script>
+/* Simple chart */
+var chart = circularHeatChart()
+	.segmentHeight(10)
+    .innerRadius(60)
+    .numSegments(54)
+    .radialLabels(null)
+    .segmentLabels(null)
+    .margin({top: 0, right: 0, bottom: 0, left: 0})
+	.range(["white", "forestgreen"]); //palegreen
+var data = [null,null];
+{% for w in weeks %}
+data.push({{w.count}});
+{% endfor %}
+
+d3.select('#chart1')
+    .selectAll('svg')
+    .data([data])
+    .enter()
+    .append('svg')
+    .call(chart);
+</script>
 	
     <p>All information is pulled from my <a href="https://boardgamegeek.com/user/{{bgg_user}}">profile</a> on the excellent site <a href="http://www.boardgamegeek.com">boardgamegeek.com</a>.</p>
     <div class="row">
