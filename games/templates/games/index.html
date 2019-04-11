@@ -28,12 +28,12 @@
 var chart = circularHeatChart()
 	.segmentHeight(10)
     .innerRadius(60)
-    .numSegments(54)
+    .numSegments(52)
     .radialLabels(null)
     .segmentLabels(null)
     .margin({top: 0, right: 0, bottom: 0, left: 0})
 	.range(["white", "forestgreen"]); //palegreen
-var data = [null,null];
+var data = [];
 {% for w in weeks %}
 data.push({{w.count}});
 {% endfor %}
