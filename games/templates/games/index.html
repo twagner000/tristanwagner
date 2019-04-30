@@ -58,6 +58,7 @@
 	<div class="chart-text">
 		<p class="chart-total">-</p>
 		<p class="chart-subtitle">boardgames played<br/>in past 52 weeks</p>
+		<p style="position: absolute; top: 12px; width:50%; left: 0; text-align: right; font-size: 25px;">&#x21e5;</p>
 	</div>
 </div>
 
@@ -66,6 +67,8 @@
 	<div class="chart-text">
 		<p class="chart-total">-</p>
 		<p class="chart-subtitle">boardgames played<br/>in past 52 weeks</p>
+		<p style="position: absolute; top: 2px; width:50%; left: 52%; text-align: left; font-size: 12px;">2019<br/>2018</p>
+		<p style="position: absolute; top: 35px; left: 205px; text-align: left; font-size: 20px; transform: rotate(25deg);">&#x21a6;</p>
 	</div>
 </div>
 
@@ -158,12 +161,13 @@
 		var chart2 = circularHeatChart()
 			.segmentHeight(15)
 			.innerRadius(135)
-			.numSegments(52)
+			.numSegments(55)
 			.radialLabels(null)
 			.segmentLabels(null)
 			.margin({top: 0, right: 0, bottom: 0, left: 0})
 			.range(["white", "forestgreen"]);
-		var chart_data2 = chart_data.concat(chart_data);
+		var chart_data2 = [null,null,null].concat(chart_data);
+		chart_data2 = chart_data2.concat(chart_data2);
 		d3.select('#chart2 .chart')
 			.selectAll('svg')
 			.data([chart_data2])
