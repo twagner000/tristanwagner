@@ -16,35 +16,12 @@
 <div style="position: relative;">
 	<div id="chart1"></div>
 	<div style="position:absolute; margin: -70px 0 0 -70px; width: 140px; height: 140px; top: 70px; left: 70px; text-align: center;">
-		<p style="position: absolute; top: 50%; width: 100%; margin-top: -24%; font-size: 30px;">{{weeks_sum}}</p>
+		<p id="chart1-total" style="position: absolute; top: 50%; width: 100%; margin-top: -24%; font-size: 30px;">-</p>
 		<p style="position: absolute; top: 50%; width: 100%; margin-top: 3%; font-size: 9px; text-transform: uppercase;">games played<br/>in past 52 weeks</p>
 	</div>
 </div>
 
-<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
-<script src="{% static 'd3-circularheat/js/circularHeatChart.js' %}"></script>
-<script>
-/* Simple chart */
-var chart = circularHeatChart()
-	.segmentHeight(10)
-    .innerRadius(60)
-    .numSegments(52)
-    .radialLabels(null)
-    .segmentLabels(null)
-    .margin({top: 0, right: 0, bottom: 0, left: 0})
-	.range(["white", "forestgreen"]); //palegreen
-var data = [];
-{% for w in weeks %}
-data.push({{w.count}});
-{% endfor %}
 
-d3.select('#chart1')
-    .selectAll('svg')
-    .data([data])
-    .enter()
-    .append('svg')
-    .call(chart);
-</script>
 	
     <p>All information is pulled from my <a href="https://boardgamegeek.com/user/{{bgg_user}}">profile</a> on the excellent site <a href="http://www.boardgamegeek.com">boardgamegeek.com</a>.</p>
     <div class="row">
@@ -95,4 +72,38 @@ d3.select('#chart1')
         </div>
 
     </div>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
+<script src="{% static 'd3-circularheat/js/circularHeatChart.js' %}"></script>
+<script>
+var chart = circularHeatChart()
+	.segmentHeight(10)
+    .innerRadius(60)
+    .numSegments(52)
+    .radialLabels(null)
+    .segmentLabels(null)
+    .margin({top: 0, right: 0, bottom: 0, left: 0})
+	.range(["white", "forestgreen"]); //palegreen
+
+(function() {
+  $.getJSON( "{% url 'games:api-past-52-weeks' %}", {})
+    .done(function( data ) {
+		var chart_data = [];
+		var total_count = 0;
+		data.forEach(function(v) {
+			chart_data.push(v.count);
+			total_count += v.count;
+			});
+		d3.select('#chart1')
+			.selectAll('svg')
+			.data([chart_data])
+			.enter()
+			.append('svg')
+			.call(chart);
+		$('#chart1-total').text(total_count);
+    });
+})();
+</script>
 {% endblock %}

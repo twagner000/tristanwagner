@@ -11,6 +11,8 @@ from . import models
 import time
 
 from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from collections import defaultdict
 from . import serializers
 
@@ -130,6 +132,20 @@ class PlayList(generics.ListAPIView):
     queryset = models.BGGPlay.objects.filter(date__gte=datetime.date(datetime.date.today().year,1,1), date__lte=datetime.date.today())
     serializer_class = serializers.PlaySerializer
     permission_classes = tuple()
+    
+class Past52WeeksList(APIView):
+    permission_classes = tuple()
+
+    def get(self, request, format=None):
+        weeks = []
+        cur_week_start = datetime.date.today()
+        cur_week_start -= datetime.timedelta(days=cur_week_start.weekday())
+        cur_week_start -= datetime.timedelta(days=52*7)
+        for i in range(52):
+            next_week_start = cur_week_start + datetime.timedelta(days=7)
+            weeks.append({'week':cur_week_start, 'count':models.BGGPlay.objects.filter(date__gte=cur_week_start, date__lt=next_week_start).count()})
+            cur_week_start = next_week_start
+        return Response(weeks)
         
 def populate_play_dates(request):
     models.BGGPlayDate.objects.all().delete()
