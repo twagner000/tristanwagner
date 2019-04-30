@@ -4,20 +4,68 @@
 {% block content %}
 
 <style>
-#chart1 svg {
-	height: 180px;
+.chart-container {
+	position: relative;
+	width: 330px;
+	height: 330px;
+	margin: 10px auto 30px auto;
+	}
+.chart {
+	width: 100%;
+	height: 100%;
 	}
 	
-#chart1 path {
+.chart svg {
+	height: 100%;
+	width: 100%;
+	}
+	
+.chart path {
 	stroke: #fff;
-	stroke-width: 1;
+	stroke-width: 2;
+	}
+	
+.chart-text {
+	position:absolute;
+	margin: -50% 0 0 -50%;
+	width: 100%;
+	height: 100%;
+	top: 50%;
+	left: 50%;
+	text-align: center;
+	}
+	
+.chart-total {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	margin-top: -24%;
+	font-size: 80px;
+	}
+	
+.chart-subtitle {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	margin-top: 3%;
+	font-size: 15px;
+	text-transform: uppercase;
 	}
 </style>
-<div style="position: relative;">
-	<div id="chart1"></div>
-	<div style="position:absolute; margin: -70px 0 0 -70px; width: 140px; height: 140px; top: 70px; left: 70px; text-align: center;">
-		<p id="chart1-total" style="position: absolute; top: 50%; width: 100%; margin-top: -24%; font-size: 30px;">-</p>
-		<p style="position: absolute; top: 50%; width: 100%; margin-top: 3%; font-size: 9px; text-transform: uppercase;">games played<br/>in past 52 weeks</p>
+
+<div class="chart-container" id="chart1">
+	<div class="chart"></div>
+	<div class="chart-text">
+		<p class="chart-total">-</p>
+		<p class="chart-subtitle">boardgames played<br/>in past 52 weeks</p>
+	</div>
+</div>
+
+<div class="chart-container" id="chart2">
+	<div class="chart"></div>
+	<div class="chart-text">
+		<p class="chart-total">-</p>
+		<p class="chart-subtitle">boardgames played<br/>in past 52 weeks</p>
 	</div>
 </div>
 
@@ -78,31 +126,51 @@
 <script type="text/javascript" src="{% static 'd3/d3.min.js' %}"></script>
 <script src="{% static 'd3-circularheat/js/circularHeatChart.js' %}"></script>
 <script>
-var chart = circularHeatChart()
-	.segmentHeight(10)
-    .innerRadius(60)
-    .numSegments(52)
-    .radialLabels(null)
-    .segmentLabels(null)
-    .margin({top: 0, right: 0, bottom: 0, left: 0})
-	.range(["white", "forestgreen"]); //palegreen
-
 (function() {
   $.getJSON( "{% url 'games:api-past-52-weeks' %}", {})
     .done(function( data ) {
+		//prep data
 		var chart_data = [];
 		var total_count = 0;
 		data.forEach(function(v) {
 			chart_data.push(v.count);
 			total_count += v.count;
 			});
-		d3.select('#chart1')
+		
+		//generate first chart
+		var chart = circularHeatChart()
+			.segmentHeight(15)
+			.innerRadius(150)
+			.numSegments(52)
+			.radialLabels(null)
+			.segmentLabels(null)
+			.margin({top: 0, right: 0, bottom: 0, left: 0})
+			.range(["white", "forestgreen"]); //palegreen
+		d3.select('#chart1 .chart')
 			.selectAll('svg')
 			.data([chart_data])
 			.enter()
 			.append('svg')
 			.call(chart);
-		$('#chart1-total').text(total_count);
+		$('#chart1 .chart-total').text(total_count);
+		
+		//generate second chart
+		var chart2 = circularHeatChart()
+			.segmentHeight(15)
+			.innerRadius(135)
+			.numSegments(52)
+			.radialLabels(null)
+			.segmentLabels(null)
+			.margin({top: 0, right: 0, bottom: 0, left: 0})
+			.range(["white", "forestgreen"]);
+		var chart_data2 = chart_data.concat(chart_data);
+		d3.select('#chart2 .chart')
+			.selectAll('svg')
+			.data([chart_data2])
+			.enter()
+			.append('svg')
+			.call(chart2);
+		$('#chart2 .chart-total').text(total_count);
     });
 })();
 </script>
