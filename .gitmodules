@@ -1,0 +1,3 @@
+[submodule "django-bgg-stats"]
+	path = django-bgg-stats
+	url = https://github.com/twagner000/django-bgg-stats
