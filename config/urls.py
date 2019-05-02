@@ -17,7 +17,7 @@ urlpatterns = [
     #path('accounts/', include('registration.backends.hmac.urls')), #https://github.com/ubernostrum/django-registration/blob/master/docs/hmac.rst
     path('accounts/', include('django.contrib.auth.urls')),
     path('checklist/', include(('checklist.urls', 'checklist'), namespace='checklist')),
-    path('games/', include(('games.urls', 'games'), namespace='games')),
+    path('bgg-stats/', include('bgg_stats.urls')),
     path('puzzles/', include(('puzzles.urls', 'puzzles'), namespace='puzzles')),
     path('deveconsim/', include(('deveconsim.urls', 'deveconsim'), namespace='deveconsim')),
     path('mpatrol-api/', include('mpatrol_api.urls')),

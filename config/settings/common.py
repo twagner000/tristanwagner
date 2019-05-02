@@ -1,4 +1,5 @@
 import environ
+from dj_git_submodule import submodule
 
 ROOT_DIR = environ.Path(__file__) - 3  # (/a/b/myfile.py - 3 = /)
 APPS_DIR = ROOT_DIR
@@ -19,6 +20,8 @@ DJANGO_APPS = (
     # Admin
     'django.contrib.admin',
 )
+
+submodule.add('django-bgg-stats')
 THIRD_PARTY_APPS = (
     'widget_tweaks',
     'crispy_forms',  # Form layouts
@@ -27,6 +30,7 @@ THIRD_PARTY_APPS = (
     'corsheaders', #for Angular + Django development
     'django_cron',
     'djangobower',
+    'bgg_stats',
     #'allauth',  # registration
     #'allauth.account',  # registration
     #'allauth.socialaccount',  # registration
@@ -35,7 +39,7 @@ THIRD_PARTY_APPS = (
 # Apps specific for this project go here.
 LOCAL_APPS = (
     'checklist',
-    'games',
+    #'games',
     'deveconsim',
     'puzzles',
     'mpatrol_api',
