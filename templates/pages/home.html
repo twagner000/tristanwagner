@@ -2,52 +2,16 @@
 {% load staticfiles %}
 
 {% block content %}
+	<div class="container">
+		<h1 class="text-center">Tristan Wagner</h1>
 
-    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-      <!-- Indicators -->
-      <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-      </ol>
-      <div class="carousel-inner">
-        <div class="item active">
-          <img src="{% static 'img/alhambra.jpg' %}" alt="Alhambra">
-          <div class="container">
-            <!--div class="carousel-caption">
-              <h1>Alhambra</h1>
-              <p>Can I create an AI for this board game?</p>
-              <p><a class="btn btn-lg btn-primary" href="#" role="button">Read the blog</a></p>
-            </div-->
-            <div class="carousel-caption">
-              <h1>Board games</h1>
-              <p><a class="btn btn-lg btn-primary" href="{% url 'bgg_stats:index' %}" role="button">See what I've played recently</a></p>
-            </div>
-          </div>
-        </div>
-        <!--div class="item">
-          <img src="{% static 'img/ledbar.jpg' %}" alt="Charlieplexed LEDs">
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>Arduino</h1>
-              <p>I can't solder worth $#!+.</p>
-              <p><a class="btn btn-lg btn-primary" href="#" role="button">Read the blog</a></p>
-            </div>
-          </div>
-        </div>
-        <div class="item">
-          <img src="{% static 'img/breakfast.jpg' %}" alt="Waffle breakfast">
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>Breakfast</h1>
-              <p>What have we always said is the most important thing?</p>
-              <p><a class="btn btn-lg btn-primary" href="#" role="button">Read the blog</a></p>
-            </div>
-          </div>
-        </div-->
-      </div>
-      <a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
-      <a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
-    </div>
-
+		<ul>
+			<li><a href="{% url 'bgg_stats:index' %}">Board Game Stats</a></li>
+			<li><a href="{% url 'deveconsim:index' %}">Developing Economy Simulation</a></li>
+			<li><a href="{% url 'mpatrol:index' %}">Mossfower Patrol Game</a></li>
+			<li><a href="{% url 'puzzles:index' %}">Puzzles</a></li>
+			<li><a href="{% url 'checklist:index' %}">Checklists</a></li>
+		</ul>
+					
+	</div>		  
 {% endblock %}
