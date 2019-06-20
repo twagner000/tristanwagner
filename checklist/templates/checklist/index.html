@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    <div class="row">
-        <div class="col-6 col-sm-6">
+	<section>
             <h3>What is a Scored Checklist?</h3>
             <p>A Scored Checklist is a tool for broadly measuring progress against multiple criteria.</p>
             <p>It is a checklist where items are scored on a scale from 1-5 instead of yes/no.</p>
-        </div>
-        <div class="col-6 col-sm-6">
+	</section>
+	
+	<section>
             <h3>Available Scored Checklists</h3>
             {% if checklist_list %}
                 <table class="table">
@@ -23,5 +22,5 @@
                 <p>None available.</p>
             {% endif %}
         </div>
-    </div>
+	</section>
 {% endblock %}

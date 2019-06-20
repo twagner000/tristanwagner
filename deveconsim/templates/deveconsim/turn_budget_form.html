@@ -6,27 +6,23 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-            <h4 class="row">
-                <div class="col-xs-10"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Budget</div>
-                <div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></div>
-            </h4>
-            <p>
-                The budget is where you set taxes (income) and spending levels (expenses) for your country.
-                When you end a turn, your income minus expenses will be added to the <b>General Fund</b>, which may never drop below zero.
-            </p>
-            {% if turn.debt_wbsap %}
-                <div class="alert alert-warning">
-                    Due to a Structural Adjustment Program (SAP) to which you agreed as part of a World Bank loan, your health spending is limited to 15% and your security spending is limited to 20%.
-                    These restrictions will be lifted once your loan is repaid.
-                </div>
-            {% endif %}
-            {% crispy form %}
-        </div>
-    </div>
+	<h3>
+		<span class="float-right"><button type="button" class="btn btn-link" data-toggle="modal" data-target="#moreInfo" title="More explanation"><i class="fas fa-question-circle"></i></button></span>
+		<i class="fas fa-chart-pie"></i> Budget
+	</h3>
+	<p>
+		The budget is where you set taxes (income) and spending levels (expenses) for your country.
+		When you end a turn, your income minus expenses will be added to the <b>General Fund</b>, which may never drop below zero.
+	</p>
+	{% if turn.debt_wbsap %}
+		<div class="alert alert-warning">
+			Due to a Structural Adjustment Program (SAP) to which you agreed as part of a World Bank loan, your health spending is limited to 15% and your security spending is limited to 20%.
+			These restrictions will be lifted once your loan is repaid.
+		</div>
+	{% endif %}
+	{% crispy form %}
 {% endblock %}
 
-{% block moreinfotitle %}More About <span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Budget{% endblock %}
+{% block moreinfotitle %}More About <i class="fas fa-chart-pie"></i> Budget{% endblock %}
 
 {% block moreinfo %}{% include 'deveconsim/tutorial_budget.html' %}{% endblock %}

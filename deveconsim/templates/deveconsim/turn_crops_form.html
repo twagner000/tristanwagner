@@ -6,21 +6,17 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-            <h4 class="row">
-                <div class="col-xs-10"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</div>
-                <div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></div>
-            </h4>
-            <p>
-                Your country does not start out with much industry, so you rely on agriculture for most of your income.
-                This page allows you to choose which type of pesticides are used in your country and how your cropland is allocated between corn and cocoa.
-            </p>
-            {% crispy form %}
-        </div>
-    </div>
+	<h3>
+		<span class="float-right"><button type="button" class="btn btn-link" data-toggle="modal" data-target="#moreInfo" title="More explanation"><i class="fas fa-question-circle"></i></button></span>
+		<i class="fas fa-seedling"></i> Crops
+	</h3>
+	<p>
+		Your country does not start out with much industry, so you rely on agriculture for most of your income.
+		This page allows you to choose which type of pesticides are used in your country and how your cropland is allocated between corn and cocoa.
+	</p>
+	{% crispy form %}
 {% endblock %}
 
-{% block moreinfotitle %}More About <span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops{% endblock %}
+{% block moreinfotitle %}More About <i class="fas fa-seedling"></i> Crops{% endblock %}
 
 {% block moreinfo %}{% include 'deveconsim/tutorial_crops.html' %}{% endblock %}

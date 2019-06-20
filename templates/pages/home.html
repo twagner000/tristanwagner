@@ -2,16 +2,62 @@
 {% load staticfiles %}
 
 {% block content %}
-	<div class="container">
-		<h1 class="text-center">Tristan Wagner</h1>
+	<h1 class="text-center">Tristan Wagner</h1>
 
-		<ul>
-			<li><a href="{% url 'bgg_stats:index' %}">Board Game Stats</a></li>
-			<li><a href="{% url 'deveconsim:index' %}">Developing Economy Simulation</a></li>
-			<li><a href="{% url 'mpatrol:index' %}">Mossfower Patrol Game</a></li>
-			<li><a href="{% url 'puzzles:index' %}">Puzzles</a></li>
-			<li><a href="{% url 'checklist:index' %}">Checklists</a></li>
-		</ul>
-					
-	</div>		  
+	<ul>
+		<li><a href="{% url 'bgg_stats:index' %}">Board Game Stats</a></li>
+		<li><a href="{% url 'deveconsim:index' %}">Developing Economy Simulation</a></li>
+		<li><a href="{% url 'mpatrol:index' %}">Mossfower Patrol Game</a></li>
+		<li><a href="{% url 'puzzles:index' %}">Puzzles</a></li>
+		<li><a href="{% url 'checklist:index' %}">Checklists</a></li>
+	</ul>  
+
+	
+	<svg viewBox="0 5 413.40 133.3" height="72">
+		<a href="{% url 'home' %}" title="Home">
+			<g class="tw-nav-hex" transform="translate(0,0)">
+				<circle cx="50" cy="50" r="50"/>
+				<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+				<g class="tw-nav-hex-icon">
+					<path d="M50,36 l17,17 l0,17 l-34,0 l0,-17 Z"/>
+					<path class="tw-nav-hex-icon" d="M27,52 l23,-25 l23,25"/>
+				</g>
+			</g>
+		</a>
+		
+		<a href="#blog" title="Blog">
+			<g class="tw-nav-hex" transform="translate(78.34936,43.30127)">
+				<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+				<image x="25" y="25" height="50" width="50" xlink:href="{% static 'img/nav_blog1.svg' %}"/>
+			</g>
+		</a>
+		
+		<a href="#about" title="About">
+			<g class="tw-nav-hex" transform="translate(156.69873,0)">
+				<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+				<image x="25" y="25" height="50" width="50" xlink:href="{% static 'img/nav_about.svg' %}"/>
+			</g>
+		</a>
+		
+		{% if user.is_staff %}
+		<a href="{% url 'admin:index' %}" title="Admin">
+			<g class="tw-nav-hex" transform="translate(235.04809, 43.30127)">
+				<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+				<image x="25" y="25" height="50" width="50" xlink:href="{% static 'img/nav_gear.svg' %}"/>
+			</g>
+		</a>
+		{% else %}
+		<g class="tw-nav-hex" transform="translate(235.04809, 43.30127)">
+			<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+		</g>
+		{% endif %}
+		
+		<a href="javascript:alert('hi');">
+			<g stroke="none" fill="none" class="tw-nav-hex">
+				<circle cx="363.39746" cy="50.00000" r="50"/>
+				<path class="tw-nav-hex-ol" d="M318.39746,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+				<image x="338.39746" y="25" height="50" width="50" xlink:href="{% static 'img/nav_loggedin.svg' %}"/>
+			</g>
+		</a>
+	</svg>
 {% endblock %}

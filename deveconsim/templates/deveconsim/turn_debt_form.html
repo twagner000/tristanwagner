@@ -6,20 +6,16 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-            <h4 class="row">
-                <div class="col-xs-10"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt</div>
-                <div class="col-xs-2"><button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#moreInfo" title="More explanation"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span></button></div>
-            </h4>
-            <p>
-                Debt is an important way to gain financing for your country, but too large of interest payments can put a heavy strain on your budget.
-            </p>
-            {% crispy form %}
-        </div>
-    </div>
+	<h3>
+		<span class="float-right"><button type="button" class="btn btn-link" data-toggle="modal" data-target="#moreInfo" title="More explanation"><i class="fas fa-question-circle"></i></button></span>
+		<i class="fas fa-piggy-bank"></i> Debt
+	</h3>
+	<p>
+		Debt is an important way to gain financing for your country, but too large of interest payments can put a heavy strain on your budget.
+	</p>
+	{% crispy form %}
 {% endblock %}
 
-{% block moreinfotitle %}More About <span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt{% endblock %}
+{% block moreinfotitle %}More About <i class="fas fa-piggy-bank"></i> Debt{% endblock %}
 
 {% block moreinfo %}{% include 'deveconsim/tutorial_debt.html' %}{% endblock %}

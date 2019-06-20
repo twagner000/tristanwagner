@@ -14,59 +14,51 @@
 	<title>{% block title %}Tristan's Website{% endblock title %}</title>
   </head>
 
-  <body>
-	<div class="pos-f-t">
-		<div class="collapse" id="navbarToggleExternalContent">
-			<div class="bg-light p-4">
-				<ul>
-				{% if user.is_authenticated %}
-					<li class="dropdown">
-					<a href="#" class="dropdown-toggle" id="navUserLabel" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-					Logged in as {{ user.username }} <span class="caret"></span>
-					</a>
-					<ul class="dropdown-menu" aria-labelledby="navUserLabel">
-					<li><a href="{% url 'password_change' %}">Change Password</a></li>
-					</ul>
-					</li>
-					<li><a href="{% url 'logout' %}?next={{request.get_full_path}}">Log Out</a></li>
-				{% else %}
-					<form class="form-inline" role="form" action="{% url 'login' %}" method="POST">
-					{% csrf_token %}
-					<input name="username" type="text" placeholder="Username" class="form-control">
-					<input name="password" type="password" placeholder="Password" class="form-control">
-					<input type="hidden" name="next" value="{{request.get_full_path}}">
-					<button type="submit" class="btn btn-primary">Log in</button>
-					</form>
-				{% endif %}
-				</ul>
-			</div>
-		</div>
+<body>
+	<div class="bg-light" id="loginBg"></div>
+	<div class="collapse" id="toggleLogin">
+		<ul>
+		{% if user.is_authenticated %}
+			<li>Logged in as {{ user.username }}</li>
+			<li><a href="{% url 'password_change' %}">Change Password</a></li>
+			<li><a href="{% url 'logout' %}?next={{request.get_full_path}}">Log Out</a></li>
+		{% else %}
+			<form class="form-inline" role="form" action="{% url 'login' %}" method="POST">
+			{% csrf_token %}
+			<input name="username" type="text" placeholder="Username" class="form-control">
+			<input name="password" type="password" placeholder="Password" class="form-control">
+			<input type="hidden" name="next" value="{{request.get_full_path}}">
+			<button type="submit" class="btn btn-primary">Log in</button>
+			</form>
+		{% endif %}
+		</ul>
 	</div>
 	
 	<header>
-		<nav class="navbar navbar-light">
-			<span></span>
-			<div>
-				<a href="#" class="btn btn-link"><i class="fas fa-home"></i></a>
-				<a href="#" class="btn btn-link"><i class="fas fa-blog"></i></a>
-				<a href="#" class="btn btn-link"><i class="fas fa-info-circle"></i></a><!--i class="far fa-smile"></i><i class="fas fa-info-circle"></i-->
-				<a href="#" class="btn btn-link" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-					{% if user.is_authenticated %}
-					<i class="fas fa-user-check"></i>
-					{% else %}
-					<i class="fas fa-user-slash"></i>
-					{% endif %}
-				</a>
-			</div>
-			<span></span>
+		{% block header %}
+		<nav id="tw-nav">
+			<a href="{% url 'home' %}" title="Home"><img src="{% static 'img/nav_home.svg' %}" /></a>
+			<a href="#" title="Blog"><img src="{% static 'img/nav_blog1.svg' %}" /></a>
+			<a href="#" title="About"><img src="{% static 'img/nav_about.svg' %}" /></a>
+			{% if user.is_staff %}
+			<a href="{% url 'admin:index' %}" title="Admin"><img src="{% static 'img/nav_gear.svg' %}" /></a>
+			{% endif %}
+			<a href="#" title="Login" data-toggle="collapse" data-target="#toggleLogin" aria-controls="toggleLogin" aria-expanded="false" aria-label="Toggle login"><img
+				{% if user.is_authenticated %}
+				src="{% static 'img/nav_loggedin.svg' %}" 
+				{% else %}
+				src="{% static 'img/nav_loggedout.svg' %}"
+				{% endif %}
+			/></a>
 		</nav>
+		{% endblock header %}
 	</header>
 		
-	<main>{% block content %}{% endblock content%}</main>
+	<main class="{% block mainclass %}{% endblock mainclass %}">{% block content %}{% endblock content%}</main>
 		
 	<footer>
 		{% block footer %}
-		<div class="container text-muted">&copy; 2015-{% now "Y" %} Tristan Wagner &middot; <a href="/admin">Admin</a></div>
+		<div class="text-muted">&copy; 2015-{% now "Y" %} Tristan Wagner</div>
 		{% endblock footer %}
 	</footer>
 	

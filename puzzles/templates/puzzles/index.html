@@ -1,27 +1,28 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 
+{% block mainclass %}tw-col{% endblock %}
 {% block content %}
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Generally Puzzling</h3>
-            <p>I enjoy solving puzzles, and occasionally creating them.</p>
-            <p>I highly recommend <a href="http://www.puzzledpint.com/">Puzzled Pint</a>. Their <a href="http://www.puzzledpint.com/index.php/download_file/1348/">code sheet</a> also frequently comes in useful.</p>
-			<p>I also enjoy working on the occasional <a href="https://projecteuler.net">Project Euler</a> problem.</p>
-			<p><a href="https://projecteuler.net"><img src="https://projecteuler.net/profile/{{project_euler_user}}.png"></a></p>
-        </div>
-        <div class="col-md-6">
-            <h3>Puzzles I've Created</h3>
-            {% if latest_released_puzzle_list %}
-                {% for puzzle in latest_released_puzzle_list %}
-                    <h4>{{puzzle.title}} <small class="pull-right">{{puzzle.release_date|date:"Y-m-d"}}</small></h4>
-                    {{puzzle.puzzle_html}}
-                    {% include "puzzles/puzzle_checkform.html" %}
-                    &nbsp;
-                {% endfor %}
-                &nbsp;<!--p><a href="" class="btn btn-primary pull-right">All Puzzles</a></p-->
-            {% else %}
-                <p>No puzzles available.</p>
-            {% endif %}
-        </div>
+	<section>
+		<h3>Generally Puzzling</h3>
+		<p>I enjoy solving puzzles, and occasionally creating them.</p>
+		<p><a href="http://www.puzzledpint.com/">Puzzled Pint</a> is a great monthly event. Their <a href="http://www.puzzledpint.com/index.php/download_file/1348/">code sheet</a> often comes in handy.</p>
+		<p>I also enjoy working on the occasional <a href="https://projecteuler.net">Project Euler</a> problem.</p>
+		<p><a href="https://projecteuler.net"><img src="https://projecteuler.net/profile/{{project_euler_user}}.png"></a></p>
+	</section>
+	
+	<section>
+		<h3>Puzzles I've Created</h3>
+		{% if latest_released_puzzle_list %}
+			{% for puzzle in latest_released_puzzle_list %}
+				<h4>{{puzzle.title}} <small class="pull-right">{{puzzle.release_date|date:"Y-m-d"}}</small></h4>
+				{{puzzle.puzzle_html}}
+				{% include "puzzles/puzzle_checkform.html" %}
+				&nbsp;
+			{% endfor %}
+			&nbsp;<!--p><a href="" class="btn btn-primary pull-right">All Puzzles</a></p-->
+		{% else %}
+			<p>No puzzles available.</p>
+		{% endif %}
+	</section>
 {% endblock %}

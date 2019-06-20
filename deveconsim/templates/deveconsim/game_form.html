@@ -3,25 +3,21 @@
 {% load widget_tweaks %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-sm-6 col-md-offset-3">
-            <h4>Start a New Game</h4>
-            {% if open_games %}
-                <div class="alert alert-warning">
-                    <p><b>Warning!</b> Creating a new game will end any games still in progress:</p>
-                    <ul>
-                        {% for open_game in open_games %}<li>{{open_game}}</li>{% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
-            
-            <form role="form" method="post">
-                {% csrf_token %}
-                {% for field in form %}
-                <div class="form-group">{{field|add_class:"form-control"}}</div>
-                {% endfor %}
-                <button type="submit" class="btn btn-primary btn-block">Start</button>
-            </form>
-        </div>
-    </div>
+	<h3>Start a New Game</h3>
+	{% if open_games %}
+		<div class="alert alert-warning">
+			<p><b>Warning!</b> Creating a new game will end any games still in progress:</p>
+			<ul>
+				{% for open_game in open_games %}<li>{{open_game}}</li>{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+	
+	<form role="form" method="post">
+		{% csrf_token %}
+		{% for field in form %}
+		<div class="form-group">{{field|add_class:"form-control"}}</div>
+		{% endfor %}
+		<button type="submit" class="btn btn-primary btn-block">Start</button>
+	</form>
 {% endblock %}
