@@ -72,6 +72,16 @@ main {
 	padding-right: .5rem;
 }
 
+section {
+	padding: .5rem;
+}
+
+.tw-section-light {
+	padding: .5rem;
+	background: #eee;
+	border-radius: .5rem;
+}
+
 footer {
 	grid-area: footer;
 	padding: .5rem;
@@ -85,6 +95,25 @@ footer {
 
 .tw-full-width {
 	grid-column: 1/-1;
+}
+
+.tw-puzzle-index {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-column-gap: 1rem;
+}
+
+.tw-list {
+	list-style-type: none;
+	padding-inline-start: 0;
+	margin-bottom: 0;
+	border-top: 1px solid #eee;
+}
+
+.tw-list li {
+	border-bottom: 1px solid #eee;
+	padding-top: .5rem;
+	padding-bottom: .5rem;
 }
 
 @media screen and (min-width: 992px) {
@@ -101,6 +130,10 @@ footer {
 	.tw-col section {
 		margin-left: .5rem;
 		margin-right: .5rem;
+	}
+	
+	.tw-puzzle-index {
+		grid-template-columns: 1fr 2fr;
 	}
 }
 

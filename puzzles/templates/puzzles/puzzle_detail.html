@@ -2,23 +2,17 @@
 {% load staticfiles %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            {% if not request.GET.check %}
-                <h3>{{puzzle.title}}</h3>
-                {{puzzle.puzzle_html}}
-                {% include "puzzles/puzzle_checkform.html" %}
-            {% elif request.GET.check.lower == puzzle.solution.lower %}
-                <h3>Success!</h3>
-                {{puzzle.success_html}}
-            {% else %}
-                <h3>Keep Trying!</h3>
-                <p>That wasn't quite correct.</p>
-                {{puzzle.fail_html}}
-                {% include "puzzles/puzzle_checkform.html" %}
-            {% endif %}
-        </div>
-	</div>
-</div>
+	{% if not request.GET.check %}
+		<h2>{{puzzle.title}}</h2>
+		{{puzzle.puzzle_html}}
+		{% include "puzzles/puzzle_checkform.html" %}
+	{% elif request.GET.check.lower == puzzle.solution.lower %}
+		<h2>Success!</h2>
+		{{puzzle.success_html}}
+	{% else %}
+		<h2>Keep Trying!</h2>
+		<p>That wasn't quite correct.</p>
+		{{puzzle.fail_html}}
+		{% include "puzzles/puzzle_checkform.html" %}
+	{% endif %}
 {% endblock %}

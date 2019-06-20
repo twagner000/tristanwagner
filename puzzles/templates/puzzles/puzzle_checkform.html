@@ -1,8 +1,6 @@
 <form role="form" action="{% url 'puzzles:detail' puzzle.slug %}" method="get">
-    <div class="input-group">
-        <input type="text" class="form-control" name="check" placeholder="Solution...">
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="submit">Check</button>
-        </span>
+	<div class="form-row">
+        <div class="col-auto"><input type="text" class="form-control" name="check" placeholder="Solution..."></div>
+		<div class="col-auto"><button class="btn btn-primary" type="submit">Check</button></div>
     </div>
 </form>
