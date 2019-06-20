@@ -48,6 +48,10 @@ header nav {
 	stroke-linecap: round;
 }
 
+.tw-nav-hex-icon-fill {
+	fill: #bbb;
+}
+
 .tw-nav-hex:hover .tw-nav-hex-ol {
 	fill: #9cf;
 	stroke: #07f;
@@ -56,6 +60,10 @@ header nav {
 
 .tw-nav-hex:hover .tw-nav-hex-icon {
 	stroke: #07f;
+}
+
+.tw-nav-hex:hover .tw-nav-hex-icon-fill {
+	fill: #07f;
 }
 
 main {
