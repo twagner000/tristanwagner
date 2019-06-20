@@ -65,17 +65,12 @@
         <h4><a href="{% url 'deveconsim:budget' %}"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Budget</a></h4>
         {% include "deveconsim/table_budget.html" %}
         
-        <div class="row">
-            <div class="col-sm-12 col-md-8">
-                <h4><a href="{% url 'deveconsim:crops' %}"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a></h4>
-                {% include "deveconsim/table_crops.html" %}
-                
-                <h4><a href="{% url 'deveconsim:debt' %}"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt</a></h4>
-                {% include "deveconsim/table_debt.html" %}
-            </div>
-            <div class="col-sm-12 col-md-4">
-                <h4><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Happiness</h4>
-                {% include "deveconsim/table_happiness.html" %}
-            </div>
-    </div>
+        <h4><a href="{% url 'deveconsim:crops' %}"><span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a></h4>
+		{% include "deveconsim/table_crops.html" %}
+		
+		<h4><a href="{% url 'deveconsim:debt' %}"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span> Debt</a></h4>
+		{% include "deveconsim/table_debt.html" %}
+
+		<h4><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Happiness</h4>
+		{% include "deveconsim/table_happiness.html" %}
 {% endblock %}

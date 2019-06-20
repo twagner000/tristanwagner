@@ -49,7 +49,7 @@
 					</g>
 				</a>
 				
-				<a href="#blog" title="Blog">
+				<a href="{% url 'blog' %}" title="Blog">
 					<g class="tw-nav-hex" transform="translate(78.34936,43.30127)">
 						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
 						<g class="tw-nav-hex-icon" transform="translate(25,25)">
@@ -68,10 +68,9 @@
 					</g>
 				</a>
 				
-				<a href="#about" title="About">
+				<a href="{% url 'about' %}" title="About">
 					<g class="tw-nav-hex" transform="translate(156.69873,0)">
 						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
-						<!--image x="25" y="25" height="50" width="50" xlink:href="{% static 'img/nav_about.svg' %}"/-->
 						<g class="tw-nav-hex-icon" transform="translate(25,25)">
 							<circle cx="25" cy="25" r="23.92578"/>
 							<path d="M 9.76563 26.36719 a 10.74219 9.76563 0 0 0 30.46875 0 Z"/>
@@ -97,7 +96,13 @@
 				<a href="#" title="Login" data-toggle="collapse" data-target="#toggleLogin" aria-controls="toggleLogin" aria-expanded="false" aria-label="Toggle login">
 					<g class="tw-nav-hex" transform="translate(313.39746,0)">
 						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
-						<image x="25" y="25" height="50" width="50" xlink:href="{% if user.is_authenticated %}{% static 'img/nav_loggedin.svg' %}{% else %}{% static 'img/nav_loggedout.svg' %}{% endif %}"/>
+						<g class="tw-nav-hex-icon" transform="translate(25,25)">
+							<circle cx="25.54" cy="12.04" r="12.60"/>
+							<path d="M 4.30 44.80 a 18 17.10 0 0 1 42.48 0 a 18 3.60 0 0 1 -42.48 0"/>
+							{% if user.is_authenticated %}
+							<path d="M 20.14 37.60 l 3.60 3.60 l 7.20 -7.20"/>
+							{% endif %}
+						</g>
 					</g>
 				</a>
 			</svg>
@@ -109,7 +114,7 @@
 		
 	<footer>
 		{% block footer %}
-		<div class="text-muted">&copy; 2015-{% now "Y" %} Tristan Wagner</div>
+		<div class="text-muted">&copy; 2015-{% now "Y" %} Tristan Wagner &middot; <a href="{% url 'attribution' %}">Attribution</a></div>
 		{% endblock footer %}
 	</footer>
 	

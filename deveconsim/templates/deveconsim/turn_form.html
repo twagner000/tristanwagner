@@ -6,10 +6,8 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
-            <h4 class="row">
-                <div class="col-xs-10"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span> End Turn</div>
+            <h4>
+                <i class="fas fa-redo"></i> End Turn</div>
             </h4>
             {% if calc.new_genfund < 0 %}
                 <p>
@@ -42,7 +40,7 @@
                     {% if turn.turn == 1 %}
                         <p class="text-primary">
                             You may want to go back to the <a href="{% url 'deveconsim:crops' %}">
-                            <span class="glyphicon glyphicon-grain" aria-hidden="true"></span> Crops</a> page and plant additional cocoa.
+                            <i class="fas fa-seedling"></i> Crops</a> page and plant additional cocoa.
                         </p>
                     {% endif %}
                 {% endif %}
@@ -53,8 +51,7 @@
             {% if calc.new_genfund_plus_max_wbsap > 0 %}
                 {% crispy form %}
             {% endif %}
-        </div>
-    </div>
+
     
 {% endblock %}
 

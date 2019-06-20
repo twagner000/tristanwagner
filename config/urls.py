@@ -8,6 +8,9 @@ from accounts.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, C
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='pages/home.html'), name='home'),
+    path('blog/', TemplateView.as_view(template_name='pages/blog.html'), name='blog'),
+    path('about/', TemplateView.as_view(template_name='pages/about.html'), name='about'),
+    path('attribution/', TemplateView.as_view(template_name='pages/attribution.html'), name='attribution'),
     path('admin/', admin.site.urls),
     path('accounts/token/', rest_framework_views.obtain_auth_token, name='auth-token'),
     path('accounts/login/', auth_views.LoginView.as_view(authentication_form=CrispyAuthenticationForm), name='login'),
