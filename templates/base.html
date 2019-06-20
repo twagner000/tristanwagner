@@ -36,20 +36,65 @@
 	
 	<header>
 		{% block header %}
-		<nav id="tw-nav">
-			<a href="{% url 'home' %}" title="Home"><img src="{% static 'img/nav_home.svg' %}" /></a>
-			<a href="#" title="Blog"><img src="{% static 'img/nav_blog1.svg' %}" /></a>
-			<a href="#" title="About"><img src="{% static 'img/nav_about.svg' %}" /></a>
-			{% if user.is_staff %}
-			<a href="{% url 'admin:index' %}" title="Admin"><img src="{% static 'img/nav_gear.svg' %}" /></a>
-			{% endif %}
-			<a href="#" title="Login" data-toggle="collapse" data-target="#toggleLogin" aria-controls="toggleLogin" aria-expanded="false" aria-label="Toggle login"><img
-				{% if user.is_authenticated %}
-				src="{% static 'img/nav_loggedin.svg' %}" 
+		<nav>
+			<svg viewBox="0 5 413.40 133.3" height="72" xmlns="http://www.w3.org/2000/svg">
+				<a href="{% url 'home' %}" title="Home">
+					<g class="tw-nav-hex" transform="translate(0,0)">
+						<circle cx="50" cy="50" r="50"/>
+						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+						<g class="tw-nav-hex-icon">
+							<path d="M 50 36 l 17 17 v 17 h -34 v -17 Z"/>
+							<path d="M 27 52 l 23 -25 l 23 25"/>
+						</g>
+					</g>
+				</a>
+				
+				<a href="#blog" title="Blog">
+					<g class="tw-nav-hex" transform="translate(78.34936,43.30127)">
+						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+						<g class="tw-nav-hex-icon" transform="translate(25,25)">
+							<path d="M 13.18359 16.11328 h 29.29688"/>
+							<path d="M 30.76172 21.97266 h 11.71875"/>
+							<path d="M 30.76172 27.83203 h 11.71875"/>
+							<path d="M 30.76172 33.69141 h 11.71875"/>
+							<path d="M 13.18359 21.97266 h 11.71875 v 11.71875 h -11.71875 Z"/>
+							<path d="M 0.78125 11.91406 v 27.53906
+								c 0 1.95313 1.95313 2.92969 2.92969 2.92969
+								c 1.95313 0 2.92969 -0.97656 2.92969 -2.92969
+								v -31.93359 h 42.38281 v 31.93359
+								c 0 1.95313 -0.97656 2.92969 -2.92969 2.92969
+								h -42.38281"/>
+						</g>
+					</g>
+				</a>
+				
+				<a href="#about" title="About">
+					<g class="tw-nav-hex" transform="translate(156.69873,0)">
+						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+						<image x="25" y="25" height="50" width="50" xlink:href="{% static 'img/nav_about.svg' %}"/>
+					</g>
+				</a>
+				
+				{% if user.is_staff %}
+				<a href="{% url 'admin:index' %}" title="Admin">
+					<g class="tw-nav-hex" transform="translate(235.04809, 43.30127)">
+						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+						<image x="25" y="25" height="50" width="50" xlink:href="{% static 'img/nav_gear.svg' %}"/>
+					</g>
+				</a>
 				{% else %}
-				src="{% static 'img/nav_loggedout.svg' %}"
+				<g class="tw-nav-hex" transform="translate(235.04809, 43.30127)">
+					<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+				</g>
 				{% endif %}
-			/></a>
+				
+				<a href="#" title="Login" data-toggle="collapse" data-target="#toggleLogin" aria-controls="toggleLogin" aria-expanded="false" aria-label="Toggle login">
+					<g class="tw-nav-hex" transform="translate(313.39746,0)">
+						<path class="tw-nav-hex-ol" d="M5.00000,50.00000 l19.48557,-38.97114 l51.02886,0.00000 l19.48557,38.97114 l-19.48557,38.97114 l-51.02886,0.00000 Z"/>
+						<image x="25" y="25" height="50" width="50" xlink:href="{% if user.is_authenticated %}{% static 'img/nav_loggedin.svg' %}{% else %}{% static 'img/nav_loggedout.svg' %}{% endif %}"/>
+					</g>
+				</a>
+			</svg>
 		</nav>
 		{% endblock header %}
 	</header>

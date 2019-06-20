@@ -31,37 +31,17 @@ header nav {
 	padding-bottom: .2rem;
 }
 
-#tw-nav img, #tw-nav svg {
-	height: 2.3rem;
-	width: 2.3rem;
-	object-fit: contain;
-	padding: .3rem;
-	border-radius: .3rem;
-	margin-left: .6rem;
-	margin-right: .6rem;
-}
-
-#tw-nav img:hover, #tw-nav svg:hover {
-	background: #f8f9fa;
-}
-
-#tw-nav svg:hover path {
-	stroke: #aaa;
-}
-
-.tw-nav-hex-ol {
-	/*stroke: #ccc;
-	stroke-width: 3;*/
-	fill: #eee;
-}
-
 .tw-nav-hex {
 	stroke: none;
 	fill: none;
 }
 
+.tw-nav-hex-ol {
+	fill: #eee;
+}
+
 .tw-nav-hex-icon {
-	stroke: #ccc;
+	stroke: #bbb;
 	stroke-width: 3;
 	fill: none;
 	stroke-linejoin: round;
@@ -69,11 +49,13 @@ header nav {
 }
 
 .tw-nav-hex:hover .tw-nav-hex-ol {
-	fill: #ccf;
+	fill: #9cf;
+	stroke: #07f;
+	stroke-width: 3;
 }
 
 .tw-nav-hex:hover .tw-nav-hex-icon {
-	stroke: #99d;
+	stroke: #07f;
 }
 
 main {
@@ -117,6 +99,11 @@ footer {
 #deveconsim-nav {
 	padding: .5rem;
 	margin-bottom: .2rem;
+}
+
+#deveconsim-nav + nav { /*make up space for fixed type nav bar*/
+	padding: .5rem;
+	margin-bottom: .5rem;
 }
 
 .game-nav-info>a {

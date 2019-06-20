@@ -5,8 +5,7 @@
 {% block script %}{{ block.super }}<script src="{% static 'deveconsim/js/jquery.bootstrap-touchspin.min.js' %}"></script>{% endblock %}
 
 {% block header %}
-{{ block.super }}
-    <nav class="bg-dark" id="deveconsim-nav">
+    <nav class="fixed-top bg-dark" id="deveconsim-nav">
 		<div class="btn-group btn-group-sm">
 			<a href="{% url 'deveconsim:index' %}" class="btn btn-outline-light" title="Overview"><i class="fas fa-globe"></i></a>
 			<a href="{% url 'deveconsim:crops' %}" class="btn btn-outline-light" title="Crops"><i class="fas fa-seedling"></i></a>
@@ -20,6 +19,7 @@
 			<a href="{% url 'deveconsim:endturn' %}" class="btn btn-success" title="End turn"><i class="fas fa-step-forward"></i></a>
 		</div>
     </nav>
+	<nav>&nbsp;</nav>
     
     <div class="modal fade" id="moreInfo" tabindex="-1" role="dialog" aria-labelledby="moreInfoLabel">
         <div class="modal-dialog modal-lg" role="document">
@@ -35,4 +35,5 @@
             </div>
         </div>
     </div>
+{{ block.super }}
 {% endblock %}
