@@ -25,4 +25,5 @@ urlpatterns = [
     path('deveconsim/', include(('deveconsim.urls', 'deveconsim'), namespace='deveconsim')),
     path('mpatrol-api/', include('mpatrol_api.urls')),
     path('mpatrol/', include('mpatrol.urls', namespace='mpatrol')),
+    path('timetracker/', include('timetracker.urls')),
 ]

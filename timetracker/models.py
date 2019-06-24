@@ -15,7 +15,7 @@ class Project(models.Model):
     team = models.ManyToManyField(get_user_model(), blank=True, related_name='projects_on')
     
     class Meta:
-        ordering = ['date_created']
+        ordering = ['-date_created']
         unique_together = (('parent', 'name',),)
     
     def is_active(self):
@@ -43,7 +43,7 @@ class Task(models.Model):
     est_hours = models.FloatField(null=True, blank=True)
     
     class Meta:
-        ordering = ['date_created']
+        ordering = ['-date_created']
         unique_together = (('project', 'name',),)
     
     def is_active(self):
@@ -64,7 +64,7 @@ class Entry(models.Model):
     #hours (store calculated value on save? would this work better with aggregation functions?)
     
     class Meta:
-        ordering = ['start']
+        ordering = ['-start']
         
     def hours(self):
         if not self.end:
@@ -72,4 +72,6 @@ class Entry(models.Model):
         return (self.end - self.start).total_seconds()/3600
         
     def __str__(self):
-        return '{:.2f} hrs on {} by {}'.format(self.hours(), self.start.strftime('%Y-%m-%d'), str(self.user))
+        return '{} hrs on {} by {}'.format(self.hours(), self.start.strftime('%Y-%m-%d'), str(self.user))
+        #{:.2f}
+        
