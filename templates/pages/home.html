@@ -3,14 +3,22 @@
 
 {% block content %}
 	<h1 class="text-center">Tristan Wagner</h1>
+	
+	<p>I'm in the process of remaking my personal website.</p>
+	
+	<ul>
+		<li><a href="{% url 'puzzles:index' %}">Puzzles</a></li>
+	</ul>
 
+	{% if user.is_staff %}
+	<h3>Admin Links</h3>
 	<ul>
 		<li><a href="{% url 'bgg_stats:index' %}">Board Game Stats</a></li>
 		<li><a href="{% url 'deveconsim:index' %}">Developing Economy Simulation</a></li>
 		<li><a href="{% url 'mpatrol:index' %}">Mossfower Patrol Game</a></li>
-		<li><a href="{% url 'puzzles:index' %}">Puzzles</a></li>
 		<li><a href="{% url 'checklist:index' %}">Checklists</a></li>
 	</ul>
+	{% endif %}
 
 <!--svg viewBox="0 0 512 512" height="300">
 	<g fill="none" stroke="black" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"-->
