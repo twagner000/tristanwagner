@@ -43,6 +43,7 @@ LOCAL_APPS = (
     'mpatrol',
     'accounts',
     'bgg_stats',
+    'timetracker',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
