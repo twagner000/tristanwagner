@@ -49,6 +49,9 @@ class Task(models.Model):
     def is_active(self):
         return not self.date_closed
         
+    def full_name(self):
+        return str(self)
+        
     def __str__(self):
         return '{} > {}'.format(self.project,self.name)
         

@@ -3,6 +3,11 @@ from django.contrib import admin
 from django.views.generic.base import TemplateView, RedirectView
 from django.contrib.auth import views as auth_views
 from rest_framework.authtoken import views as rest_framework_views
+#NEED TO UPDATE rest_framework_extensions/routers.py FROM GITHUB
+from rest_framework_extensions.routers import ExtendedDefaultRouter
+
+from accounts.api import AuthTokenViewSet
+
 
 from accounts.forms import CrispyAuthenticationForm, CrispyPasswordChangeForm, CrispyPasswordResetForm, CrispySetPasswordForm
 
@@ -27,3 +32,7 @@ urlpatterns = [
     path('mpatrol/', include('mpatrol.urls', namespace='mpatrol')),
     path('timetracker/', include('timetracker.urls')),
 ]
+
+router = ExtendedDefaultRouter()
+router.register('accounts/auth-token',AuthTokenViewSet, base_name='auth-token')
+urlpatterns += router.urls

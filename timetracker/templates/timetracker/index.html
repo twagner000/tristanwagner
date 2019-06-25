@@ -2,20 +2,10 @@
 {% load staticfiles %}
 
 {% block content %}
-	<h2>Time Tracker</h2>
-	{% if not user.is_authenticated %}
-	<p>You must be logged in to use this app.</p>
-	{% else %}
-		<div style="display: grid; grid-template-columns: auto 1fr; grid-gap: .5rem;">
-		{% for entry in open_entries %}
-			<div><a href="#" class="btn btn-outline-danger"><i class="fas fa-stop"></i></a></div>
-			<!--a href="{ url 'timetracker:entry-end' entry.id }"-->
-			<div><b>{{entry.task}}</b><br/>Started {{entry.start|date:'SHORT_DATETIME_FORMAT'}}</div>
-		{% endfor %}
-		{% for entry in recent_entries %}
-			<div><a href="#" class="btn btn-outline-primary"><i class="fas fa-play"></i></a></div>
-			<div><b>{{entry.task}}</b><br/>{{entry.hours|floatformat:2}} hours ending {{entry.end|date:'SHORT_DATETIME_FORMAT'}}<br/><em>{{entry.comments}}</em></div>
-		{% endfor %}
-		</div>
-	{% endif %}
+	<div id="root"></div>
+{% endblock %}
+
+{% block script %}
+{{ block.super }}
+<script src="{% static 'timetracker/main.js' %}"></script>
 {% endblock %}
