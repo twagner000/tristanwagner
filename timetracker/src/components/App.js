@@ -1,11 +1,10 @@
-import React, {Component} from "react";
-import DataProvider from "./DataProvider";
-import Table from "./Table";
+import React from "react";
 import Form from "./Form";
-import RecentEntries from "./RecentEntries";
+import { RecentEntryList, UpdateEntryForm } from "./Entry";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 
-class App extends Component {
+class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -28,11 +27,19 @@ class App extends Component {
 		if (this.state.token == null)
 			return (<p>{this.state.placeholder}</p>);
 		return (
-			<div className="App">
-				<RecentEntries endpoint="api/entry/recent/" token={this.state.token} />
-				<Form endpoint="api/entry/" />
-			</div>
+			<Router basename="/timetracker">
+				<nav>
+					<ul>
+						<li><Link to="/">Recent</Link></li>
+						<li><Link to="/entry">Start</Link></li>
+					</ul>
+				</nav>
+				<Route exact path="/" render={props => <RecentEntryList {...props} token={this.state.token} />} />
+				<Route exact path="/entry" render={props => <Form {...props} endpoint="api/entry/" token={this.state.token} />} />
+				<Route path="/entry/:id" render={props => <UpdateEntryForm {...props} token={this.state.token} />} />
+			</Router>
 		);
+		//<div className="App">
 		/*<!--DataProvider endpoint="api/recent-entry/" token={this.state.token} render={data => <Table data={data} />} /-->*/
 	}
 }

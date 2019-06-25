@@ -25,10 +25,10 @@ class Entry extends React.Component {
 
 
 class RecentEntries extends React.Component {
-	/*static propTypes = {
+	static propTypes = {
 		endpoint: PropTypes.string.isRequired,
 		token: PropTypes.string.isRequired
-	};*/
+	};
 	
 	constructor(props) {
 		super(props);
@@ -41,12 +41,9 @@ class RecentEntries extends React.Component {
 	
 	componentDidMount() {
 		const headers = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+			'Authorization': 'Token ' + this.props.token
         };
-
-        if (this.props.token != null) {
-            headers['Authorization'] = 'Token ' + this.props.token;
-        }
 
 		fetch(this.props.endpoint, {headers})
 			.then(response => {
@@ -73,6 +70,8 @@ class RecentEntries extends React.Component {
 		}
 	}
 }
+
+//RecentEntries.propTypes = {};
 
 export default RecentEntries;
 
