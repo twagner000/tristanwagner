@@ -58,7 +58,7 @@ class Task(models.Model):
         
     
 class Entry(models.Model):
-    user = models.ForeignKey(get_user_model(), models.PROTECT)
+    owner = models.ForeignKey(get_user_model(), models.PROTECT)
     task = models.ForeignKey(Task, models.CASCADE)
     start = models.DateTimeField()
     end = models.DateTimeField(null=True, blank=True)

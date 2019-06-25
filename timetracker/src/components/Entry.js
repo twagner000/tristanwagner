@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import key from "weak-key";
 import { format } from 'date-fns';
 import { Link } from "react-router-dom";
+import Autosuggest from 'react-autosuggest';
 
 const endpoint_base = '/timetracker/api/';
 
@@ -23,6 +24,71 @@ class Entry extends React.Component {
 				</React.Fragment>
 			);
 		}
+	}
+}
+
+
+class TaskSelect extends React.Component {
+	static propTypes = {
+		token: PropTypes.string.isRequired
+	};
+	
+	// Teach Autosuggest how to calculate suggestions for any given input value.
+	getSuggestions(value) {
+		const escapedValue = value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		if (escapedValue === '') {
+			return [];
+		}
+		const regex = new RegExp(escapedValue, 'i');
+		return this.state.full_list.filter(item => regex.test(item.full_name));
+	}
+	
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			value: '',
+			suggestions: [],
+			full_list: []
+		};
+	}
+	
+	componentDidMount() {
+		const headers = {
+            'Content-Type': 'application/json',
+			'Authorization': 'Token ' + this.props.token
+        };
+
+		fetch(endpoint_base+"task/", {headers})
+			.then(response => {
+				if (response.status !== 200) {
+					return this.setState({ placeholder: "Something went wrong" });
+				}
+				return response.json();
+			})
+			.then(data => this.setState({full_list: data}));
+	}
+
+	render() {
+		const { value, suggestions } = this.state;
+
+		// Autosuggest will pass through all these props to the input.
+		const inputProps = {
+			placeholder: 'Type a task',
+			value,
+			onChange: (event, { newValue }) => this.setState({value: newValue})
+		};
+
+		return (
+			<Autosuggest
+				suggestions={suggestions}
+				onSuggestionsFetchRequested={({ value }) => this.setState({suggestions: this.getSuggestions(value)})}
+				onSuggestionsClearRequested={() => this.setState({suggestions: []})}
+				getSuggestionValue={suggestion => suggestion.id.toString()}
+				renderSuggestion={suggestion => suggestion.full_name}
+				inputProps={inputProps}
+			/>
+		);
 	}
 }
 
@@ -78,8 +144,20 @@ export class UpdateEntryForm extends React.Component {
 	state = {
 		loaded: false,
 		placeholder: "Loading...",
-		data: []
+		data: [],
+		value: "",
+		suggestions: [],
+		full_list: []
 	};
+	
+	getSuggestions(value) {
+		const escapedValue = value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		if (escapedValue === '') {
+			return [];
+		}
+		const regex = new RegExp(escapedValue, 'i');
+		return this.state.full_list.filter(item => regex.test(item.full_name));
+	}
 	
 	componentDidMount() {
 		const headers = {
@@ -95,6 +173,15 @@ export class UpdateEntryForm extends React.Component {
 				return response.json();
 			})
 			.then(data => {console.log(data); this.setState({ data: data, loaded: true })});
+			
+		fetch(endpoint_base+"task/", {headers})
+			.then(response => {
+				if (response.status !== 200) {
+					return this.setState({ placeholder: "Something went wrong" });
+				}
+				return response.json();
+			})
+			.then(data => this.setState({full_list: data}));
 	}
 
 	handleChange = e => {
@@ -114,25 +201,36 @@ export class UpdateEntryForm extends React.Component {
 	};
 
 	render() {
+		const { value, suggestions } = this.state;
+
+		// Autosuggest will pass through all these props to the input.
+		const inputProps = {
+			placeholder: 'Type a task',
+			value,
+			onChange: (event, { newValue }) => {
+				this.setState({value: newValue});
+			}
+		};
+		
 		return (
 			<div>
 				<h3>Update entry with id={this.state.data.id}</h3>
 				<form onSubmit={this.handleSubmit}>
-					<div className="field">
-					<label className="label">User</label>
-					<div className="control">
-					<input
-					className="input"
-					type="text"
-					name="user"
-					onChange={this.handleChange}
-					value={this.state.data.user}
-					required
+					<Autosuggest
+						suggestions={suggestions}
+						onSuggestionsFetchRequested={({ value }) => this.setState({suggestions: this.getSuggestions(value)})}
+						onSuggestionsClearRequested={() => this.setState({suggestions: []})}
+						getSuggestionValue={suggestion => suggestion.id.toString()}
+						renderSuggestion={suggestion => suggestion.full_name}
+						inputProps={inputProps}
 					/>
-					</div>
-					</div>
+					<p>{this.state.value}</p>
 					
-					<div className="field">
+				</form>
+			</div>
+		);
+	}
+	/*<div className="field">
 					<label className="label">Task</label>
 					<div className="control">
 					<input
@@ -164,9 +262,5 @@ export class UpdateEntryForm extends React.Component {
 					<button type="submit" className="button is-info">
 					Add entry
 					</button>
-					</div>
-				</form>
-			</div>
-		);
-	}
+					</div>*/
 }

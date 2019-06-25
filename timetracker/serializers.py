@@ -13,7 +13,7 @@ class EntrySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Entry
-        fields = ('id', 'user', 'task', 'start', 'end', 'comments', 'date_updated', 'hours')
+        fields = ('id', 'owner', 'task', 'start', 'end', 'comments', 'date_updated', 'hours')
         
         
 #battalions = BriefBattalionSerializer(many=True)

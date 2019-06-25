@@ -5,12 +5,10 @@ from . import views
 
 app_name = 'timetracker'
 
-urlpatterns = [
-    re_path('^$', views.IndexView.as_view(), name='index'),
-    #path('api/entry/', views.EntryListCreate.as_view(), name='entry-list'),
-    path('api/entry/recent/', views.RecentEntryList.as_view(), name='recent-entry-list'),
-]
-
 router = SimpleRouter()
 router.register('api/entry', views.EntryViewSet)
-urlpatterns += router.urls
+router.register('api/task', views.TaskViewSet)
+
+urlpatterns = router.urls + [
+    re_path('^(?!api).*$', views.IndexView.as_view(), name='index'),
+]

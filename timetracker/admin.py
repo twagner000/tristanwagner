@@ -13,8 +13,8 @@ class TaskAdmin(admin.ModelAdmin):
 
     
 class EntryAdmin(admin.ModelAdmin):
-    list_display = ('task', 'user', 'start', 'end', 'hours')
-    list_filter = ['task', 'user']
+    list_display = ('task', 'owner', 'start', 'end', 'hours')
+    list_filter = ['task', 'owner']
     
 
 admin.site.register(models.Project, ProjectAdmin)
