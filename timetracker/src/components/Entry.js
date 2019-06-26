@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import key from "weak-key";
 import { format } from 'date-fns';
 import { Link } from "react-router-dom";
-import Autosuggest from 'react-autosuggest';
+import Select from 'react-select';
 
 const endpoint_base = '/timetracker/api/';
 
@@ -142,12 +142,14 @@ export class UpdateEntryForm extends React.Component {
 	};
 	
 	state = {
-		loaded: false,
+		entry_loaded: false,
 		placeholder: "Loading...",
 		data: [],
 		value: "",
 		suggestions: [],
-		full_list: []
+		full_list: [],
+		task_options: [],
+		task: undefined
 	};
 	
 	getSuggestions(value) {
@@ -172,7 +174,7 @@ export class UpdateEntryForm extends React.Component {
 				}
 				return response.json();
 			})
-			.then(data => {console.log(data); this.setState({ data: data, loaded: true })});
+			.then(data => {console.log(data); this.setState({ data: data, entry_loaded: true })});
 			
 		fetch(endpoint_base+"task/", {headers})
 			.then(response => {
@@ -181,7 +183,7 @@ export class UpdateEntryForm extends React.Component {
 				}
 				return response.json();
 			})
-			.then(data => this.setState({full_list: data}));
+			.then(data => this.setState({full_list: data, task: data[0]}));
 	}
 
 	handleChange = e => {
@@ -211,24 +213,29 @@ export class UpdateEntryForm extends React.Component {
 				this.setState({value: newValue});
 			}
 		};
-		
-		return (
-			<div>
-				<h3>Update entry with id={this.state.data.id}</h3>
-				<form onSubmit={this.handleSubmit}>
-					<Autosuggest
-						suggestions={suggestions}
-						onSuggestionsFetchRequested={({ value }) => this.setState({suggestions: this.getSuggestions(value)})}
-						onSuggestionsClearRequested={() => this.setState({suggestions: []})}
-						getSuggestionValue={suggestion => suggestion.id.toString()}
-						renderSuggestion={suggestion => suggestion.full_name}
-						inputProps={inputProps}
-					/>
-					<p>{this.state.value}</p>
-					
-				</form>
-			</div>
-		);
+		if (!this.state.entry_loaded) {
+			return (<p>{this.state.placeholder}</p>);
+		} else {
+			return (
+				<div>
+					<h3>Update entry with id={this.state.data.id}</h3>
+					<form onSubmit={this.handleSubmit}>
+						<Select
+							name="task"
+							
+							options={this.state.full_list}
+							getOptionLabel={option => option.full_name}
+							getOptionValue={option => option.id}
+							onChange={(option, meta) => { this.setState({task: option}); console.log(option, meta); } }
+						/>
+						<p>{this.state.data.task.id} / {this.state.task ? this.state.task.id : 'na'}</p>
+						
+					</form>
+				</div>
+			);
+		}
+		//defaultValue={this.state.full_list.filter(option => option.id == this.state.data.task.id)}
+		//onChange={option => this.setState({task_id: option.id})}
 	}
 	/*<div className="field">
 					<label className="label">Task</label>
