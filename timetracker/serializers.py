@@ -14,6 +14,6 @@ class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Entry
         fields = ('id', 'owner', 'task', 'start', 'end', 'comments', 'task_obj', 'date_updated', 'hours')
-        
+        read_only_fields = ('owner',)
         
 #battalions = BriefBattalionSerializer(many=True)

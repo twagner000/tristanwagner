@@ -1,6 +1,6 @@
 import React from "react";
 import Form from "./Form";
-import { RecentEntryList, UpdateEntryForm } from "./Entry";
+import { EntryRecentList, EntryCreateUpdateForm } from "./Entry";
 import TimeTrackerService, {ServiceContext} from "./TimeTrackerService";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
@@ -23,15 +23,9 @@ class App extends React.Component {
 		return (
 			<Router basename="/timetracker">
 				<ServiceContext.Provider value={this.state.service}>
-					<nav>
-						<ul>
-							<li><Link to="/">Recent</Link></li>
-							<li><Link to="/entry">Start</Link></li>
-						</ul>
-					</nav>
-					<Route exact path="/" component={RecentEntryList} />
-					<Route exact path="/entry" render={props => <Form {...props} endpoint="api/entry/" token={this.state.token} />} />
-					<Route path="/entry/:id" component={UpdateEntryForm} />
+					<Route exact path="/" component={EntryRecentList} />
+					<Route path="/entry/:id" component={EntryCreateUpdateForm} />
+					<Route exact path="/entry/" component={EntryCreateUpdateForm} />
 				</ServiceContext.Provider>
 			</Router>
 		);

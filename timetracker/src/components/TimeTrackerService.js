@@ -28,6 +28,11 @@ export default class TimeTrackerService {
         return axios.put(url, entry, this.config);
     }
 	
+    createEntry(entry){
+        const url = `${API_URL}/api/entry/`;
+        return axios.post(url, entry, this.config);
+    }
+	
     getTasks() {
         const url = `${API_URL}/api/task/`;
         return axios.get(url, this.config).then(response => response.data);
@@ -37,14 +42,6 @@ export default class TimeTrackerService {
     /*deleteCustomer(customer){
         const url = `${API_URL}/api/customers/${customer.pk}`;
         return axios.delete(url);
-    }
-    createCustomer(customer){
-        const url = `${API_URL}/api/customers/`;
-        return axios.post(url,customer);
-    }
-    updateCustomer(customer){
-        const url = `${API_URL}/api/customers/${customer.pk}`;
-        return axios.put(url,customer);
     }*/
 }
 

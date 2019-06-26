@@ -13,7 +13,7 @@ class Entry extends React.Component {
 		if (this.props.data.end) {
 			return (
 				<React.Fragment>
-					<div><Link to="entry/" className="btn btn-outline-primary"><i className="fas fa-play"></i></Link></div>
+					<div><Link to={{ pathname: "entry/", search: "?task_id="+this.props.data.task }} className="btn btn-outline-primary"><i className="fas fa-play"></i></Link></div>
 					<div><b>{this.props.data.task_obj.full_name}</b><br/>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}<br/><em>{this.props.data.comments}</em></div>
 				</React.Fragment>
 			);
@@ -29,7 +29,7 @@ class Entry extends React.Component {
 }
 
 
-export class RecentEntryList extends React.Component {
+export class EntryRecentList extends React.Component {
 	static contextType = ServiceContext;
 	
 	state = {
@@ -59,16 +59,17 @@ export class RecentEntryList extends React.Component {
 	}
 }
 
-export class UpdateEntryForm extends React.Component {
+export class EntryCreateUpdateForm extends React.Component {
 	static contextType = ServiceContext;
 	
 	state = {
 		placeholder: "Loading...",
 		loaded: false,
 		submitting: false,
-		entry: [],
 		task_list: [],
 		task: [],
+		id: null,
+		task_id: null,
 		start: "",
 		end: "",
 		comments: ""
@@ -77,26 +78,35 @@ export class UpdateEntryForm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
 	}
 	
 	componentDidMount() {
 		const p = [];
 		
-		p.push(this.context.getEntry(this.props.match.params.id)
-			.then(data => this.setState({
-				entry: data,
-				comments: data.comments,
-				start: data.start.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)[0],
-				end: data.end ? data.end.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)[0] : ""
-			})));
+		if(this.props.match.params  &&  this.props.match.params.id) {
+			p.push(this.context.getEntry(this.props.match.params.id)
+				.then(data => this.setState({
+					id: data.id,
+					task_id: data.task,
+					start: data.start.slice(0, 16),
+					end: data.end ? data.end.slice(0, 16) : "",
+					comments: data.comments
+				})));
+		}
 			
 		p.push(this.context.getTasks()
 			.then(data => this.setState({task_list: data})));
 			
 		Promise.all(p)
 			.then(() => {
-				this.setState({loaded: true, task: this.state.task_list.filter(option => option.id == this.state.entry.task)});
-				console.log(this.state.entry);
+				let task_id = new URLSearchParams(location.search).get('task_id');
+				this.setState({
+					loaded: true,
+					task_id: task_id != null ? task_id : this.state.task_id,
+					start: !this.state.id ? this.getLocalDate() : this.state.start,
+					task: this.state.task_list.filter(option => option.id == (task_id != null ? task_id : this.state.task_id))
+				});
 			});
 	}
 
@@ -104,23 +114,31 @@ export class UpdateEntryForm extends React.Component {
 		this.setState({ [event.target.name]: event.target.value });
 	};
 
-	handleSubmit = e => {
-		e.preventDefault();
+	handleSubmit(event) {
 		this.setState({submitting: true});
+		
+		const { id, task_id, task, start, end, comments } = this.state;
+		
 		const entry = {
-			'id': this.state.entry.id,
-			'owner': this.state.entry.owner,
-			'task': this.state.task[0].id,
-			'start': this.state.start,
-			'end': this.state.end,
-			'comments': this.state.comments
+			'id': id,
+			'task': task[0].id,
+			'start': start,
+			'end': end=="" ? null : end,
+			'comments': comments
 		};
-		console.log(entry);
-		this.context.updateEntry(entry)
+		
+		(id ? this.context.updateEntry(entry) : this.context.createEntry(entry))
 			.then((result) => this.props.history.push('/'))
 			.catch((err) => console.log(err));
-		
+			
+		event.preventDefault();
 	};
+	
+	getLocalDate() {
+		const date = new Date();
+		const dateLocal = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
+		return dateLocal.toISOString().slice(0, 16);
+	}
 
 	render() {
 		if (!this.state.loaded) {
@@ -128,12 +146,13 @@ export class UpdateEntryForm extends React.Component {
 		} else {
 			return (
 				<div>
-					<h3>Update Entry</h3>
+					<h3>{this.state.id ? "Update" : "Create"} Entry</h3>
 					<form onSubmit={this.handleSubmit}>
 						<div className="form-group">
-							<label>Task</label>
 							<Select
 								name="task"
+								aria-label="Task"
+								placeholder="Select a task..."
 								required
 								options={this.state.task_list}
 								getOptionLabel={option => option.full_name}
@@ -142,39 +161,46 @@ export class UpdateEntryForm extends React.Component {
 								onChange={(option, meta) => this.setState({task: [option]}) }
 							/>
 						</div>
-						<div className="form-group">
-							<label>Start</label>
+						<div className="form-group" style={{display: "flex"}}>
+							<button className="btn" type="button"><i className="fas fa-play"></i></button>
 							<input
 								className="form-control"
 								type="datetime-local"
 								name="start"
+								aria-label="Start"
 								required
 								value={this.state.start}
 								onChange={this.handleChange}
 							/>
+							<button onClick={() => this.setState({start: this.getLocalDate()})} className="btn btn-link" type="button"><i className="fas fa-clock"></i></button>
 						</div>
-						<div className="form-group">
-							<label>End</label>
+						<div className="form-group" style={{display: "flex"}}>
+							<button className="btn" type="button"><i className="fas fa-stop"></i></button>
 							<input
 								className="form-control"
 								type="datetime-local"
 								name="end"
+								aria-label="End"
 								value={this.state.end}
 								onChange={this.handleChange}
 							/>
-							<button className="btn btn-outline-primary" type="button"><i className="fas fa-clock"></i></button>
-							<button className="btn btn-outline-primary" type="button"><i className="fas fa-times"></i></button>
+							<button onClick={() => this.setState({end: ""})} className="btn btn-link" type="button"><i className="fas fa-times"></i></button>
+							<button onClick={() => this.setState({end: this.getLocalDate()})} className="btn btn-link" type="button"><i className="fas fa-clock"></i></button>
 						</div>
 						<div className="form-group">
-							<label>Comments</label>
 							<textarea
 								className="form-control"
 								name="comments"
+								aria-label="Comments"
+								placeholder="Comments..."
 								value={this.state.comments}
 								onChange={this.handleChange}
 							/>
 						</div>
-						<button type="submit" className="btn btn-primary" disabled={this.state.submitting}>Update</button>
+						<div className="form-group" style={{display: "flex", justifyContent: "space-between"}}>
+							<Link to="/" className="btn btn-outline-primary">Cancel</Link>
+							<button type="submit" className="btn btn-primary" disabled={this.state.submitting}>Save</button>
+						</div>
 					</form>
 				</div>
 			);
