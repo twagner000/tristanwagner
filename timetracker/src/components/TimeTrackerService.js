@@ -5,8 +5,12 @@ const API_URL = '/timetracker';
 export default class TimeTrackerService {
 	config = {'headers': {'Content-Type': 'application/json'}};
 	
-    constructor(token) {
-		this.config['headers']['Authorization'] = 'Token ' + token;
+	constructor() {
+	}
+	
+	getToken() {
+		const url = `/accounts/auth-token/`;
+        return axios.get(url).then(response => this.config['headers']['Authorization'] = 'Token ' + response.data.token);
 	}
 	
     getRecentEntries() {

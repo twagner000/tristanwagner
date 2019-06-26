@@ -6,31 +6,20 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 
 class App extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
+	state = {
 			loaded: false,
-			placeholder: 'Authenticating...',
-			token: null,
 			service: null
 		};
 		
-		fetch("/accounts/auth-token")
-			.then(response => {
-				if (response.status !== 200) {
-					return this.setState({ placeholder: "You must be logged into use the Time Tracker app." });
-				}
-				return response.json();
-			})
-			.then(data => {
-				this.setState({ loaded: true, token: data.token, service: new TimeTrackerService(data.token), placeholder: "Token established." });
-			});
-		
+	constructor(props) {
+		super(props);
+		const service = new TimeTrackerService();
+		service.getToken().then(() => this.setState({ loaded: true, service: service}))
 	}
 	
 	render() {
 		if (!this.state.loaded)
-			return (<p>{this.state.placeholder}</p>);
+			return (<p>Authenticating...</p>);
 		return (
 			<Router basename="/timetracker">
 				<ServiceContext.Provider value={this.state.service}>
@@ -42,12 +31,10 @@ class App extends React.Component {
 					</nav>
 					<Route exact path="/" component={RecentEntryList} />
 					<Route exact path="/entry" render={props => <Form {...props} endpoint="api/entry/" token={this.state.token} />} />
-					<Route path="/entry/:id" component={UpdateEntryForm} />} />
+					<Route path="/entry/:id" component={UpdateEntryForm} />
 				</ServiceContext.Provider>
 			</Router>
 		);
-		//<div className="App">
-		/*<!--DataProvider endpoint="api/recent-entry/" token={this.state.token} render={data => <Table data={data} />} /-->*/
 	}
 }
 
