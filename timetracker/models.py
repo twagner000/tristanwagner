@@ -74,6 +74,9 @@ class Entry(models.Model):
             return None
         return (self.end - self.start).total_seconds()/3600
         
+    def task_obj(self):
+        return self.task
+        
     def __str__(self):
         return '{} hrs on {} by {}'.format(self.hours(), self.start.strftime('%Y-%m-%d'), str(self.user))
         #{:.2f}

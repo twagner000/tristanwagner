@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import key from "weak-key";
 import { format } from 'date-fns';
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import Select from 'react-select';
 
 const endpoint_base = '/timetracker/api/';
@@ -13,14 +13,14 @@ class Entry extends React.Component {
 			return (
 				<React.Fragment>
 					<div><Link to="entry/" className="btn btn-outline-primary"><i className="fas fa-play"></i></Link></div>
-					<div><b>{this.props.data.task.full_name}</b><br/>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}<br/><em>{this.props.data.comments}</em></div>
+					<div><b>{this.props.data.task_obj.full_name}</b><br/>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}<br/><em>{this.props.data.comments}</em></div>
 				</React.Fragment>
 			);
 		} else {
 			return (
 				<React.Fragment>
 					<div><Link to={'entry/' + this.props.data.id} className="btn btn-outline-danger"><i className="fas fa-stop"></i></Link></div>
-					<div><b>{this.props.data.task.full_name}</b><br/>Started {format(this.props.data.start, 'M/D/YY h:mma')}<br/><em>{this.props.data.comments}</em></div>
+					<div><b>{this.props.data.task_obj.full_name}</b><br/>Started {format(this.props.data.start, 'M/D/YY h:mma')}<br/><em>{this.props.data.comments}</em></div>
 				</React.Fragment>
 			);
 		}
@@ -30,7 +30,7 @@ class Entry extends React.Component {
 
 export class RecentEntryList extends React.Component {
 	static propTypes = {
-		token: PropTypes.string.isRequired
+		service: PropTypes.object.isRequired
 	};
 	
 	state = {
@@ -40,18 +40,7 @@ export class RecentEntryList extends React.Component {
 	};
 	
 	componentDidMount() {
-		const headers = {
-            'Content-Type': 'application/json',
-			'Authorization': 'Token ' + this.props.token
-        };
-
-		fetch(endpoint_base+"entry/recent/", {headers})
-			.then(response => {
-				if (response.status !== 200) {
-					return this.setState({ placeholder: "Something went wrong" });
-				}
-				return response.json();
-			})
+		this.props.service.getRecentEntries()
 			.then(data => this.setState({ data: data, loaded: true }));
 	}
 	
@@ -73,68 +62,70 @@ export class RecentEntryList extends React.Component {
 
 export class UpdateEntryForm extends React.Component {
 	static propTypes = {
-		token: PropTypes.string.isRequired
+		service: PropTypes.object.isRequired
 	};
 	
 	state = {
 		placeholder: "Loading...",
 		loaded: false,
+		submitting: false,
 		entry: [],
 		task_list: [],
-		task: []
+		task: [],
+		start: "",
+		end: "",
+		comments: ""
 	};
 	
+	constructor(props) {
+		super(props);
+		this.handleChange = this.handleChange.bind(this);
+	}
+	
 	componentDidMount() {
-		const headers = {
-            'Content-Type': 'application/json',
-			'Authorization': 'Token ' + this.props.token
-        };
-
-		const get_entry = fetch(endpoint_base+"entry/"+this.props.match.params.id, {headers})
-			.then(response => {
-				if (response.status !== 200) {
-					return this.setState({ placeholder: "Something went wrong" });
-				}
-				return response.json();
-			})
-			.then(data => this.setState({entry: data}));
+		const p = [];
+		
+		p.push(this.props.service.getEntry(this.props.match.params.id)
+			.then(data => this.setState({
+				entry: data,
+				comments: data.comments,
+				start: data.start.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)[0],
+				end: data.end ? data.end.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)[0] : ""
+			})));
 			
-		const get_task_list = fetch(endpoint_base+"task/", {headers})
-			.then(response => {
-				if (response.status !== 200) {
-					return this.setState({ placeholder: "Something went wrong" });
-				}
-				return response.json();
-			})
-			.then(data => this.setState({task_list: data}));
+		p.push(this.props.service.getTasks()
+			.then(data => this.setState({task_list: data})));
 			
-		Promise.all([get_entry,get_task_list])
+		Promise.all(p)
 			.then(() => {
-				this.setState({loaded: true, task: this.state.task_list.filter(option => option.id == this.state.entry.task.id)});
+				this.setState({loaded: true, task: this.state.task_list.filter(option => option.id == this.state.entry.task)});
 				console.log(this.state.entry);
 			});
 	}
 
-	handleChange = e => {
-		this.setState({ ["entry."+e.target.name]: e.target.value });
+	handleChange(event) {
+		this.setState({ [event.target.name]: event.target.value });
 	};
 
 	handleSubmit = e => {
-		//this.state.task[0].id
 		e.preventDefault();
-		const { user, task, start } = this.state;
-		const entry = { user, task, start };
-		const conf = {
-			method: "post",
-			body: JSON.stringify(entry),
-			headers: new Headers({ "Content-Type": "application/json" })
+		this.setState({submitting: true});
+		const entry = {
+			'id': this.state.entry.id,
+			'owner': this.state.entry.owner,
+			'task': this.state.task[0].id,
+			'start': this.state.start,
+			'end': this.state.end,
+			'comments': this.state.comments
 		};
-		fetch(this.props.endpoint, conf).then(response => console.log(response));
+		console.log(entry);
+		this.props.service.updateEntry(entry)
+			.then((result) => this.props.history.push('/'))
+			.catch((err) => console.log(err));
+		
 	};
 
 	render() {
-		const { value, suggestions } = this.state;
-		
 		if (!this.state.loaded) {
 			return (<p>{this.state.placeholder}</p>);
 		} else {
@@ -142,51 +133,54 @@ export class UpdateEntryForm extends React.Component {
 				<div>
 					<h3>Update Entry</h3>
 					<form onSubmit={this.handleSubmit}>
-						<Select
-							name="task"
-							value={this.state.task}
-							options={this.state.task_list}
-							getOptionLabel={option => option.full_name}
-							getOptionValue={option => option.id}
-							onChange={(option, meta) => this.setState({task: [option]}) }
-						/>
-						
+						<div className="form-group">
+							<label>Task</label>
+							<Select
+								name="task"
+								required
+								options={this.state.task_list}
+								getOptionLabel={option => option.full_name}
+								getOptionValue={option => option.id}
+								value={this.state.task}
+								onChange={(option, meta) => this.setState({task: [option]}) }
+							/>
+						</div>
+						<div className="form-group">
+							<label>Start</label>
+							<input
+								className="form-control"
+								type="datetime-local"
+								name="start"
+								required
+								value={this.state.start}
+								onChange={this.handleChange}
+							/>
+						</div>
+						<div className="form-group">
+							<label>End</label>
+							<input
+								className="form-control"
+								type="datetime-local"
+								name="end"
+								value={this.state.end}
+								onChange={this.handleChange}
+							/>
+							<button className="btn btn-outline-primary" type="button"><i className="fas fa-clock"></i></button>
+							<button className="btn btn-outline-primary" type="button"><i className="fas fa-times"></i></button>
+						</div>
+						<div className="form-group">
+							<label>Comments</label>
+							<textarea
+								className="form-control"
+								name="comments"
+								value={this.state.comments}
+								onChange={this.handleChange}
+							/>
+						</div>
+						<button type="submit" className="btn btn-primary" disabled={this.state.submitting}>Update</button>
 					</form>
 				</div>
 			);
 		}
 	}
-	/*<div className="field">
-					<label className="label">Task</label>
-					<div className="control">
-					<input
-					className="input"
-					type="text"
-					name="task"
-					onChange={this.handleChange}
-					value={this.state.entry.task}
-					required
-					/>
-					</div>
-					</div>
-					
-					<div className="field">
-					<label className="label">Start</label>
-					<div className="control">
-					<input
-					className="input"
-					type="datetime-local"
-					name="start"
-					onChange={this.handleChange}
-					value={this.state.entry.start}
-					required
-					/>
-					</div>
-					</div>
-					
-					<div className="control">
-					<button type="submit" className="button is-info">
-					Add entry
-					</button>
-					</div>*/
 }

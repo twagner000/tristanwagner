@@ -9,11 +9,11 @@ class BriefTaskSerializer(serializers.ModelSerializer):
 
         
 class EntrySerializer(serializers.ModelSerializer):
-    task = BriefTaskSerializer()
+    task_obj = BriefTaskSerializer(read_only=True)
     
     class Meta:
         model = models.Entry
-        fields = ('id', 'owner', 'task', 'start', 'end', 'comments', 'date_updated', 'hours')
+        fields = ('id', 'owner', 'task', 'start', 'end', 'comments', 'task_obj', 'date_updated', 'hours')
         
         
 #battalions = BriefBattalionSerializer(many=True)

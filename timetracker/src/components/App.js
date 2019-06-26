@@ -1,6 +1,7 @@
 import React from "react";
 import Form from "./Form";
 import { RecentEntryList, UpdateEntryForm } from "./Entry";
+import TimeTrackerService from "./TimeTrackerService";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 
@@ -8,8 +9,10 @@ class App extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			loaded: false,
 			placeholder: 'Authenticating...',
-			token: null
+			token: null,
+			service: null
 		};
 		
 		fetch("/accounts/auth-token")
@@ -19,12 +22,14 @@ class App extends React.Component {
 				}
 				return response.json();
 			})
-			.then(data => this.setState({ token: data.token, placeholder: "Token established." }));
+			.then(data => {
+				this.setState({ loaded: true, token: data.token, service: new TimeTrackerService(data.token), placeholder: "Token established." });
+			});
 		
 	}
 	
 	render() {
-		if (this.state.token == null)
+		if (!this.state.loaded)
 			return (<p>{this.state.placeholder}</p>);
 		return (
 			<Router basename="/timetracker">
@@ -34,9 +39,9 @@ class App extends React.Component {
 						<li><Link to="/entry">Start</Link></li>
 					</ul>
 				</nav>
-				<Route exact path="/" render={props => <RecentEntryList {...props} token={this.state.token} />} />
+				<Route exact path="/" render={props => <RecentEntryList {...props} service={this.state.service} />} />
 				<Route exact path="/entry" render={props => <Form {...props} endpoint="api/entry/" token={this.state.token} />} />
-				<Route path="/entry/:id" render={props => <UpdateEntryForm {...props} token={this.state.token} />} />
+				<Route path="/entry/:id" render={props => <UpdateEntryForm {...props} service={this.state.service} />} />
 			</Router>
 		);
 		//<div className="App">
