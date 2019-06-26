@@ -4,6 +4,7 @@ import key from "weak-key";
 import { format } from 'date-fns';
 import { Link, withRouter } from "react-router-dom";
 import Select from 'react-select';
+import { ServiceContext } from "./TimeTrackerService";
 
 const endpoint_base = '/timetracker/api/';
 
@@ -29,9 +30,7 @@ class Entry extends React.Component {
 
 
 export class RecentEntryList extends React.Component {
-	static propTypes = {
-		service: PropTypes.object.isRequired
-	};
+	static contextType = ServiceContext;
 	
 	state = {
 		data: [],
@@ -40,7 +39,7 @@ export class RecentEntryList extends React.Component {
 	};
 	
 	componentDidMount() {
-		this.props.service.getRecentEntries()
+		this.context.getRecentEntries()
 			.then(data => this.setState({ data: data, loaded: true }));
 	}
 	
@@ -61,9 +60,7 @@ export class RecentEntryList extends React.Component {
 }
 
 export class UpdateEntryForm extends React.Component {
-	static propTypes = {
-		service: PropTypes.object.isRequired
-	};
+	static contextType = ServiceContext;
 	
 	state = {
 		placeholder: "Loading...",
@@ -85,7 +82,7 @@ export class UpdateEntryForm extends React.Component {
 	componentDidMount() {
 		const p = [];
 		
-		p.push(this.props.service.getEntry(this.props.match.params.id)
+		p.push(this.context.getEntry(this.props.match.params.id)
 			.then(data => this.setState({
 				entry: data,
 				comments: data.comments,
@@ -93,7 +90,7 @@ export class UpdateEntryForm extends React.Component {
 				end: data.end ? data.end.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)[0] : ""
 			})));
 			
-		p.push(this.props.service.getTasks()
+		p.push(this.context.getTasks()
 			.then(data => this.setState({task_list: data})));
 			
 		Promise.all(p)
@@ -119,7 +116,7 @@ export class UpdateEntryForm extends React.Component {
 			'comments': this.state.comments
 		};
 		console.log(entry);
-		this.props.service.updateEntry(entry)
+		this.context.updateEntry(entry)
 			.then((result) => this.props.history.push('/'))
 			.catch((err) => console.log(err));
 		

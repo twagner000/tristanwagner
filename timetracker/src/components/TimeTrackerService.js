@@ -1,7 +1,8 @@
+import React from "react";
 import axios from 'axios';
 const API_URL = '/timetracker';
 
-export default class TimeTrackerService{
+export default class TimeTrackerService {
 	config = {'headers': {'Content-Type': 'application/json'}};
 	
     constructor(token) {
@@ -42,3 +43,5 @@ export default class TimeTrackerService{
         return axios.put(url,customer);
     }*/
 }
+
+export const ServiceContext = React.createContext(null);
