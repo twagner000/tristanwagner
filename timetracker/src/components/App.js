@@ -1,8 +1,8 @@
 import React from "react";
-import Form from "./Form";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import './App.css';
 import { EntryRecentList, EntryCreateUpdateForm } from "./Entry";
 import TimeTrackerService, {ServiceContext} from "./TimeTrackerService";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 
 class App extends React.Component {
@@ -23,11 +23,15 @@ class App extends React.Component {
 		return (
 			<Router basename="/timetracker">
 				<ServiceContext.Provider value={this.state.service}>
-					<Route exact path="/" component={EntryRecentList} />
-					<Route path="/entry/:id" component={EntryCreateUpdateForm} />
-					<Route exact path="/entry/" component={EntryCreateUpdateForm} />
+					<Switch>
+						<Route exact path="/" component={EntryRecentList} />
+						<Route exact path="/entry/" component={EntryCreateUpdateForm} />
+						<Route path="/entry/:id" component={EntryCreateUpdateForm} />
+						<Route render={() => <p>Not Found</p>} />
+					</Switch>
 				</ServiceContext.Provider>
 			</Router>
+			
 		);
 	}
 }
