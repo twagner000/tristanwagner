@@ -28,71 +28,6 @@ class Entry extends React.Component {
 }
 
 
-class TaskSelect extends React.Component {
-	static propTypes = {
-		token: PropTypes.string.isRequired
-	};
-	
-	// Teach Autosuggest how to calculate suggestions for any given input value.
-	getSuggestions(value) {
-		const escapedValue = value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		if (escapedValue === '') {
-			return [];
-		}
-		const regex = new RegExp(escapedValue, 'i');
-		return this.state.full_list.filter(item => regex.test(item.full_name));
-	}
-	
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			value: '',
-			suggestions: [],
-			full_list: []
-		};
-	}
-	
-	componentDidMount() {
-		const headers = {
-            'Content-Type': 'application/json',
-			'Authorization': 'Token ' + this.props.token
-        };
-
-		fetch(endpoint_base+"task/", {headers})
-			.then(response => {
-				if (response.status !== 200) {
-					return this.setState({ placeholder: "Something went wrong" });
-				}
-				return response.json();
-			})
-			.then(data => this.setState({full_list: data}));
-	}
-
-	render() {
-		const { value, suggestions } = this.state;
-
-		// Autosuggest will pass through all these props to the input.
-		const inputProps = {
-			placeholder: 'Type a task',
-			value,
-			onChange: (event, { newValue }) => this.setState({value: newValue})
-		};
-
-		return (
-			<Autosuggest
-				suggestions={suggestions}
-				onSuggestionsFetchRequested={({ value }) => this.setState({suggestions: this.getSuggestions(value)})}
-				onSuggestionsClearRequested={() => this.setState({suggestions: []})}
-				getSuggestionValue={suggestion => suggestion.id.toString()}
-				renderSuggestion={suggestion => suggestion.full_name}
-				inputProps={inputProps}
-			/>
-		);
-	}
-}
-
-
 export class RecentEntryList extends React.Component {
 	static propTypes = {
 		token: PropTypes.string.isRequired
@@ -142,24 +77,12 @@ export class UpdateEntryForm extends React.Component {
 	};
 	
 	state = {
-		entry_loaded: false,
 		placeholder: "Loading...",
-		data: [],
-		value: "",
-		suggestions: [],
-		full_list: [],
-		task_options: [],
-		task: undefined
+		loaded: false,
+		entry: [],
+		task_list: [],
+		task: []
 	};
-	
-	getSuggestions(value) {
-		const escapedValue = value.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		if (escapedValue === '') {
-			return [];
-		}
-		const regex = new RegExp(escapedValue, 'i');
-		return this.state.full_list.filter(item => regex.test(item.full_name));
-	}
 	
 	componentDidMount() {
 		const headers = {
@@ -167,30 +90,37 @@ export class UpdateEntryForm extends React.Component {
 			'Authorization': 'Token ' + this.props.token
         };
 
-		fetch(endpoint_base+"entry/"+this.props.match.params.id, {headers})
+		const get_entry = fetch(endpoint_base+"entry/"+this.props.match.params.id, {headers})
 			.then(response => {
 				if (response.status !== 200) {
 					return this.setState({ placeholder: "Something went wrong" });
 				}
 				return response.json();
 			})
-			.then(data => {console.log(data); this.setState({ data: data, entry_loaded: true })});
+			.then(data => this.setState({entry: data}));
 			
-		fetch(endpoint_base+"task/", {headers})
+		const get_task_list = fetch(endpoint_base+"task/", {headers})
 			.then(response => {
 				if (response.status !== 200) {
 					return this.setState({ placeholder: "Something went wrong" });
 				}
 				return response.json();
 			})
-			.then(data => this.setState({full_list: data, task: data[0]}));
+			.then(data => this.setState({task_list: data}));
+			
+		Promise.all([get_entry,get_task_list])
+			.then(() => {
+				this.setState({loaded: true, task: this.state.task_list.filter(option => option.id == this.state.entry.task.id)});
+				console.log(this.state.entry);
+			});
 	}
 
 	handleChange = e => {
-		this.setState({ ["data."+e.target.name]: e.target.value });
+		this.setState({ ["entry."+e.target.name]: e.target.value });
 	};
 
 	handleSubmit = e => {
+		//this.state.task[0].id
 		e.preventDefault();
 		const { user, task, start } = this.state;
 		const entry = { user, task, start };
@@ -204,38 +134,27 @@ export class UpdateEntryForm extends React.Component {
 
 	render() {
 		const { value, suggestions } = this.state;
-
-		// Autosuggest will pass through all these props to the input.
-		const inputProps = {
-			placeholder: 'Type a task',
-			value,
-			onChange: (event, { newValue }) => {
-				this.setState({value: newValue});
-			}
-		};
-		if (!this.state.entry_loaded) {
+		
+		if (!this.state.loaded) {
 			return (<p>{this.state.placeholder}</p>);
 		} else {
 			return (
 				<div>
-					<h3>Update entry with id={this.state.data.id}</h3>
+					<h3>Update Entry</h3>
 					<form onSubmit={this.handleSubmit}>
 						<Select
 							name="task"
-							
-							options={this.state.full_list}
+							value={this.state.task}
+							options={this.state.task_list}
 							getOptionLabel={option => option.full_name}
 							getOptionValue={option => option.id}
-							onChange={(option, meta) => { this.setState({task: option}); console.log(option, meta); } }
+							onChange={(option, meta) => this.setState({task: [option]}) }
 						/>
-						<p>{this.state.data.task.id} / {this.state.task ? this.state.task.id : 'na'}</p>
 						
 					</form>
 				</div>
 			);
 		}
-		//defaultValue={this.state.full_list.filter(option => option.id == this.state.data.task.id)}
-		//onChange={option => this.setState({task_id: option.id})}
 	}
 	/*<div className="field">
 					<label className="label">Task</label>
@@ -245,7 +164,7 @@ export class UpdateEntryForm extends React.Component {
 					type="text"
 					name="task"
 					onChange={this.handleChange}
-					value={this.state.data.task}
+					value={this.state.entry.task}
 					required
 					/>
 					</div>
@@ -259,7 +178,7 @@ export class UpdateEntryForm extends React.Component {
 					type="datetime-local"
 					name="start"
 					onChange={this.handleChange}
-					value={this.state.data.start}
+					value={this.state.entry.start}
 					required
 					/>
 					</div>
