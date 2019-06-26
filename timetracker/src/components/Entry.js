@@ -1,5 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
+//import PropTypes from "prop-types";
 import key from "weak-key";
 import { format } from 'date-fns';
 import { Link, withRouter } from "react-router-dom";
