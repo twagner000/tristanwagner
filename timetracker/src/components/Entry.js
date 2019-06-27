@@ -166,7 +166,9 @@ export class EntryCreateUpdateForm extends React.Component {
 				<div>
 					<div style={{display: "flex", justifyContent: "space-between", marginBottom: "1rem"}}>
 						<h3>{this.state.id ? "Update" : "Create"} Entry</h3>
-						<button onClick={() => this.setState({confirm_delete: true})} type="button" className="btn btn-outline-danger" aria-label="Delete"><i className="fas fa-trash"></i></button>
+						{this.state.id ? (
+							<button onClick={() => this.setState({confirm_delete: true})} type="button" className="btn btn-outline-danger" aria-label="Delete"><i className="fas fa-trash"></i></button>
+						) : ""}
 					</div>
 					{this.state.confirm_delete ? (
 						<div className="alert alert-danger">
