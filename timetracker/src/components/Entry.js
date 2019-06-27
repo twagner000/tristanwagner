@@ -59,13 +59,12 @@ export class EntryRecentList extends React.Component {
 						{this.state.data.map((entry,i) => (<Entry data={entry} key={key(entry)} />))}
 						<Link style={{gridColumn: "1/-1"}} to="entry/" className="btn btn-primary">Create an Entry</Link>
 					</div>
-					<h5>Stats for Time Period</h5>
-					<p>blah</p>
 				</React.Fragment>
 			);
 		}
 	}
 }
+
 
 export class EntryCreateUpdateForm extends React.Component {
 	static contextType = ServiceContext;
@@ -165,7 +164,7 @@ export class EntryCreateUpdateForm extends React.Component {
 			return (
 				<div>
 					<div style={{display: "flex", justifyContent: "space-between", marginBottom: "1rem"}}>
-						<h3>{this.state.id ? "Update" : "Create"} Entry</h3>
+						<h5>{this.state.id ? "Update" : "Create"} Entry</h5>
 						{this.state.id ? (
 							<button onClick={() => this.setState({confirm_delete: true})} type="button" className="btn btn-outline-danger" aria-label="Delete"><i className="fas fa-trash"></i></button>
 						) : ""}
