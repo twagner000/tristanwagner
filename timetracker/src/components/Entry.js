@@ -10,35 +10,26 @@ const endpoint_base = '/timetracker/api/';
 
 class Entry extends React.Component {
 	render() {
-		if (this.props.data.end) {
-			return (
-				<React.Fragment>
-					<div><Link to={{ pathname: "entry/", search: "?task_id="+this.props.data.task }} className="btn btn-outline-primary"><i className="fas fa-play"></i></Link></div>
-					<div>
-						<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
-						<div style={{display: "flex", justifyContent: "space-between"}}>
-							<span>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}</span>
-							<span style={{margin: "0 .5rem"}}><Link to={'entry/' + this.props.data.id}><i className="fas fa-edit"></i></Link></span>
-						</div>
-						<div><em>{this.props.data.comments}</em></div>
+		const end = this.props.data.end;
+		const pathname = end ? "entry/" : "entry/" + this.props.data.id;
+		const search = end ? "?task_id="+this.props.data.task : "?stop=y";
+		const iconClass = end ? "fas fa-play" : "fas fa-stop";
+		const buttonClass = end ? "btn btn-outline-primary" : "btn btn-outline-danger";
+		const timeMessage = end ? this.props.data.hours.toFixed(2) + " hours ending "+format(this.props.data.end, 'M/D/YY h:mma') : "Started "+format(this.props.data.start, 'M/D/YY h:mma');
+		
+		return (
+			<React.Fragment>
+				<div><Link to={{ pathname: pathname, search: search }} className={buttonClass}><i className={iconClass}></i></Link></div>
+				<div>
+					<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
+					<div style={{display: "flex", justifyContent: "space-between"}}>
+						<span>{timeMessage}</span>
+						<span style={{margin: "0 .5rem"}}><Link to={'entry/' + this.props.data.id}><i className="fas fa-edit"></i></Link></span>
 					</div>
-				</React.Fragment>
-			);
-		} else {
-			return (
-				<React.Fragment>
-					<div><Link to={{ pathname: "entry/" + this.props.data.id, search: "?stop=y" }} className="btn btn-outline-danger"><i className="fas fa-stop"></i></Link></div>
-					<div>
-						<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
-						<div style={{display: "flex", justifyContent: "space-between"}}>
-							<span>Started {format(this.props.data.start, 'M/D/YY h:mma')}</span>
-							<span style={{margin: "0 .5rem"}}><Link to={'entry/' + this.props.data.id}><i className="fas fa-edit"></i></Link></span>
-						</div>
-						<div><em>{this.props.data.comments}</em></div>
-					</div>
-				</React.Fragment>
-			);
-		}
+					<div><em>{this.props.data.comments}</em></div>
+				</div>
+			</React.Fragment>
+		);
 	}
 }
 
@@ -83,6 +74,7 @@ export class EntryCreateUpdateForm extends React.Component {
 		placeholder: "Loading...",
 		loaded: false,
 		submitting: false,
+		confirm_delete: false,
 		task_list: [],
 		task: [],
 		id: null,
@@ -132,6 +124,12 @@ export class EntryCreateUpdateForm extends React.Component {
 
 	handleChange(event) {
 		this.setState({ [event.target.name]: event.target.value });
+	}
+	
+	handleDelete = () => {
+		this.context.deleteEntry(this.state.id)
+			.then((result) => this.props.history.push('/'))
+			.catch((err) => console.log(err));
 	};
 
 	handleSubmit(event) {
@@ -152,7 +150,7 @@ export class EntryCreateUpdateForm extends React.Component {
 			.catch((err) => console.log(err));
 			
 		event.preventDefault();
-	};
+	}
 	
 	getLocalDate() {
 		const date = new Date();
@@ -166,7 +164,20 @@ export class EntryCreateUpdateForm extends React.Component {
 		} else {
 			return (
 				<div>
-					<h3>{this.state.id ? "Update" : "Create"} Entry</h3>
+					<div style={{display: "flex", justifyContent: "space-between", marginBottom: "1rem"}}>
+						<h3>{this.state.id ? "Update" : "Create"} Entry</h3>
+						<button onClick={() => this.setState({confirm_delete: true})} type="button" className="btn btn-outline-danger" aria-label="Delete"><i className="fas fa-trash"></i></button>
+					</div>
+					{this.state.confirm_delete ? (
+						<div className="alert alert-danger">
+							<h6><i className="fas fa-exclamation-triangle"></i> Please Confirm</h6>
+							<p>Are you sure you want to delete this entry?</p>
+							<div style={{display: "flex", justifyContent: "space-between"}}>
+								<button onClick={() => this.setState({confirm_delete: false})} type="button" className="btn btn-outline-dark">Cancel</button>
+								<button onClick={this.handleDelete} type="button" className="btn btn-danger">Delete</button>
+							</div>
+						</div>
+					) : ""}	
 					<form onSubmit={this.handleSubmit}>
 						<div className="form-group">
 							<Select

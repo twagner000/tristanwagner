@@ -38,11 +38,10 @@ export default class TimeTrackerService {
         return axios.get(url, this.config).then(response => response.data);
     }
 	
-	
-    /*deleteCustomer(customer){
-        const url = `${API_URL}/api/customers/${customer.pk}`;
-        return axios.delete(url);
-    }*/
+	deleteEntry(id){
+        const url = `${API_URL}/api/entry/${id}`;
+        return axios.delete(url, this.config);
+    }
 }
 
 export const ServiceContext = React.createContext(null);
