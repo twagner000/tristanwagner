@@ -16,10 +16,12 @@ class Entry extends React.Component {
 					<div><Link to={{ pathname: "entry/", search: "?task_id="+this.props.data.task }} className="btn btn-outline-primary"><i className="fas fa-play"></i></Link></div>
 					<div>
 						<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
-						<div>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}
-						<br/><em>{this.props.data.comments}</em></div>
+						<div style={{display: "flex", justifyContent: "space-between"}}>
+							<span>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}</span>
+							<span style={{margin: "0 .5rem"}}><Link to={'entry/' + this.props.data.id}><i className="fas fa-edit"></i></Link></span>
+						</div>
+						<div><em>{this.props.data.comments}</em></div>
 					</div>
-					<div><Link to={'entry/' + this.props.data.id} className="btn btn-link"><i className="fas fa-edit"></i></Link></div>
 				</React.Fragment>
 			);
 		} else {
@@ -28,10 +30,12 @@ class Entry extends React.Component {
 					<div><Link to={{ pathname: "entry/" + this.props.data.id, search: "?stop=y" }} className="btn btn-outline-danger"><i className="fas fa-stop"></i></Link></div>
 					<div>
 						<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
-						<div>Started {format(this.props.data.start, 'M/D/YY h:mma')}
-						<br/><em>{this.props.data.comments}</em></div>
+						<div style={{display: "flex", justifyContent: "space-between"}}>
+							<span>Started {format(this.props.data.start, 'M/D/YY h:mma')}</span>
+							<span style={{margin: "0 .5rem"}}><Link to={'entry/' + this.props.data.id}><i className="fas fa-edit"></i></Link></span>
+						</div>
+						<div><em>{this.props.data.comments}</em></div>
 					</div>
-					<div><Link to={'entry/' + this.props.data.id} className="btn btn-link"><i className="fas fa-edit"></i></Link></div>
 				</React.Fragment>
 			);
 		}
@@ -60,7 +64,7 @@ export class EntryRecentList extends React.Component {
 			return (
 				<React.Fragment>
 					<h5>Recent Entries</h5>
-					<div style={{display: 'grid', gridTemplateColumns: 'auto 1fr auto', gridColumnGap: '.5rem', gridRowGap: '1rem', marginBottom: '1rem'}}>
+					<div style={{display: 'grid', gridTemplateColumns: 'auto 1fr', gridColumnGap: '.5rem', gridRowGap: '1rem', marginBottom: '1rem'}}>
 						{this.state.data.map((entry,i) => (<Entry data={entry} key={key(entry)} />))}
 						<Link style={{gridColumn: "1/-1"}} to="entry/" className="btn btn-primary">Create an Entry</Link>
 					</div>
