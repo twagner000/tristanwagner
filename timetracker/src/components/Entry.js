@@ -14,14 +14,24 @@ class Entry extends React.Component {
 			return (
 				<React.Fragment>
 					<div><Link to={{ pathname: "entry/", search: "?task_id="+this.props.data.task }} className="btn btn-outline-primary"><i className="fas fa-play"></i></Link></div>
-					<div><b>{this.props.data.task_obj.full_name}</b><br/>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}<br/><em>{this.props.data.comments}</em></div>
+					<div>
+						<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
+						<div>{this.props.data.hours.toFixed(2)} hours ending {format(this.props.data.end, 'M/D/YY h:mma')}
+						<br/><em>{this.props.data.comments}</em></div>
+					</div>
+					<div><Link to={'entry/' + this.props.data.id} className="btn btn-link"><i className="fas fa-edit"></i></Link></div>
 				</React.Fragment>
 			);
 		} else {
 			return (
 				<React.Fragment>
-					<div><Link to={'entry/' + this.props.data.id} className="btn btn-outline-danger"><i className="fas fa-stop"></i></Link></div>
-					<div><b>{this.props.data.task_obj.full_name}</b><br/>Started {format(this.props.data.start, 'M/D/YY h:mma')}<br/><em>{this.props.data.comments}</em></div>
+					<div><Link to={{ pathname: "entry/" + this.props.data.id, search: "?stop=y" }} className="btn btn-outline-danger"><i className="fas fa-stop"></i></Link></div>
+					<div>
+						<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
+						<div>Started {format(this.props.data.start, 'M/D/YY h:mma')}
+						<br/><em>{this.props.data.comments}</em></div>
+					</div>
+					<div><Link to={'entry/' + this.props.data.id} className="btn btn-link"><i className="fas fa-edit"></i></Link></div>
 				</React.Fragment>
 			);
 		}
@@ -49,10 +59,13 @@ export class EntryRecentList extends React.Component {
 		} else {
 			return (
 				<React.Fragment>
-					<h3>Recent Entries</h3>
-					<div style={{display: 'grid', gridTemplateColumns: 'auto 1fr', gridGap: '.5rem'}}>
+					<h5>Recent Entries</h5>
+					<div style={{display: 'grid', gridTemplateColumns: 'auto 1fr auto', gridColumnGap: '.5rem', gridRowGap: '1rem', marginBottom: '1rem'}}>
 						{this.state.data.map((entry,i) => (<Entry data={entry} key={key(entry)} />))}
+						<Link style={{gridColumn: "1/-1"}} to="entry/" className="btn btn-primary">Create an Entry</Link>
 					</div>
+					<h5>Stats for Time Period</h5>
+					<p>blah</p>
 				</React.Fragment>
 			);
 		}
@@ -84,7 +97,7 @@ export class EntryCreateUpdateForm extends React.Component {
 	componentDidMount() {
 		const p = [];
 		
-		if(this.props.match.params  &&  this.props.match.params.id) {
+		if(this.props.match && this.props.match.params  &&  this.props.match.params.id) {
 			p.push(this.context.getEntry(this.props.match.params.id)
 				.then(data => this.setState({
 					id: data.id,
@@ -100,11 +113,14 @@ export class EntryCreateUpdateForm extends React.Component {
 			
 		Promise.all(p)
 			.then(() => {
-				let task_id = new URLSearchParams(location.search).get('task_id');
+				const uparams = new URLSearchParams(location.search);
+				const task_id = uparams.get('task_id');
+				const stop = uparams.get('stop');
 				this.setState({
 					loaded: true,
 					task_id: task_id != null ? task_id : this.state.task_id,
 					start: !this.state.id ? this.getLocalDate() : this.state.start,
+					end: stop != null && !this.state.end ? this.getLocalDate() : this.state.end,
 					task: this.state.task_list.filter(option => option.id == (task_id != null ? task_id : this.state.task_id))
 				});
 			});

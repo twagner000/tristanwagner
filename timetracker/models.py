@@ -78,6 +78,6 @@ class Entry(models.Model):
         return self.task
         
     def __str__(self):
-        return '{} hrs on {} by {}'.format(self.hours(), self.start.strftime('%Y-%m-%d'), str(self.user))
+        return '{} hrs on {} by {}'.format(self.hours(), self.start.strftime('%Y-%m-%d'), str(self.owner))
         #{:.2f}
         
