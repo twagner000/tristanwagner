@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 
 class Project(models.Model):
-    parent = models.ForeignKey('self', models.CASCADE, null=True, blank=True)
+    parent = models.ForeignKey('self', models.CASCADE, null=True, blank=True, related_name='project_set')
     name = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     owner = models.ForeignKey(get_user_model(), models.PROTECT, related_name='projects_owned')
@@ -11,20 +11,26 @@ class Project(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     date_closed = models.DateTimeField(null=True, blank=True)
     
-    #use 'team' for top-level projects only
-    team = models.ManyToManyField(get_user_model(), blank=True, related_name='projects_on')
-    
     class Meta:
         ordering = ['-date_created']
         unique_together = (('parent', 'name',),)
+        
+    def top_level_project(self):
+        top_level_project = self
+        while top_level_project.parent:
+            top_level_project = top_level_project.parent
+        return top_level_project
     
     def is_active(self):
         return not self.date_closed
         
-    def get_team(self):
+    def project_list(self):
         if self.parent:
-            return self.parent.get_team()
-        return self.team
+            proj_list = self.parent.project_list()[:]
+            proj_list.append({'id':self.id,'name':self.name})
+            return proj_list
+        else:
+            return [{'id':self.id,'name':self.name}]
         
     def __str__(self):
         if self.parent:
@@ -49,8 +55,8 @@ class Task(models.Model):
     def is_active(self):
         return not self.date_closed
         
-    def full_name(self):
-        return str(self)
+    def project_list(self):
+        return self.project.project_list()
         
     def __str__(self):
         return '{} > {}'.format(self.project,self.name)
@@ -64,20 +70,15 @@ class Entry(models.Model):
     end = models.DateTimeField(null=True, blank=True)
     comments = models.TextField(blank=True)
     date_updated = models.DateTimeField(auto_now=True)
-    #hours (store calculated value on save? would this work better with aggregation functions?)
+    hours = models.FloatField(editable=False, default=0)
     
     class Meta:
         ordering = ['-start']
         
-    def hours(self):
-        if not self.end:
-            return None
-        return (self.end - self.start).total_seconds()/3600
-        
-    def task_obj(self):
-        return self.task
+    def save(self, *args, **kwargs):
+        self.hours = 0 if not self.end else (self.end - self.start).total_seconds()/3600
+        super(Entry, self).save(*args, **kwargs)
         
     def __str__(self):
-        return '{} hrs on {} by {}'.format(self.hours(), self.start.strftime('%Y-%m-%d'), str(self.owner))
-        #{:.2f}
+        return '{:.2f} hrs on {} by {}'.format(self.hours, self.start.strftime('%Y-%m-%d'), str(self.owner))
         

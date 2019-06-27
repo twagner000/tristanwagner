@@ -42,6 +42,11 @@ export default class TimeTrackerService {
         const url = `${API_URL}/api/entry/${id}`;
         return axios.delete(url, this.config);
     }
+	
+    getTimePeriodSummary(per_start,per_end) {
+        const url = `${API_URL}/api/summary/${per_start}-to-${per_end}/`;
+        return axios.get(url, this.config).then(response => response.data);
+    }
 }
 
 export const ServiceContext = React.createContext(null);
