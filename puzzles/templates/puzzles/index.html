@@ -2,30 +2,44 @@
 {% load staticfiles %}
 
 {% block content %}
-	<div class="tw-puzzle-index">
-		<section class="tw-section-light">
-			<h2>Generally Puzzling</h2>
-			<p>I enjoy solving puzzles, and occasionally creating them.</p>
-			<p><a href="http://www.puzzledpint.com/">Puzzled Pint</a> is a great monthly event. Their <a href="http://www.puzzledpint.com/index.php/download_file/1348/">code sheet</a> often comes in handy.</p>
-			<p>I also enjoy working on the occasional <a href="https://projecteuler.net">Project Euler</a> problem.</p>
-			<div class="text-center"><a href="https://projecteuler.net"><img src="https://projecteuler.net/profile/{{project_euler_user}}.png"></a></div>
-		</section>
+<div class="section container">
+	<div class="columns">
+		<div class="column is-one-third">
+			<div class="message">
+				<h3 class="message-header">Generally Puzzling</h3>
+				<div class="message-body content">
+					<p>I enjoy solving puzzles, and occasionally creating them.</p>
+					<p><a href="http://www.puzzledpint.com/">Puzzled Pint</a> is a great monthly event. Their <a href="http://www.puzzledpint.com/index.php/download_file/1348/">code sheet</a> often comes in handy.</p>
+					<p>I also enjoy working on the occasional <a href="https://projecteuler.net">Project Euler</a> problem.</p>
+					<div class="has-text-centered"><a href="https://projecteuler.net"><img src="https://projecteuler.net/profile/{{project_euler_user}}.png"></a></div>
+				</div>
+			</div>
+		</div>
 		
-		<section>
-			<h2>Puzzles I've Created</h2>
+		<div class="column">
+			<h2 class="title is-3">Puzzles I've Created</h2>
 			{% if latest_released_puzzle_list %}
-				<ul class="tw-list">
 				{% for puzzle in latest_released_puzzle_list %}
-					<li>
-						<h5>{{puzzle.title}} <span class="text-muted float-right"><small>{{puzzle.release_date|date:"Y-m-d"}}</small></span></h5>
-						{{puzzle.puzzle_html}}
-						{% include "puzzles/puzzle_checkform.html" %}
-					</li>
+					<article class="media">
+						
+						<div class="media-content">
+							<div class="level is-marginless is-mobile">
+								<div class="level-left">
+									<div class="level-item title is-5">{{puzzle.title}}</div>
+								</div>
+								<div class="level-right">
+									<div class="level-item has-text-grey-light">{{puzzle.release_date|date:"Y-m-d"}}</div>
+								</div>
+							</div>
+							<div class="content">{{puzzle.puzzle_html}}</div>
+								{% include "puzzles/puzzle_checkform.html" %}
+						</div>
+					</article>
+					
 				{% endfor %}
-				</ul>
 			{% else %}
 				<p>No puzzles available.</p>
 			{% endif %}
-		</section>
 	</div>
+</div>
 {% endblock %}

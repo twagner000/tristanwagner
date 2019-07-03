@@ -2,17 +2,25 @@
 {% load staticfiles %}
 
 {% block content %}
+<div class="section container">
 	{% if not request.GET.check %}
-		<h2>{{puzzle.title}}</h2>
+		<h3 class="title is-3">{{puzzle.title}}</h3>
+		<div class="content">
 		{{puzzle.puzzle_html}}
+		</div>
 		{% include "puzzles/puzzle_checkform.html" %}
 	{% elif request.GET.check.lower == puzzle.solution.lower %}
-		<h2>Success!</h2>
+		<h3 class="title is-3">Success!</h3>
+		<div class="content">
 		{{puzzle.success_html}}
+		</div>
 	{% else %}
-		<h2>Keep Trying!</h2>
-		<p>That wasn't quite correct.</p>
-		{{puzzle.fail_html}}
+		<h3 class="title is-3">Keep Trying!</h3>
+		<div class="content">
+			<p>That wasn't quite correct.</p>
+			{{puzzle.fail_html}}
+		</div>
 		{% include "puzzles/puzzle_checkform.html" %}
 	{% endif %}
+</div>
 {% endblock %}

@@ -5,8 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/tw.css' %}">
+	<!--link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" />
+	<link rel="stylesheet" href="{% static 'css/tw.css' %}">
     {% block extracss %}{% endblock %}
 	
 	<script src="https://kit.fontawesome.com/3ef8ab7c33.js"></script>
@@ -15,27 +16,43 @@
   </head>
 
 <body>
-	<div class="bg-light" id="loginBg"></div>
-	<div class="collapse" id="toggleLogin">
-		<ul>
-		{% if user.is_authenticated %}
-			<li>Logged in as {{ user.username }}</li>
-			<li><a href="{% url 'password_change' %}">Change Password</a></li>
-			<li><a href="{% url 'logout' %}?next={{request.get_full_path}}">Log Out</a></li>
-		{% else %}
-			<form class="form-inline" role="form" action="{% url 'login' %}" method="POST">
-			{% csrf_token %}
-			<input name="username" type="text" placeholder="Username" class="form-control">
-			<input name="password" type="password" placeholder="Password" class="form-control">
-			<input type="hidden" name="next" value="{{request.get_full_path}}">
-			<button type="submit" class="btn btn-primary">Log in</button>
-			</form>
-		{% endif %}
-		</ul>
-	</div>
 	
 	<header>
 		{% block header %}
+		
+		<div class="section has-background-light is-hidden" id="toggleLogin">
+			<div class="container">
+				{% if user.is_authenticated %}
+					
+					<div class="level is-mobile">
+						<div class="level-item"><a href="{% url 'password_change' %}" class="icon"><i class="fas fa-key"></i></a></div>
+						<div class="level-item"><b><span class="icon"><i class="fas fa-user"></i></span> {{ user.username }}</b></div>
+						<div class="level-item"><a href="{% url 'logout' %}?next={{request.get_full_path}}" class="icon" title="Log out"><i class="fas fa-sign-out-alt"></i></a></div>
+					</div>
+					
+				{% else %}
+					<form role="form" action="{% url 'login' %}" method="POST">
+						{% csrf_token %}
+						<input type="hidden" name="next" value="{{request.get_full_path}}">
+						<div class="level">
+							<div class="level-item">
+								<div class="field has-addons">
+									<div class="control">
+										<input name="username" type="text" placeholder="Username" class="input" />
+									</div>
+									<div class="control">
+										<input name="password" type="password" placeholder="Password" class="input" />
+									</div>
+									<div class="control">
+										<button type="submit" class="button is-primary">Log in</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				{% endif %}
+			</div>
+		</div>
 		<nav>
 			<svg viewBox="0 5 413.40 133.3" height="72" xmlns="http://www.w3.org/2000/svg">
 				<a href="{% url 'home' %}" title="Home">
@@ -114,9 +131,9 @@
 		
 	<main class="{% block mainclass %}{% endblock mainclass %}">{% block content %}{% endblock content%}</main>
 		
-	<footer>
+	<footer class="footer">
 		{% block footer %}
-		<div class="text-muted">&copy; 2015-{% now "Y" %} Tristan Wagner &middot; <a href="{% url 'attribution' %}">Attribution</a></div>
+		<div class="container has-text-grey-light">&copy; 2015-{% now "Y" %} Tristan Wagner &middot; <a href="{% url 'attribution' %}">Attribution</a></div>
 		{% endblock footer %}
 	</footer>
 	
@@ -125,11 +142,17 @@
 
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<!--script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script-->
 
 		<script>
-		$(document).ready(function(){
+		/*$(document).ready(function(){
 			$('[data-toggle="popover"]').popover(); 
+			});*/
+			
+			$(document).ready(function() {
+				$('[data-toggle="collapse"]').click(function() {
+					$($(this).data("target")).toggleClass("is-hidden");
+				});
 			});
 		</script>
 		{% block script %}

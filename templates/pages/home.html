@@ -2,26 +2,51 @@
 {% load staticfiles %}
 
 {% block content %}
-	<h1 class="text-center">Tristan Wagner</h1>
-	
-	<p>I'm in the process of remaking my personal website.</p>
-	
-	<ul>
-		<li><a href="{% url 'puzzles:index' %}">Puzzles</a></li>
-	</ul>
-
+<div class="section container">
+	<h1 class="title has-text-centered">Tristan Wagner</h1>
+	<div class="columns">
+		<div class="column is-half is-offset-one-quarter">
+			
+			<article class="media">
+				<div class="media-content">
+					<div class="content">
+						I'm in the process of remaking my personal website.
+					</div>
+				</div>
+			</article>
+		
+			<article class="media">
+				<figure class="media-left">
+					<a class="image is-64x64" href="{% url 'puzzles:index' %}">
+						<img class="is-rounded" src="{% static 'img/puzzle.jpg' %}" />
+						<!-- original https://www.pexels.com/photo/black-and-white-blank-challenge-connect-262488/ -->
+					</a>
+				</figure>
+				<div class="media-content">
+					<div class="content">
+						<strong><a href="{% url 'puzzles:index' %}">Puzzles</a></strong><br/>
+						I enjoy solving puzzles, and occasionally creating them.
+					</div>
+				</div>
+			</article>
+		</div>
+		
 	{% if user.is_staff %}
-	<h3>Admin Links</h3>
-	<ul>
-		<li><a href="{% url 'timetracker:index' %}">Time Tracker</a></li>
-		<li><a href="{% url 'bgg_stats:index' %}">Board Game Stats</a></li>
-		<li><a href="{% url 'deveconsim:index' %}">Developing Economy Simulation</a></li>
-		<li><a href="{% url 'mpatrol:index' %}">Mossfower Patrol Game</a></li>
-		<li><a href="{% url 'checklist:index' %}">Checklists</a></li>
-	</ul>
+		<div class="column">
+			<article class="message">
+				<div class="message-header">Admin Links</div>
+				<div class="message-body">
+					<ul>
+						<li><a href="{% url 'timetracker:index' %}">Time Tracker</a></li>
+						<li><a href="{% url 'bgg_stats:index' %}">Board Game Stats</a></li>
+						<li><a href="{% url 'deveconsim:index' %}">Developing Economy Simulation</a></li>
+						<li><a href="{% url 'mpatrol:index' %}">Mossfower Patrol Game</a></li>
+						<li><a href="{% url 'checklist:index' %}">Checklists</a></li>
+					</ul>
+				</div>
+			</article>
+		</div>
 	{% endif %}
-
-<!--svg viewBox="0 0 512 512" height="300">
-	<g fill="none" stroke="black" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"-->
-
+	</div>
+</div>
 {% endblock %}
