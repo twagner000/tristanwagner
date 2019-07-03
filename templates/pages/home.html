@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block content %}
-<div class="section container">
+<section class="section container">
 	<h1 class="title has-text-centered">Tristan Wagner</h1>
 	<div class="columns">
 		<div class="column is-half is-offset-one-quarter">
@@ -19,7 +19,6 @@
 				<figure class="media-left">
 					<a class="image is-64x64" href="{% url 'puzzles:index' %}">
 						<img class="is-rounded" src="{% static 'img/puzzle.jpg' %}" />
-						<!-- original https://www.pexels.com/photo/black-and-white-blank-challenge-connect-262488/ -->
 					</a>
 				</figure>
 				<div class="media-content">
@@ -48,5 +47,5 @@
 		</div>
 	{% endif %}
 	</div>
-</div>
+</section>
 {% endblock %}
