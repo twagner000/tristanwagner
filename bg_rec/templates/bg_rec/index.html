@@ -16,38 +16,44 @@
 			<button class="button is-primary" type="submit">Go</button>
 		</form>
 	</article>
-	<article class="content">
-		<table>
-			<thead>
-				<tr><th>Rank</th><th>Thumbnail</th><th>Name</th><th>Distance</th><th>Ratings</th><th>GeekScore</th><th>Players</th><th>Playing Time</th></tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>NA</td>
-					<td><figure class="image is-64x64"><img src="{{match.thumbnail}}" style="height: 100%; object-fit: cover;" /></figure></td>
-					<td><a href="https://boardgamegeek.com/boardgame/{{match.pk}}">{{match.name}}</a></td>
-					<td>NA</td>
-					<td>{{match.usersrated}}</td>
-					<td>{{match.bayesaverage|floatformat:2}}</td>
-					<td>{{match.minplayers}} - {{match.maxplayers}}</td>
-					<td>{% if match.minplaytime and match.maxplaytime and match.minplaytime != match.maxplaytime %}{{match.minplaytime}} - {{match.maxplaytime}}{%else%}{{match.playingtime}}{%endif%} min</td>
-				</tr>
-				{% for n in match.gameneighbor_set.all %}
-				<tr>
-					<td>{{n.rank}}</td>
-					<td><figure class="image is-64x64"><img src="{{n.neighbor.thumbnail}}" style="height: 100%; object-fit: cover;" /></figure></td>
-					<td><a href="{{n.neighbor.bgg_link}}">{{n.neighbor.name}}</a></td>
-					<td>{{n.distance|floatformat:3}}</td>
-					<td>{{n.neighbor.usersrated}}</td>
-					<td>{{n.neighbor.bayesaverage|floatformat:2}}</td>
-					<td>{{n.neighbor.minplayers}} - {{n.neighbor.maxplayers}}</td>
-					<td>{% if n.neighbor.minplaytime and n.neighbor.maxplaytime and n.neighbor.minplaytime != n.neighbor.maxplaytime %}{{n.neighbor.minplaytime}} - {{n.neighbor.maxplaytime}}{%else%}{{n.neighbor.playingtime}}{%endif%} min</td>
-    <!--averageweight-->
-					
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+	<article>
+		{% if match %}
+		<div class="content"><h4>Results for {{match.name}}:</h4></div>
+		{% endif %}
+		<div class="columns is-multiline">
+		{% for n in match.gameneighbor_set.all %}
+			<div class="column is-one-third">
+				<div class="box">
+					<article class="media">
+						<div class="media-content">
+							<p><strong><a href="{{n.neighbor.bgg_link}}">{{n.neighbor.name}}</a></strong></p>
+							<div class="level is-mobile is-marginless">
+								<!--span class="tag is-rounded is-light">{{n.rank}}</span--> 
+								<span>
+									<span class="icon"><i class="fas fa-long-arrow-alt-up" aria-hidden="true"></i></span>{{n.rank}}
+									<br/><span class="icon"><i class="fas fa-users" aria-hidden="true"></i></span>{{n.neighbor.minplayers}}-{{n.neighbor.maxplayers}}
+								</span>
+								<span>
+									<span class="icon"><i class="fas fa-arrows-alt-h" aria-hidden="true"></i></span>{{n.distance|floatformat:3}}
+									<br/><span class="icon"><i class="fas fa-clock" aria-hidden="true"></i></span>{% if n.neighbor.minplaytime and n.neighbor.maxplaytime and n.neighbor.minplaytime != n.neighbor.maxplaytime %}{{n.neighbor.minplaytime}}-{{n.neighbor.maxplaytime}}{%else%}{{n.neighbor.playingtime}}{%endif%}
+								</span>
+								<span>
+									<span class="icon"><i class="fas fa-globe" aria-hidden="true"></i></span>{{n.neighbor.usersrated}}
+									<br/><span class="icon"><i class="fas fa-star" aria-hidden="true"></i></span>{{n.neighbor.bayesaverage|floatformat:2}}
+								</span>
+							</div>
+								<!--averageweight-->
+						</div>
+						<div class="media-right">
+							<figure class="image is-96x96">
+								<img src="{{n.neighbor.thumbnail}}" style="height: 100%; object-fit: cover;" />
+							</figure>
+						</div>
+					</article>
+				</div>
+			</div>
+		{% endfor %}
+		</div>
 	</article>
 	<article class="content">
 		{% if user.is_staff %}
