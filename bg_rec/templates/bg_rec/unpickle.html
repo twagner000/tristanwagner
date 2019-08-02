@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<section class="section container">
+	<h1 class="title">Data Unpickled!</h1>
+	<article class="content">
+		<p><a class="button is-primary" href="{% url 'bg_rec:index' %}">Back to the Recommender</a></p>
+		<p>Loaded in...</p>
+		<table>
+			<tr><td>BoardGame</td><td>{{n_boardgame}}</td></tr>
+			<tr><td>GameFactors</td><td>{{n_gamefactors}}</td></tr>
+			<tr><td>GameNeighbor</td><td>{{n_gameneighbor}}</td></tr>
+		</table>
+	</article>
+</section>
+{% endblock %}

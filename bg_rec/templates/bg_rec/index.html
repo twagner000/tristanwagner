@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<section class="section container">
+	<h1 class="title">Board Game Recommender</h1>
+	<article class="content">
+		<form method="GET">
+			<p>Select a game for recommendations of similar games.</p>
+			<div class="select"><select name="id">
+				<option></option>
+			{% for g in boardgames %}
+				<option value="{{g.pk}}">{{g.name}}</option>
+			{% endfor %}
+			</select></div>
+			<button class="button is-primary" type="submit">Go</button>
+		</form>
+	</article>
+	<article class="content">
+		<table>
+			<thead>
+				<tr><th>Rank</th><th>Thumbnail</th><th>Name</th><th>Distance</th><th>Ratings</th><th>GeekScore</th><th>Players</th><th>Playing Time</th></tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>NA</td>
+					<td><figure class="image is-64x64"><img src="{{match.thumbnail}}" style="height: 100%; object-fit: cover;" /></figure></td>
+					<td><a href="https://boardgamegeek.com/boardgame/{{match.pk}}">{{match.name}}</a></td>
+					<td>NA</td>
+					<td>{{match.usersrated}}</td>
+					<td>{{match.bayesaverage|floatformat:2}}</td>
+					<td>{{match.minplayers}} - {{match.maxplayers}}</td>
+					<td>{% if match.minplaytime and match.maxplaytime and match.minplaytime != match.maxplaytime %}{{match.minplaytime}} - {{match.maxplaytime}}{%else%}{{match.playingtime}}{%endif%} min</td>
+				</tr>
+				{% for n in match.gameneighbor_set.all %}
+				<tr>
+					<td>{{n.rank}}</td>
+					<td><figure class="image is-64x64"><img src="{{n.neighbor.thumbnail}}" style="height: 100%; object-fit: cover;" /></figure></td>
+					<td><a href="{{n.neighbor.bgg_link}}">{{n.neighbor.name}}</a></td>
+					<td>{{n.distance|floatformat:3}}</td>
+					<td>{{n.neighbor.usersrated}}</td>
+					<td>{{n.neighbor.bayesaverage|floatformat:2}}</td>
+					<td>{{n.neighbor.minplayers}} - {{n.neighbor.maxplayers}}</td>
+					<td>{% if n.neighbor.minplaytime and n.neighbor.maxplaytime and n.neighbor.minplaytime != n.neighbor.maxplaytime %}{{n.neighbor.minplaytime}} - {{n.neighbor.maxplaytime}}{%else%}{{n.neighbor.playingtime}}{%endif%} min</td>
+    <!--averageweight-->
+					
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</article>
+	<article class="content">
+		{% if user.is_staff %}
+		<p><a class="button is-warning" href="{% url 'bg_rec:unpickle' %}">Unpickle Data</a></p>
+		{% endif %}
+	</article>
+</section>
+{% endblock %}

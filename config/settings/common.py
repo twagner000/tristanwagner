@@ -44,6 +44,7 @@ LOCAL_APPS = (
     'accounts',
     'bgg_stats',
     'timetracker',
+    'bg_rec',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
