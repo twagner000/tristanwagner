@@ -42,7 +42,7 @@ export class TimePeriodSummary extends React.Component {
 	
 	render() {
 		const results = (!this.state.loaded) ? (<p>{this.state.placeholder}</p>) : (
-			<React.Fragment>
+			<div className="content">
 				<h5>Results</h5>
 				<p>{this.state.data.start} to {this.state.data.end}</p>
 				<ul>
@@ -62,37 +62,46 @@ export class TimePeriodSummary extends React.Component {
 					</li>
 				))}
 				</ul>
-			</React.Fragment>
+			</div>
 		)
 			
 		return (
-			<React.Fragment>
-				<div style={{display: "flex", justifyContent: "space-between"}}>
-					<h5>Time Period Summary</h5>
-					<Link to="/" className="btn btn-light"><i className="fas fa-times"></i></Link>
+			<div className="content">
+				<Link to="/" className="delete is-pulled-right"></Link>
+				<h5>Time Period Summary</h5>
+				<div className="field">
+					<label className="label">From</label>
+					<div className="control">
+						<input
+							className="input"
+							type="date"
+							name="per_start"
+							aria-label="Period Start"
+							value={this.state.per_start}
+							onChange={this.handleChange}
+						/>
+					</div>
 				</div>
-				<div className="form-group" style={{display: "flex"}}>
-					<input
-						className="form-control"
-						type="date"
-						name="per_start"
-						aria-label="Period Start"
-						value={this.state.per_start}
-						onChange={this.handleChange}
-					/>
-					<span className="btn">to</span>
-					<input
-						className="form-control"
-						type="date"
-						name="per_end"
-						aria-label="Period End"
-						value={this.state.per_end}
-						onChange={this.handleChange}
-					/>
-					<button onClick={this.handleSubmit} type="button" className="btn btn-primary">Go</button>
+				<div className="field">
+					<label className="label">To</label>
+					<div className="control">
+						<input
+							className="input"
+							type="date"
+							name="per_end"
+							aria-label="Period End"
+							value={this.state.per_end}
+							onChange={this.handleChange}
+						/>
+					</div>
+				</div>
+				<div className="field">
+					<div className="control">
+						<button onClick={this.handleSubmit} type="button" className="button is-primary is-fullwidth">Go</button>
+					</div>
 				</div>
 				{results}
-			</React.Fragment>
+			</div>
 		);
 	}
 }

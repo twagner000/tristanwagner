@@ -14,21 +14,25 @@ class Entry extends React.Component {
 		const pathname = end ? "entry/" : "entry/" + this.props.data.id;
 		const search = end ? "?task_id="+this.props.data.task : "?stop=y";
 		const iconClass = end ? "fas fa-play" : "fas fa-stop";
-		const buttonClass = end ? "btn btn-outline-primary" : "btn btn-outline-danger";
+		const buttonClass = end ? "button is-primary is-outlined" : "button is-danger is-outlined";
 		const timeMessage = end ? this.props.data.hours.toFixed(2) + " hours ending "+format(this.props.data.end, 'M/D/YY h:mma') : "Started "+format(this.props.data.start, 'M/D/YY h:mma');
 		
 		return (
-			<React.Fragment>
-				<div><Link to={{ pathname: pathname, search: search }} className={buttonClass}><i className={iconClass}></i></Link></div>
-				<div>
-					<h6 style={{marginBottom: ".2rem"}}>{this.props.data.task_obj.full_name}</h6>
-					<div style={{display: "flex", justifyContent: "space-between"}}>
-						<span>{timeMessage}</span>
-						<span style={{margin: "0 .5rem"}}><Link to={'entry/' + this.props.data.id}><i className="fas fa-edit"></i></Link></span>
-					</div>
-					<div><em>{this.props.data.comments}</em></div>
+			<article className="media">
+				<div className="media-left">
+					<Link to={{ pathname: pathname, search: search }} className={buttonClass}><span className="icon"><i className={iconClass}></i></span></Link>
 				</div>
-			</React.Fragment>
+				<div class="media-content">
+					<div class="content">
+						<strong>{this.props.data.task_obj.full_name}</strong>
+						<br/><small>{timeMessage}</small>
+						<br/><small><em>{this.props.data.comments}</em></small>
+					</div>
+				</div>
+				<div class="media-right">
+					<Link to={'entry/' + this.props.data.id}><span className="icon has-text-primary"><i className="fas fa-edit"></i></span></Link>
+				</div>
+			</article>
 		);
 	}
 }
@@ -53,13 +57,11 @@ export class EntryRecentList extends React.Component {
 			return (<p>{this.state.placeholder}</p>);
 		} else {
 			return (
-				<React.Fragment>
+				<div className="content">
 					<h5>Recent Entries</h5>
-					<div style={{display: 'grid', gridTemplateColumns: 'auto 1fr', gridColumnGap: '.5rem', gridRowGap: '1rem', marginBottom: '1rem'}}>
-						{this.state.data.map((entry,i) => (<Entry data={entry} key={key(entry)} />))}
-						<Link style={{gridColumn: "1/-1"}} to="entry/" className="btn btn-primary">Create an Entry</Link>
-					</div>
-				</React.Fragment>
+					{this.state.data.map((entry,i) => (<Entry data={entry} key={key(entry)} />))}
+					&nbsp;<p><Link style={{gridColumn: "1/-1"}} to="entry/" className="button is-primary is-fullwidth">Create New Entry</Link></p>
+				</div>
 			);
 		}
 	}
@@ -162,26 +164,43 @@ export class EntryCreateUpdateForm extends React.Component {
 			return (<p>{this.state.placeholder}</p>);
 		} else {
 			return (
-				<div>
-					<div style={{display: "flex", justifyContent: "space-between", marginBottom: "1rem"}}>
-						<h5>{this.state.id ? "Update" : "Create"} Entry</h5>
-						{this.state.id ? (
-							<button onClick={() => this.setState({confirm_delete: true})} type="button" className="btn btn-outline-danger" aria-label="Delete"><i className="fas fa-trash"></i></button>
-						) : ""}
-					</div>
-					{this.state.confirm_delete ? (
-						<div className="alert alert-danger">
-							<h6><i className="fas fa-exclamation-triangle"></i> Please Confirm</h6>
-							<p>Are you sure you want to delete this entry?</p>
-							<div style={{display: "flex", justifyContent: "space-between"}}>
-								<button onClick={() => this.setState({confirm_delete: false})} type="button" className="btn btn-outline-dark">Cancel</button>
-								<button onClick={this.handleDelete} type="button" className="btn btn-danger">Delete</button>
-							</div>
-						</div>
-					) : ""}	
+				<div className="content">
+					<Link to="/" className="delete is-pulled-right"></Link>
+					<h5>{this.state.id ? "Update" : "Create"} Entry</h5>
 					<form onSubmit={this.handleSubmit}>
-						<div className="form-group">
+						<div className="field has-addons">
+							<div className="control is-expanded has-icons-left">
+								<input
+									className="input"
+									type="datetime-local"
+									name="start"
+									aria-label="Start"
+									required
+									value={this.state.start}
+									onChange={this.handleChange}
+								/>
+								<span className="icon is-left"><i className="fas fa-play"></i></span>
+							</div>
+							<div className="control"><button onClick={() => this.setState({start: this.getLocalDate()})} className="button" type="button"><span className="icon has-text-primary"><i className="fas fa-clock"></i></span></button></div>
+						</div>
+						<div className="field has-addons">
+							<div className="control is-expanded has-icons-left">
+								<input
+									className="input"
+									type="datetime-local"
+									name="end"
+									aria-label="End"
+									value={this.state.end}
+									onChange={this.handleChange}
+								/>
+								<span className="icon is-left"><i className="fas fa-stop"></i></span>
+							</div>
+							<div className="control"><button onClick={() => this.setState({end: ""})} className="button" type="button"><span className="icon has-text-primary"><i className="fas fa-times"></i></span></button></div>
+							<div className="control"><button onClick={() => this.setState({end: this.getLocalDate()})} className="button" type="button"><span className="icon has-text-primary"><i className="fas fa-clock"></i></span></button></div>
+						</div>
+						<div className="field is-fullwidth">
 							<Select
+								className="control"
 								name="task"
 								aria-label="Task"
 								placeholder="Select a task..."
@@ -193,35 +212,9 @@ export class EntryCreateUpdateForm extends React.Component {
 								onChange={(option, meta) => this.setState({task: [option]}) }
 							/>
 						</div>
-						<div className="form-group" style={{display: "flex"}}>
-							<button className="btn" type="button"><i className="fas fa-play"></i></button>
-							<input
-								className="form-control"
-								type="datetime-local"
-								name="start"
-								aria-label="Start"
-								required
-								value={this.state.start}
-								onChange={this.handleChange}
-							/>
-							<button onClick={() => this.setState({start: this.getLocalDate()})} className="btn btn-link" type="button"><i className="fas fa-clock"></i></button>
-						</div>
-						<div className="form-group" style={{display: "flex"}}>
-							<button className="btn" type="button"><i className="fas fa-stop"></i></button>
-							<input
-								className="form-control"
-								type="datetime-local"
-								name="end"
-								aria-label="End"
-								value={this.state.end}
-								onChange={this.handleChange}
-							/>
-							<button onClick={() => this.setState({end: ""})} className="btn btn-link" type="button"><i className="fas fa-times"></i></button>
-							<button onClick={() => this.setState({end: this.getLocalDate()})} className="btn btn-link" type="button"><i className="fas fa-clock"></i></button>
-						</div>
-						<div className="form-group">
+						<div className="field is-full-width">
 							<textarea
-								className="form-control"
+								className="textarea"
 								name="comments"
 								aria-label="Comments"
 								placeholder="Comments..."
@@ -229,10 +222,25 @@ export class EntryCreateUpdateForm extends React.Component {
 								onChange={this.handleChange}
 							/>
 						</div>
-						<div className="form-group" style={{display: "flex", justifyContent: "space-between"}}>
-							<Link to="/" className="btn btn-outline-primary">Cancel</Link>
-							<button type="submit" className="btn btn-primary" disabled={this.state.submitting}>Save</button>
+						<div className="level is-mobile">
+							<div className="level-left">{this.state.id ? (
+								<div className="level-item"><button onClick={() => this.setState({confirm_delete: true})} type="button" className="button is-danger is-outlined" aria-label="Delete"><span className="icon"><i className="fas fa-trash"></i></span></button></div>
+							) : ""}
+							</div>
+							<div className="level-right"><div className="level-item"><button type="submit" className="button is-primary" disabled={this.state.submitting}><span className="icon"><i className="fas fa-save"></i></span></button></div></div>
 						</div>
+						{this.state.confirm_delete ? (
+							<article className="message is-danger">
+								<div className="message-header"><div><span className="icon"><i className="fas fa-exclamation-triangle"></i></span> Please Confirm</div></div>
+								<div className="message-body">
+									<p>Are you sure you want to delete this entry?</p>
+									<div className="level is-mobile">
+										<div className="level-left"><button onClick={() => this.setState({confirm_delete: false})} type="button" className="button is-outlined">Cancel</button></div>
+										<div className="level-right"><button onClick={this.handleDelete} type="button" className="button is-danger">Delete</button></div>
+									</div>
+								</div>
+							</article>
+						) : ""}	
 					</form>
 				</div>
 			);

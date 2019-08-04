@@ -12,7 +12,7 @@ class Home extends React.Component {
 		return (
 			<React.Fragment>
 				<EntryRecentList />
-				<Link to="period/" className="btn btn-outline-primary">Time Period Summary</Link>
+				<Link to="period/" className="button is-primary is-outlined is-fullwidth">Time Period Summary</Link>
 			</React.Fragment>
 		);
 	}
