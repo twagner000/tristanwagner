@@ -3,8 +3,10 @@ import pickle
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import generics, permissions, viewsets
 
 from . import models
+from . import serializers
 
 class IndexView(TemplateView):
     template_name = 'bg_rec/index.html'
@@ -16,6 +18,11 @@ class IndexView(TemplateView):
             context['match'] = models.BoardGame.objects.get(pk=self.request.GET.get('id'))
         return context
     
+class BoardGameViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = models.BoardGame.objects.all()
+    serializer_class = serializers.BriefBoardGameSerializer
+    permission_classes = [permissions.AllowAny]
+
 class UnpickleView(PermissionRequiredMixin, TemplateView):
     permission_required = 'is_staff'
     template_name = 'bg_rec/unpickle.html'
