@@ -20,8 +20,13 @@ class IndexView(TemplateView):
     
 class BoardGameViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.BoardGame.objects.all()
-    serializer_class = serializers.BriefBoardGameSerializer
     permission_classes = [permissions.AllowAny]
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return serializers.BoardGameSearchSerializer
+        else:
+            return serializers.BriefBoardGameSerializer
 
 class UnpickleView(PermissionRequiredMixin, TemplateView):
     permission_required = 'is_staff'
