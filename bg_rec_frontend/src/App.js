@@ -81,35 +81,31 @@ class Game extends React.Component {
 		let neigh = this.props.game_neighbor;
 		return (
 			<Card>
-				<Card.Content>
+				<Card.Header>
+					<Card.Header.Title><Link to={`/game/${neigh.neighbor.objectid}/`}>{neigh.neighbor.name}</Link></Card.Header.Title>
+					<a className="card-header-icon" href={`https://boardgamegeek.com/boardgame/${neigh.neighbor.objectid}`}><Icon><i className="fas fa-external-link-alt"></i></Icon></a>
+				</Card.Header>
+				{this.props.show_image
+						? (<Card.Image size={128} src={neigh.neighbor.thumbnail} />)
+						: ""}
+				
+				<small>
+					<Card.Footer>
+						<Card.Footer.Item><a className="tooltip" data-tooltip={`Adjusted average of ${neigh.neighbor.usersrated} ratings`}><Icon><i className="fas fa-star"></i></Icon>{neigh.neighbor.bayesaverage.toFixed(2)}</a></Card.Footer.Item>
+						<Card.Footer.Item><Icon><i className="fas fa-users"></i></Icon>{Game.players(neigh.neighbor)}</Card.Footer.Item>
+						<Card.Footer.Item><Icon><i className="fas fa-clock"></i></Icon>{Game.playtime(neigh.neighbor)}</Card.Footer.Item>
+					</Card.Footer>
+				</small>
+			</Card>
+		);
+		/*<Card.Footer.Item style={{paddingLeft: ".2rem", paddingRight: ".2rem"}}><Icon><i className="fas fa-arrows-alt-h"></i></Icon>{neigh.distance.toFixed(2)}</Card.Footer.Item>
+							*/
+		/*<Card.Content>
 					{this.props.show_image
 						? (<p className="has-text-centered"><img src={neigh.neighbor.thumbnail} /></p>)
 						: ""}
-					<h4><Link to={`/game/${neigh.neighbor.objectid}/`}>{neigh.neighbor.name}</Link></h4>
-					<Columns gapless>
-						<Columns.Column size="one-third">
-							<Icon><i className="fas fa-arrows-alt-h"></i></Icon>{neigh.distance.toFixed(3)}
-						</Columns.Column>
-						<Columns.Column size="one-third">
-							<Icon><i className="fas fa-globe"></i></Icon>{neigh.neighbor.usersrated}
-						</Columns.Column>
-						<Columns.Column size="one-third">
-							<a href={`https://boardgamegeek.com/boardgame/${neigh.neighbor.objectid}`}><Icon><i className="fas fa-external-link-alt"></i></Icon> BGG</a>
-						</Columns.Column>
 						
-						<Columns.Column size="one-third">
-							<Icon><i className="fas fa-users"></i></Icon>{Game.players(neigh.neighbor)}
-						</Columns.Column>
-						<Columns.Column size="one-third">
-							<Icon><i className="fas fa-clock"></i></Icon>{Game.playtime(neigh.neighbor)}
-						</Columns.Column>
-						<Columns.Column size="one-third">
-							<Icon><i className="fas fa-star"></i></Icon>{neigh.neighbor.bayesaverage.toFixed(2)}
-						</Columns.Column>
-					</Columns>
-				</Card.Content>
-			</Card>
-		);
+				</Card.Content>*/
 	}
 }
 
