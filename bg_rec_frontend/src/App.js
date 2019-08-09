@@ -3,7 +3,7 @@ import './App.css';
 
 
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import { Section, Container, Heading, Form, Icon, Columns, Box, Content, Level, Card, Image} from 'react-bulma-components';
+import { Section, Container, Heading, Form, Icon, Content, Level, Table} from 'react-bulma-components';
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import axios from 'axios';
 
@@ -78,34 +78,20 @@ class Game extends React.Component {
 	}
 	
 	render() {
-		let neigh = this.props.game_neighbor;
+		let game = this.props.game;
+		let distance = this.props.distance;
 		return (
-			<Card>
-				<Card.Header>
-					<Card.Header.Title><Link to={`/game/${neigh.neighbor.objectid}/`}>{neigh.neighbor.name}</Link></Card.Header.Title>
-					<a className="card-header-icon" href={`https://boardgamegeek.com/boardgame/${neigh.neighbor.objectid}`}><Icon><i className="fas fa-external-link-alt"></i></Icon></a>
-				</Card.Header>
-				{this.props.show_image
-						? (<Card.Image size={128} src={neigh.neighbor.thumbnail} />)
-						: ""}
-				
-				<small>
-					<Card.Footer>
-						<Card.Footer.Item><a className="tooltip" data-tooltip={`Adjusted average of ${neigh.neighbor.usersrated} ratings`}><Icon><i className="fas fa-star"></i></Icon>{neigh.neighbor.bayesaverage.toFixed(2)}</a></Card.Footer.Item>
-						<Card.Footer.Item><Icon><i className="fas fa-users"></i></Icon>{Game.players(neigh.neighbor)}</Card.Footer.Item>
-						<Card.Footer.Item><Icon><i className="fas fa-clock"></i></Icon>{Game.playtime(neigh.neighbor)}</Card.Footer.Item>
-					</Card.Footer>
-				</small>
-			</Card>
+			<tr>
+				{distance
+					? (<td><Link to={`/game/${game.objectid}/`}>{game.name}</Link></td>)
+					: (<td>{game.name}</td>)}
+				<td>{distance ? distance.toFixed(2) : "NA"}</td>
+				<td>{game.bayesaverage.toFixed(2)}</td>
+				<td>{Game.players(game)}</td>
+				<td>{Game.playtime(game)}</td>
+				<td><a href={`https://boardgamegeek.com/boardgame/${game.objectid}`}><Icon><i className="fas fa-external-link-alt"></i></Icon></a></td>
+			</tr>
 		);
-		/*<Card.Footer.Item style={{paddingLeft: ".2rem", paddingRight: ".2rem"}}><Icon><i className="fas fa-arrows-alt-h"></i></Icon>{neigh.distance.toFixed(2)}</Card.Footer.Item>
-							*/
-		/*<Card.Content>
-					{this.props.show_image
-						? (<p className="has-text-centered"><img src={neigh.neighbor.thumbnail} /></p>)
-						: ""}
-						
-				</Card.Content>*/
 	}
 }
 
@@ -113,8 +99,13 @@ class Results extends React.Component {
 	state = {game: null, loaded: false};
 	
 	getResults() {
-        axios.get(`${BASE_URL}/api/game/${this.props.match.params.id}/`)
-			.then(response => this.setState({game: response.data, loaded: true}));
+		console.log("calling getResults");
+		if (this.state.game == null || this.props.match.params.id !== this.state.game.objectid) {
+			console.log(this.props.match.params.id);
+			//console.log(this.state.game.objectid);
+			axios.get(`${BASE_URL}/api/game/${this.props.match.params.id}/`)
+				.then(response => this.setState({game: response.data, loaded: true}));
+		}
 	}
 	
 	componentDidMount() {
@@ -132,28 +123,35 @@ class Results extends React.Component {
 		} else {
 			return (
 				<Content>
-					<Columns gapless>
-						<Columns.Column size="two-thirds"><h4>Results: {game.name}</h4></Columns.Column>
-						<Columns.Column>
-						<Level breakpoint="mobile" className="is-marginless">
-								<Level.Item><a className="tooltip" data-tooltip={`Adjusted average of ${game.usersrated} ratings`}><Icon><i className="fas fa-star"></i></Icon>{game.bayesaverage.toFixed(2)}</a></Level.Item>
-								<Level.Item><Icon><i className="fas fa-users"></i></Icon>{Game.players(game)}</Level.Item>
-								<Level.Item><Icon><i className="fas fa-clock"></i></Icon>{Game.playtime(game)}</Level.Item>
-								<Level.Item><a href={`https://boardgamegeek.com/boardgame/${game.objectid}`}><Icon><i className="fas fa-external-link-alt"></i></Icon></a></Level.Item>
-						</Level>
-						</Columns.Column>
-					</Columns>
+					<h4>Results: {game.name}</h4>
 					
-					<Columns multiline>
-					{game.gameneighbor_set.slice(0,3).map((game_neighbor) => (
-						<Columns.Column size="one-third" key={game_neighbor.neighbor.objectid}><Game show_image game_neighbor={game_neighbor} /></Columns.Column>
-					))}{game.gameneighbor_set.slice(3).map((game_neighbor) => (
-						<Columns.Column size="one-third" key={game_neighbor.neighbor.objectid}><Game game_neighbor={game_neighbor} /></Columns.Column>
+					<Level breakpoint="mobile">
+					{game.gameneighbor_set.slice(0,9).map((game_neighbor, i) => (
+						<Level.Item className={"" + (i>2 ? " is-hidden-mobile" : "") + (i>5 ? " is-hidden-touch" : "")} key={game_neighbor.neighbor.objectid}>
+							<Link to={`/game/${game_neighbor.neighbor.objectid}/`}><img className="image is-96x96 has-background-dark" alt={game_neighbor.neighbor.name} title={game_neighbor.neighbor.name} src={game_neighbor.neighbor.thumbnail} style={{objectFit: "contain"}}/></Link>
+						</Level.Item>
 					))}
-					</Columns>
+					</Level>
+					<Table>
+						<thead>
+							<tr>
+								<th>Game</th>
+								<th><Icon><i className="fas fa-arrows-alt-h"></i></Icon></th>
+								<th><Icon><i className="fas fa-star"></i></Icon></th>
+								<th><Icon><i className="fas fa-users"></i></Icon></th>
+								<th><Icon><i className="fas fa-clock"></i></Icon></th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<Game game={game} key={game.objectid} />
+							{game.gameneighbor_set.map((game_neighbor) => (
+							<Game game={game_neighbor.neighbor} distance={game_neighbor.distance} key={game_neighbor.neighbor.objectid} />
+							))}
+						</tbody>
+					</Table>
 				</Content>
 			);
-			
 		}
 	}
 }
