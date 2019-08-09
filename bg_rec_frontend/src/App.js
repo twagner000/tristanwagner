@@ -99,13 +99,8 @@ class Results extends React.Component {
 	state = {game: null, loaded: false};
 	
 	getResults() {
-		console.log("calling getResults");
-		if (this.state.game == null || this.props.match.params.id !== this.state.game.objectid) {
-			console.log(this.props.match.params.id);
-			//console.log(this.state.game.objectid);
-			axios.get(`${BASE_URL}/api/game/${this.props.match.params.id}/`)
-				.then(response => this.setState({game: response.data, loaded: true}));
-		}
+		axios.get(`${BASE_URL}/api/game/${this.props.match.params.id}/`)
+			.then(response => this.setState({game: response.data, loaded: true}));
 	}
 	
 	componentDidMount() {
@@ -113,7 +108,12 @@ class Results extends React.Component {
 	}
 	
 	componentDidUpdate() {
-		this.getResults();
+		if (this.state.loaded === true) {
+			if (parseInt(this.props.match.params.id) !== this.state.game.objectid) {
+				this.setState({loaded: false});
+				this.getResults();
+			}
+		}
 	}
 	
 	render() {
@@ -165,8 +165,8 @@ class App extends React.Component {
 						<Heading>Board Game Recommender</Heading>
 						<Search />
 						<Switch>
-							<Route exact path="/" component={Info} />
 							<Route path="/game/:id" component={Results} />
+							<Route exact path="/" component={Info} />
 						</Switch>
 					</Container>
 				</Section>
