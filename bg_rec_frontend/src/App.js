@@ -3,7 +3,7 @@ import './App.css';
 
 
 import 'react-bulma-components/dist/react-bulma-components.min.css';
-import { Section, Container, Heading, Form, Icon, Content, Level, Table} from 'react-bulma-components';
+import { Section, Container, Heading, Form, Icon, Content, Level, Table, Modal, Box, Media} from 'react-bulma-components';
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import axios from 'axios';
 
@@ -132,20 +132,19 @@ class Results extends React.Component {
 				<Content>
 					<button className="is-pulled-right button is-white has-text-link" onClick={() => this.setState({show_info: this.state.show_info ? false : true})}><Icon><i className="fas fa-question-circle"></i></Icon></button>
 					<h4>Results: {game.name}</h4>
-						
-					{this.state.show_info ? (
-						<article className="message is-info">
-							<div className="message-header">
-								<div>Columns Explained</div>
-								<button onClick={() => this.setState({show_info: false})} className="delete is-pulled-right"></button>
-							</div>
-							<div className="message-body">
-							{this.table_headers.map(({icon, description}, i) => (
-								<p key={i}><Icon><i className={icon}></i></Icon> {description}</p>
-							))}
-							</div>
-						</article>
-					) : ""}	
+					
+					<Modal show={this.state.show_info} onClose={() => this.setState({show_info: false})} closeOnBlur showClose>
+						<Modal.Content>
+							<Box>
+								<Content>
+									<h4>Columns Explained</h4>
+									{this.table_headers.map(({icon, description}, i) => (
+									<Media key={i}><Media.Item position="left"><Icon><i className={icon}></i></Icon></Media.Item><Media.Item>{description}</Media.Item></Media>
+									))}
+								</Content>
+							</Box>
+						</Modal.Content>
+					</Modal>
 					
 					<Level breakpoint="mobile">
 					{game.gameneighbor_set.slice(0,9).map((game_neighbor, i) => (
