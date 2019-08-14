@@ -96,7 +96,14 @@ class Game extends React.Component {
 }
 
 class Results extends React.Component {
-	state = {game: null, loaded: false};
+	state = {game: null, loaded: false, show_info: false};
+	table_headers = [
+		{icon: "fas fa-arrows-alt-h", description: "Distance (smaller number indicates greater similarity)"},
+		{icon: "fas fa-star", description: "BGG average rating, adjusted for number of ratings"},
+		{icon: "fas fa-users", description: "Players"},
+		{icon: "fas fa-clock", description: "Playing time (minutes)"},
+		{icon: "fas fa-external-link-alt", description: "Link to the game's BGG page"}
+		];
 	
 	getResults() {
 		axios.get(`${BASE_URL}/api/game/${this.props.match.params.id}/`)
@@ -123,7 +130,22 @@ class Results extends React.Component {
 		} else {
 			return (
 				<Content>
+					<button className="is-pulled-right button is-white has-text-link" onClick={() => this.setState({show_info: this.state.show_info ? false : true})}><Icon><i className="fas fa-question-circle"></i></Icon></button>
 					<h4>Results: {game.name}</h4>
+						
+					{this.state.show_info ? (
+						<article className="message is-info">
+							<div className="message-header">
+								<div>Columns Explained</div>
+								<button onClick={() => this.setState({show_info: false})} className="delete is-pulled-right"></button>
+							</div>
+							<div className="message-body">
+							{this.table_headers.map(({icon, description}, i) => (
+								<p key={i}><Icon><i className={icon}></i></Icon> {description}</p>
+							))}
+							</div>
+						</article>
+					) : ""}	
 					
 					<Level breakpoint="mobile">
 					{game.gameneighbor_set.slice(0,9).map((game_neighbor, i) => (
@@ -132,15 +154,14 @@ class Results extends React.Component {
 						</Level.Item>
 					))}
 					</Level>
+					<small>
 					<Table>
 						<thead>
 							<tr>
 								<th>Game</th>
-								<th><Icon><i className="fas fa-arrows-alt-h"></i></Icon></th>
-								<th><Icon><i className="fas fa-star"></i></Icon></th>
-								<th><Icon><i className="fas fa-users"></i></Icon></th>
-								<th><Icon><i className="fas fa-clock"></i></Icon></th>
-								<th></th>
+							{this.table_headers.map(({icon, description}, i) => (
+								<th key={i} title={description}><Icon><i className={icon}></i></Icon></th>
+							))}
 							</tr>
 						</thead>
 						<tbody>
@@ -150,6 +171,7 @@ class Results extends React.Component {
 							))}
 						</tbody>
 					</Table>
+					</small>
 				</Content>
 			);
 		}
