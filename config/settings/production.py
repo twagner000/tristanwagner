@@ -21,3 +21,10 @@ EMAIL_HOST_USER = "tristanwagner.noreply@gmail.com"
 EMAIL_HOST_PASSWORD = env("DJANGO_EMAIL_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+WEBPACK_LOADER = {
+    'BG_REC': {
+            'BUNDLE_DIR_NAME': 'bg_rec_bundles/',
+            'STATS_FILE': str(APPS_DIR.path('webpack-stats-bg_rec.prod.json')),
+        }
+}
