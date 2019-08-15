@@ -28,6 +28,7 @@ THIRD_PARTY_APPS = (
     'corsheaders', #for Angular + Django development
     'django_cron',
     'djangobower',
+    'webpack_loader',
     #'allauth',  # registration
     #'allauth.account',  # registration
     #'allauth.socialaccount',  # registration

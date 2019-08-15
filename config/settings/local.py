@@ -14,3 +14,10 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default='x48gm=xyt7cgz_3zl6r4bxh2^^-_s8++x
 CORS_ORIGIN_ALLOW_ALL = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+WEBPACK_LOADER = {
+    'BG_REC': {
+            'BUNDLE_DIR_NAME': 'bg_rec_bundles/',
+            'STATS_FILE': str(APPS_DIR.path('webpack-stats-bg_rec.dev.json')),
+        }
+}

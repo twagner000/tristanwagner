@@ -9,6 +9,7 @@ django-crispy-forms==1.7.2
 django-cron==0.5.1
 django-environ==0.3.1
 django-git-submodules==1.1.1
+django-webpack-loader==0.6.0
 django-widget-tweaks==1.4.1
 djangorestframework==3.8.2
 djangorestframework-jwt==1.11.0

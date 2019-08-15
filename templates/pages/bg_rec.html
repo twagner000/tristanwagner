@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load render_bundle from webpack_loader %}
+{% load staticfiles %}
+
+{% block extracss %}{{ block.super }}{% render_bundle 'main' 'css' 'BG_REC' %}{% endblock %}
+
+{% block content %}
+<section class="section container">
+	<div id="root"></div>
+</section>
+{% endblock %}
+
+{% block script %}{{ block.super }}{% render_bundle 'main' 'js' 'BG_REC' %}{% endblock %}

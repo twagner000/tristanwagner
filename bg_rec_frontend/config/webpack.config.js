@@ -1,5 +1,7 @@
 'use strict';
 
+const BundleTracker = require('webpack-bundle-tracker');
+
 const fs = require('fs');
 const isWsl = require('is-wsl');
 const path = require('path');
@@ -61,7 +63,7 @@ module.exports = function(webpackEnv) {
   // In development, we always serve from the root. This makes config easier.
   const publicPath = isEnvProduction
     ? paths.servedPath
-    : isEnvDevelopment && '/';
+    : isEnvDevelopment && 'http://localhost:3000/';
   // Some apps do not use client-side routing with pushState.
   // For these, "homepage" can be set to "." to enable relative asset paths.
   const shouldUseRelativeAssetPaths = publicPath === './';
@@ -71,7 +73,7 @@ module.exports = function(webpackEnv) {
   // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
   const publicUrl = isEnvProduction
     ? publicPath.slice(0, -1)
-    : isEnvDevelopment && '';
+    : isEnvDevelopment && 'http://localhost:3000';
   // Get environment variables to inject into our app.
   const env = getClientEnvironment(publicUrl);
 
@@ -154,8 +156,9 @@ module.exports = function(webpackEnv) {
       // the line below with these two lines if you prefer the stock client:
       // require.resolve('webpack-dev-server/client') + '?/',
       // require.resolve('webpack/hot/dev-server'),
-      isEnvDevelopment &&
-        require.resolve('react-dev-utils/webpackHotDevClient'),
+      // ... not sure if isEnvDevelopment && is necessary???
+      isEnvDevelopment && require.resolve('webpack-dev-server/client') + '?http://localhost:3000',
+      isEnvDevelopment && require.resolve('webpack/hot/dev-server'),
       // Finally, this is your app's code:
       paths.appIndexJs,
       // We include the app code last so that if there is a runtime error during
@@ -262,12 +265,12 @@ module.exports = function(webpackEnv) {
       // https://twitter.com/wSokra/status/969633336732905474
       // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
       splitChunks: {
-        chunks: 'all',
-        name: false,
+        chunks: 'async',
+        name: true,
       },
       // Keep the runtime chunk separated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
-      runtimeChunk: true,
+      runtimeChunk: false,
     },
     resolve: {
       // This allows you to set a fallback for where Webpack should look for modules.
@@ -630,6 +633,7 @@ module.exports = function(webpackEnv) {
           // The formatter is invoked directly in WebpackDevServerUtils during development
           formatter: isEnvProduction ? typescriptFormatter : undefined,
         }),
+		new BundleTracker({path: paths.statsRoot, filename: 'webpack-stats-bg_rec.dev.json'}),
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
     // Tell Webpack to provide empty mocks for them so importing them works.
