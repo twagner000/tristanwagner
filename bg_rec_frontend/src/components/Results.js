@@ -1,14 +1,126 @@
 import React from 'react';
-import {Content} from 'react-bulma-components';
+import {Link} from 'react-router-dom';
+import {Content, Icon, Media, Level, Table} from 'react-bulma-components';
+import {connect} from 'react-redux';
+
+import {games} from "../actions";
 
 
-export default class Results extends React.Component {
+class Game extends React.Component {
+	static players(game) {
+		return (game.minplayers && game.maxplayers && game.minplayers !== game.maxplayers)
+			? `${game.minplayers}-${game.maxplayers}`
+			: `${game.minplayers}`;
+	}
+	
+	static playtime(game) {
+		return (game.minplaytime && game.maxplaytime && game.minplaytime !== game.maxplaytime)
+			? `${game.minplaytime}-${game.maxplaytime}`
+			: `${game.playingtime}`;
+	}
+	
 	render() {
+		let game = this.props.game;
+		let distance = this.props.distance;
 		return (
-			<Content>
-				<h3>Results</h3>
-				<p>...results...</p>
-			</Content>
-		)
+			<tr>
+				{distance
+					? (<td><Link to={`/game/${game.objectid}/`}>{game.name}</Link></td>)
+					: (<td>{game.name}</td>)}
+				<td>{distance ? distance.toFixed(2) : "NA"}</td>
+				<td>{game.bayesaverage.toFixed(2)}</td>
+				<td>{Game.players(game)}</td>
+				<td>{Game.playtime(game)}</td>
+				<td><a href={`https://boardgamegeek.com/boardgame/${game.objectid}`}><Icon><i className="fas fa-external-link-alt"></i></Icon></a></td>
+			</tr>
+		);
 	}
 }
+
+
+class Results extends React.Component {
+	table_headers = [
+		{icon: "fas fa-arrows-alt-h", description: "Distance (smaller number indicates greater similarity)"},
+		{icon: "fas fa-star", description: "BGG average rating, adjusted for number of ratings"},
+		{icon: "fas fa-users", description: "Players"},
+		{icon: "fas fa-clock", description: "Playing time (minutes)"},
+		{icon: "fas fa-external-link-alt", description: "Link to the game's BGG page"}
+		];
+		
+	componentDidMount() {
+        this.props.fetchGame(this.props.match.params.id);
+    }
+	
+	componentDidUpdate() {
+		if (this.props.gameLoaded && parseInt(this.props.match.params.id) !== this.props.game.objectid) {
+			this.props.startGameRefresh();
+			this.props.fetchGame(this.props.match.params.id);
+		}
+    }
+		
+	render() {
+		let game = this.props.game;
+		if (!game) {
+			return "";
+		} else {
+			return (
+				<Content>
+					<Link to="/" className="is-pulled-right delete"></Link>
+					<h4>Results: {game.name}</h4>
+					
+					<Level breakpoint="mobile">
+					{game.gameneighbor_set.slice(0,9).map((game_neighbor, i) => (
+						<Level.Item className={"" + (i>2 ? " is-hidden-mobile" : "") + (i>5 ? " is-hidden-touch" : "")} key={game_neighbor.neighbor.objectid}>
+							<Link to={`/game/${game_neighbor.neighbor.objectid}/`}><img className="image is-96x96 has-background-dark" alt={game_neighbor.neighbor.name} title={game_neighbor.neighbor.name} src={game_neighbor.neighbor.thumbnail} style={{objectFit: "contain"}}/></Link>
+						</Level.Item>
+					))}
+					</Level>
+					<small>
+						<Table>
+							<thead>
+								<tr>
+									<th>Game</th>
+								{this.table_headers.map(({icon, description}, i) => (
+									<th key={i} title={description}><Icon><i className={icon}></i></Icon></th>
+								))}
+								</tr>
+							</thead>
+							<tbody>
+								<Game game={game} key={game.objectid} />
+								{game.gameneighbor_set.map((game_neighbor) => (
+								<Game game={game_neighbor.neighbor} distance={game_neighbor.distance} key={game_neighbor.neighbor.objectid} />
+								))}
+							</tbody>
+						</Table>
+					</small>
+					
+					<p>&nbsp;</p>
+					<h4>Columns Explained</h4>
+					{this.table_headers.map(({icon, description}, i) => (
+					<Media key={i}><Media.Item position="left"><Icon><i className={icon}></i></Icon></Media.Item><Media.Item>{description}</Media.Item></Media>
+					))}
+				</Content>
+			);
+		}
+	}
+}
+
+const mapStateToProps = state => {
+	return {
+		game: state.games.game,
+		gameLoaded: state.games.gameLoaded,
+	}
+}
+
+const mapDispatchToProps = dispatch => {
+	return {
+        fetchGame: (id) => {
+            dispatch(games.fetchGame(id));
+        },
+		startGameRefresh: () => {
+			dispatch(games.startGameRefresh());
+		},
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Results);
