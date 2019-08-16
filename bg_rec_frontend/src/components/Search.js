@@ -37,7 +37,7 @@ class Search extends React.Component {
 						</datalist>
 					</Form.Control>
 					<Form.Control>
-						<Link to={`/game/${this.state.game_id}/`} className="button is-primary" disabled={this.state.game_id == null ? true : false}><Icon><i className="fas fa-search"></i></Icon></Link>
+						<Link to={`/game/${this.state.game_id}/`} onClick={() => this.setState({game: "", game_id: null})} className="button is-primary" disabled={this.state.game_id == null ? true : false}><Icon><i className="fas fa-search"></i></Icon></Link>
 					</Form.Control>
 				</Form.Field>
 				<Form.Field><Form.Help color="danger">{this.state.game_id == null ? "Please enter a valid game name." : ""}</Form.Help></Form.Field>

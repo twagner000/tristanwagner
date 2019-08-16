@@ -69,8 +69,11 @@ class Results extends React.Component {
 					<h4>Results: {game.name}</h4>
 					
 					<Level breakpoint="mobile">
-					{game.gameneighbor_set.slice(0,9).map((game_neighbor, i) => (
-						<Level.Item className={"" + (i>2 ? " is-hidden-mobile" : "") + (i>5 ? " is-hidden-touch" : "")} key={game_neighbor.neighbor.objectid}>
+						<Level.Item key={game.objectid}>
+							<img className="image is-96x96 has-background-dark" alt={game.name} title={game.name} src={game.thumbnail} style={{objectFit: "contain"}}/>
+						</Level.Item>
+					{game.gameneighbor_set.slice(0,8).map((game_neighbor, i) => (
+						<Level.Item className={"" + (i>1 ? " is-hidden-mobile" : "") + (i>4 ? " is-hidden-touch" : "")} key={game_neighbor.neighbor.objectid}>
 							<Link to={`/game/${game_neighbor.neighbor.objectid}/`}><img className="image is-96x96 has-background-dark" alt={game_neighbor.neighbor.name} title={game_neighbor.neighbor.name} src={game_neighbor.neighbor.thumbnail} style={{objectFit: "contain"}}/></Link>
 						</Level.Item>
 					))}
