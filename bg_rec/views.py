@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, permissions, viewsets
+from django.conf import settings
 
 from . import models
 from . import serializers
@@ -34,7 +35,7 @@ class UnpickleView(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        with open('boardgames.pkl','rb') as f:
+        with open(str(settings.APPS_DIR.path('boardgames.pkl')),'rb') as f:
             boardgames = pickle.load(f)
         bulk_factors = []
         bulk_neighbors = []
