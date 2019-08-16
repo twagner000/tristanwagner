@@ -6,20 +6,6 @@
 	<h1 class="title has-text-centered">Tristan Wagner</h1>
 	<div class="columns">
 		<div class="column is-half is-offset-one-quarter">
-		
-			<article class="media">
-				<figure class="media-left">
-					<a class="image is-64x64" href="{% url 'puzzles:index' %}">
-						<img class="is-rounded" src="{% static 'img/puzzle.jpg' %}" />
-					</a>
-				</figure>
-				<div class="media-content">
-					<div class="content">
-						<strong><a href="{% url 'puzzles:index' %}">Puzzles</a></strong><br/>
-						I enjoy solving puzzles, and occasionally creating them.
-					</div>
-				</div>
-			</article>
 			
 			<article class="media">
 				<figure class="media-left">
@@ -31,6 +17,20 @@
 					<div class="content">
 						<strong><a href="{% url 'bg_rec:index' %}">Board Game Recommender</a></strong><br/>
 						Enter a board game you like and get some recommendations.
+					</div>
+				</div>
+			</article>
+		
+			<article class="media">
+				<figure class="media-left">
+					<a class="image is-64x64" href="{% url 'puzzles:index' %}">
+						<img class="is-rounded" src="{% static 'img/puzzle.jpg' %}" />
+					</a>
+				</figure>
+				<div class="media-content">
+					<div class="content">
+						<strong><a href="{% url 'puzzles:index' %}">Puzzles</a></strong><br/>
+						I enjoy solving puzzles, and occasionally creating them.
 					</div>
 				</div>
 			</article>
