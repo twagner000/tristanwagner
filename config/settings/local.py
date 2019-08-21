@@ -19,5 +19,9 @@ WEBPACK_LOADER = {
     'BG_REC': {
             'BUNDLE_DIR_NAME': 'bg_rec_bundles/',
             'STATS_FILE': str(APPS_DIR.path('webpack-stats-bg_rec.dev.json')),
-        }
+        },
+    'TRY': {
+            'BUNDLE_DIR_NAME': 'try_bundles/',
+            'STATS_FILE': str(APPS_DIR.path('try_frontend','webpack-stats.dev.json')),
+        },
 }
