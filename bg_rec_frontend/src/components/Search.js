@@ -64,20 +64,6 @@ class Search extends React.Component {
 				</Form.Field>
 			</React.Fragment>
 		)
-		/*					<Select
-						className="control is-expanded"
-						name="game"
-						aria-label="Game"
-						placeholder="Select a game..."
-						required
-						options={this.props.gameList}
-						getOptionLabel={option => option.name}
-						getOptionValue={option => option.objectid}
-						onChange={this.handleChange}
-						autoFocus
-						components={{Option}}
-						filterOption={createFilter({ignoreAccents: false})}
-					/>*/
 	}
 }
 
