@@ -13,7 +13,7 @@ export const fetchGames = () => {
 }
 
 export const startGameRefresh = () => {
-	return {type: 'REFRESH_GAME'};
+	return {type: 'FETCH_GAME_REQUEST'};
 }
 
 export const fetchGame = (id) => {
@@ -23,7 +23,7 @@ export const fetchGame = (id) => {
             .then(res => res.json())
             .then(game => {
                 return dispatch({
-                    type: 'FETCH_GAME',
+                    type: 'FETCH_GAME_SUCCESS',
                     game
                 })
             })

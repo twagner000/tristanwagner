@@ -1,46 +1,53 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import {Form, Icon} from 'react-bulma-components';
+import {withRouter} from 'react-router-dom';
+import {Form} from 'react-bulma-components';
+import Select, {createFilter, components as SelectComponents} from 'react-select';
 import {connect} from 'react-redux';
 
 import {games} from "../actions";
 
+//https://github.com/JedWatson/react-select/issues/3128#issuecomment-451936743
+const Option = ({ children, ...props }) => {
+	const { onMouseMove, onMouseOver, ...rest } = props.innerProps;
+	const newProps = Object.assign(props, { innerProps: rest });
+	return (
+		<SelectComponents.Option {...newProps} className="select-item-hover" >
+			{children}
+		</SelectComponents.Option>
+	);
+};
 
 class Search extends React.Component {
-	state = {game: "", game_id: null, };
-	
 	componentDidMount() {
         this.props.fetchGames();
     }
 	
-	handleChange = (event) => {
-		const search_lower_case = event.target.value.toLowerCase();
-		let game_id = null;
-		for (let g of this.props.gameList) {
-			if (g.name.toLowerCase() === search_lower_case) {
-				game_id = g.objectid;
-				break;
-			}
+	handleChange = (option, meta) => {
+		if (option) {
+			this.props.history.push(`/game/${option.objectid}/`);
 		}
-		this.setState({game: event.target.value, game_id: game_id});
 	}
 	
 	render() {
+		//filterOption because of https://github.com/JedWatson/react-select/issues/3128#issuecomment-431397942
 		return (
 			<React.Fragment>
 				<Form.Field kind="addons">
-					<Form.Control iconLeft fullwidth>
-						<Form.Input placeholder="Select a game..." list="game_list" value={this.state.game} onChange={this.handleChange} />
-						<Icon align="left"><i className={this.state.game_id == null ? "fas fa-exclamation-triangle" : "fas fa-check"}></i></Icon>
-						<datalist id="game_list">
-							{this.props.gameList.map((game) => (<option key={game.objectid} value={game.name}/>))}
-						</datalist>
-					</Form.Control>
-					<Form.Control>
-						<Link to={`/game/${this.state.game_id}/`} onClick={() => this.setState({game: "", game_id: null})} className="button is-primary" disabled={this.state.game_id == null ? true : false}><Icon><i className="fas fa-search"></i></Icon></Link>
-					</Form.Control>
+					<Select
+						className="control is-expanded"
+						name="game"
+						aria-label="Game"
+						placeholder="Select a game..."
+						required
+						options={this.props.gameList}
+						getOptionLabel={option => option.name}
+						getOptionValue={option => option.objectid}
+						onChange={this.handleChange}
+						autoFocus
+						components={{Option}}
+						filterOption={createFilter({ignoreAccents: false})}
+					/>
 				</Form.Field>
-				<Form.Field><Form.Help color="danger">{this.state.game_id == null ? "Please enter a valid game name." : ""}</Form.Help></Form.Field>
 			</React.Fragment>
 		)
 	}
@@ -61,4 +68,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Search);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Search));

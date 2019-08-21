@@ -2,7 +2,7 @@ const initialState = {
 	gameList: [],
 	gameListLoaded: false,
 	game: null,
-	gameLoaded: false,
+	isFetchingGame: false,
 };
 
 
@@ -15,13 +15,13 @@ export default function games(state=initialState, action) {
 			newState.gameListLoaded = true;
 			return newState;
 			
-		case 'REFRESH_GAME':
-			newState.gameLoaded = false;
+		case 'FETCH_GAME_REQUEST':
+			newState.isFetchingGame = true;
 			return newState;
 			
-		case 'FETCH_GAME':
+		case 'FETCH_GAME_SUCCESS':
 			newState.game = action.game;
-			newState.gameLoaded = true;
+			newState.isFetchingGame = false;
 			return newState;
 		
 		default:

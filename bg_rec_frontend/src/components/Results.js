@@ -47,15 +47,19 @@ class Results extends React.Component {
 		{icon: "fas fa-external-link-alt", description: "Link to the game's BGG page"}
 		];
 		
+	
+	checkForUpdate = () => {
+		if (!this.props.isFetchingGame && (this.props.game == null || parseInt(this.props.match.params.id) !== this.props.game.objectid)) {
+			this.props.loadGame(this.props.match.params.id);
+		}
+	}
+		
 	componentDidMount() {
-        this.props.fetchGame(this.props.match.params.id);
+        this.checkForUpdate();
     }
 	
 	componentDidUpdate() {
-		if (this.props.gameLoaded && parseInt(this.props.match.params.id) !== this.props.game.objectid) {
-			this.props.startGameRefresh();
-			this.props.fetchGame(this.props.match.params.id);
-		}
+		this.checkForUpdate();
     }
 		
 	render() {
@@ -111,18 +115,16 @@ class Results extends React.Component {
 const mapStateToProps = state => {
 	return {
 		game: state.games.game,
-		gameLoaded: state.games.gameLoaded,
+		isFetchingGame: state.games.isFetchingGame,
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-        fetchGame: (id) => {
+        loadGame: (id) => {
+			dispatch(games.startGameRefresh());
             dispatch(games.fetchGame(id));
         },
-		startGameRefresh: () => {
-			dispatch(games.startGameRefresh());
-		},
     }
 }
 
