@@ -1,26 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, Switch, BrowserRouter } from 'react-router-dom';
+import { Section, Container, Heading } from 'react-bulma-components';
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          222 Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import bgRecApp from "./reducers";
+
+import Search from "./components/Search";
+import Home from "./components/Home";
+import Results from "./components/Results";
+
+let store = createStore(bgRecApp, applyMiddleware(thunk));
+
+const BASE_URL = '/bg_rec';
+
+class App extends React.Component {
+	render() {
+		return (
+			<Section>
+				<Container>
+					<Provider store={store}>
+						<BrowserRouter basename={BASE_URL}>
+							<Heading>Board Game Recommender</Heading>
+							<Search />
+							<Switch>
+								<Route exact path="/game/:id" component={Results} />
+								<Route component={Home} />
+							</Switch>
+						</BrowserRouter>
+					</Provider>
+				</Container>
+			</Section>
+		);
+	}
 }
 
 export default App;
