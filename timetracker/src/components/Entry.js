@@ -1,12 +1,10 @@
 import React from "react";
 //import PropTypes from "prop-types";
 import key from "weak-key";
-import { format } from 'date-fns';
-import { Link, withRouter } from "react-router-dom";
+import { format, parseISO } from 'date-fns';
+import { Link } from "react-router-dom";
 import Select from 'react-select';
 import { ServiceContext } from "./TimeTrackerService";
-
-const endpoint_base = '/timetracker/api/';
 
 class Entry extends React.Component {
 	render() {
@@ -15,21 +13,21 @@ class Entry extends React.Component {
 		const search = end ? "?task_id="+this.props.data.task : "?stop=y";
 		const iconClass = end ? "fas fa-play" : "fas fa-stop";
 		const buttonClass = end ? "button is-primary is-outlined" : "button is-danger is-outlined";
-		const timeMessage = end ? this.props.data.hours.toFixed(2) + " hours ending "+format(this.props.data.end, 'M/D/YY h:mma') : "Started "+format(this.props.data.start, 'M/D/YY h:mma');
+		const timeMessage = end ? this.props.data.hours.toFixed(2) + " hours ending "+format(parseISO(this.props.data.end), 'M/d/yy h:mma') : "Started "+format(parseISO(this.props.data.start), 'M/d/yy h:mma');
 		
 		return (
 			<article className="media">
 				<div className="media-left">
 					<Link to={{ pathname: pathname, search: search }} className={buttonClass}><span className="icon"><i className={iconClass}></i></span></Link>
 				</div>
-				<div class="media-content">
-					<div class="content">
+				<div className="media-content">
+					<div className="content">
 						<strong>{this.props.data.task_obj.full_name}</strong>
 						<br/><small>{timeMessage}</small>
 						<br/><small><em>{this.props.data.comments}</em></small>
 					</div>
 				</div>
-				<div class="media-right">
+				<div className="media-right">
 					<Link to={'entry/' + this.props.data.id}><span className="icon has-text-primary"><i className="fas fa-edit"></i></span></Link>
 				</div>
 			</article>
@@ -110,7 +108,7 @@ export class EntryCreateUpdateForm extends React.Component {
 			
 		Promise.all(p)
 			.then(() => {
-				const uparams = new URLSearchParams(location.search);
+				const uparams = new URLSearchParams(window.location.search);
 				const task_id = uparams.get('task_id');
 				const stop = uparams.get('stop');
 				this.setState({
@@ -118,7 +116,7 @@ export class EntryCreateUpdateForm extends React.Component {
 					task_id: task_id != null ? task_id : this.state.task_id,
 					start: !this.state.id ? this.getLocalDate() : this.state.start,
 					end: stop != null && !this.state.end ? this.getLocalDate() : this.state.end,
-					task: this.state.task_list.filter(option => option.id == (task_id != null ? task_id : this.state.task_id))
+					task: this.state.task_list.filter(option => option.id === (task_id != null ? task_id : this.state.task_id))
 				});
 			});
 	}
@@ -136,13 +134,13 @@ export class EntryCreateUpdateForm extends React.Component {
 	handleSubmit(event) {
 		this.setState({submitting: true});
 		
-		const { id, task_id, task, start, end, comments } = this.state;
+		const { id, task, start, end, comments } = this.state;
 		
 		const entry = {
 			'id': id,
 			'task': task[0].id,
 			'start': start,
-			'end': end=="" ? null : end,
+			'end': end==="" ? null : end,
 			'comments': comments
 		};
 		

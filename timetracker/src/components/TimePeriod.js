@@ -1,6 +1,5 @@
 import React from "react";
-import { format } from 'date-fns';
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ServiceContext } from "./TimeTrackerService";
 
 export class TimePeriodSummary extends React.Component {
@@ -19,7 +18,7 @@ export class TimePeriodSummary extends React.Component {
 		
 		const today = new Date();
 		const monday = new Date(today);
-		monday.setDate(today.getDate()-today.getDay()+(today.getDay()==0?-6:1));
+		monday.setDate(today.getDate()-today.getDay()+(today.getDay()===0?-6:1));
 		const sunday = new Date(monday);
 		sunday.setDate(monday.getDate()+6);
 		

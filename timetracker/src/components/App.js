@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import './App.css';
 import { EntryRecentList, EntryCreateUpdateForm } from "./Entry";
-import { TimePeriodSearch, TimePeriodSummary } from "./TimePeriod";
+import { TimePeriodSummary } from "./TimePeriod";
 import TimeTrackerService, {ServiceContext} from "./TimeTrackerService";
 
 class Home extends React.Component {

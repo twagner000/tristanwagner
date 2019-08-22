@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Count, Sum, Case, When, IntegerField, FloatField
@@ -21,10 +20,6 @@ AUTH_OFF = True
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.owner == request.user        
-
-
-class IndexView(TemplateView):
-    template_name = 'timetracker/index.html'
     
     
 class EntryViewSet(viewsets.ModelViewSet):
@@ -141,29 +136,4 @@ class DateRangeProjectList(APIView):
         
         #serializer = serializers.EntrySerializer(entries, many=True)
         #return Response(serializer.data)
-    
-   
-'''class PlayDateList(generics.ListAPIView):
-    queryset = models.BGGPlayDate.objects.filter(date__gte=datetime.date(datetime.date.today().year,1,1), date__lte=datetime.date.today())
-    serializer_class = serializers.PlayDateSerializer
-    permission_classes = tuple()
-    
-class PlayList(generics.ListAPIView):
-    queryset = models.BGGPlay.objects.filter(date__gte=datetime.date(datetime.date.today().year,1,1), date__lte=datetime.date.today())
-    serializer_class = serializers.PlaySerializer
-    permission_classes = tuple()
-    
-class Past52WeeksList(APIView):
-    permission_classes = tuple()
-
-    def get(self, request, format=None):
-        weeks = []
-        cur_week_start = datetime.date.today()
-        cur_week_start -= datetime.timedelta(days=cur_week_start.weekday())
-        cur_week_start -= datetime.timedelta(days=52*7)
-        for i in range(52):
-            next_week_start = cur_week_start + datetime.timedelta(days=7)
-            weeks.append({'week':cur_week_start, 'count':models.BGGPlay.objects.filter(date__gte=cur_week_start, date__lt=next_week_start).count()})
-            cur_week_start = next_week_start
-        return Response(weeks)'''
     

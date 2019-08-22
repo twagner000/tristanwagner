@@ -1,5 +1,12 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load render_bundle from webpack_loader %}
+
+{% block extracss %}
+	{{ block.super }}
+	{% render_bundle 'vendors' 'css' 'TIMETRACKER' %}
+	{% render_bundle 'main' 'css' 'TIMETRACKER' %}
+	{% render_bundle 'runtime~main' 'css' 'TIMETRACKER' %}
+{% endblock %}
 
 {% block content %}
 <section class="section container">
@@ -8,6 +15,8 @@
 {% endblock %}
 
 {% block script %}
-{{ block.super }}
-<script src="{% static 'timetracker/main.js' %}"></script>
+	{{ block.super }}
+	{% render_bundle 'vendors' 'js' 'TIMETRACKER' %}
+	{% render_bundle 'main' 'js' 'TIMETRACKER' %}
+	{% render_bundle 'runtime~main' 'js' 'TIMETRACKER' %}
 {% endblock %}

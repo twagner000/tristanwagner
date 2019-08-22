@@ -23,8 +23,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 WEBPACK_LOADER = {
+    'TIMETRACKER': {
+            'BUNDLE_DIR_NAME': 'timetracker_bundles/',
+            'STATS_FILE': str(APPS_DIR.path('timetracker','webpack-stats.prod.json')),
+        },
     'BG_REC': {
             'BUNDLE_DIR_NAME': 'bg_rec_bundles/',
             'STATS_FILE': str(APPS_DIR.path('bg_rec_frontend','webpack-stats.prod.json')),
-        }
+        },
 }

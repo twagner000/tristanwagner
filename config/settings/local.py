@@ -16,8 +16,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 WEBPACK_LOADER = {
+    'TIMETRACKER': {
+            'BUNDLE_DIR_NAME': 'timetracker_bundles/',
+            'STATS_FILE': str(APPS_DIR.path('timetracker','webpack-stats.dev.json')),
+        },
     'BG_REC': {
             'BUNDLE_DIR_NAME': 'bg_rec_bundles/',
             'STATS_FILE': str(APPS_DIR.path('bg_rec_frontend','webpack-stats.dev.json')),
-        }
+        },
 }
