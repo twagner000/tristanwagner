@@ -1,9 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import './App.css';
-import { EntryRecentList, EntryCreateUpdateForm } from "./Entry";
-import { TimePeriodSummary } from "./TimePeriod";
-import TimeTrackerService, {ServiceContext} from "./TimeTrackerService";
+import { EntryRecentList, EntryCreateUpdateForm } from "./components/Entry";
+import { TimePeriodSummary } from "./components/TimePeriod";
+import TimeTrackerService, {ServiceContext} from "./components/TimeTrackerService";
 
 class Home extends React.Component {
 	static contextType = ServiceContext;
