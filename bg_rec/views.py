@@ -9,15 +9,6 @@ from django.conf import settings
 from . import models
 from . import serializers
 
-class IndexView(TemplateView):
-    template_name = 'bg_rec/index.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['boardgames'] = models.BoardGame.objects.all()
-        if self.request.GET.get('id'):
-            context['match'] = models.BoardGame.objects.get(pk=self.request.GET.get('id'))
-        return context
     
 class BoardGameViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.BoardGame.objects.all()

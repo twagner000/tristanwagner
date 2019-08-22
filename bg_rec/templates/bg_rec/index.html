@@ -1,93 +1,20 @@
 {% extends "base.html" %}
-{% load staticfiles %}
+{% load render_bundle from webpack_loader %}
+
+{% block extracss %}
+	{{ block.super }}
+	{% render_bundle 'vendors' 'css' 'BG_REC' %}
+	{% render_bundle 'main' 'css' 'BG_REC' %}
+	{% render_bundle 'runtime~main' 'css' 'BG_REC' %}
+{% endblock %}
 
 {% block content %}
-<section class="section container">
-	<h1 class="title">Board Game Recommender</h1>
-	<article>
-		<form method="GET">
-			<div class="content"><p>Select a game and find some other games you might also enjoy.</p></div>
-			<div class="field"><div class="control"><div class="select is-fullwidth"><select name="id">
-				<option></option>
-			{% for g in boardgames %}
-				<option value="{{g.pk}}">{{g.name}}</option>
-			{% endfor %}
-			</select></div></div></div>
-			<div class="field"><button class="button is-primary is-fullwidth" type="submit">Go</button></div>
-		</form>
-	</article>
-	<article>
-		{% if match %}
-		<div class="content"><p></p><h4>Results for {{match.name}}:</h4></div>
-		{% endif %}
-		<div class="columns is-multiline">
-			<div class="column is-one-third">
-				<div class="box">
-					<article class="media">
-						<div class="media-content">
-							<div class="level is-mobile is-marginless">
-								<span>
-									<span class="icon"><i class="fas fa-long-arrow-alt-up" aria-hidden="true"></i></span>Rank
-									<br/><span class="icon"><i class="fas fa-users" aria-hidden="true"></i></span>Players
-									<br/>&nbsp;
-								</span>
-								<span>
-									<span class="icon"><i class="fas fa-arrows-alt-h" aria-hidden="true"></i></span>Distance
-									<br/><span class="icon"><i class="fas fa-clock" aria-hidden="true"></i></span>Playtime
-									<br/>&nbsp;
-								</span>
-								<span>
-									<span class="icon"><i class="fas fa-globe" aria-hidden="true"></i></span>Ratings
-									<br/><span class="icon"><i class="fas fa-star" aria-hidden="true"></i></span>GeekScore
-									<br/>&nbsp;
-								</span>
-							</div>
-								<!--averageweight-->
-						</div>
-					</article>
-				</div>
-			</div>
-		{% for n in match.gameneighbor_set.all %}
-			<div class="column is-one-third">
-				<div class="box">
-					<article class="media">
-						<div class="media-content">
-							<p><strong><a href="?id={{n.neighbor.pk}}">{{n.neighbor.name}}</a></strong></p>
-							<div class="level is-mobile is-marginless">
-								<!--span class="tag is-rounded is-light">{{n.rank}}</span--> 
-								<span>
-									<span class="icon"><i class="fas fa-long-arrow-alt-up" aria-hidden="true"></i></span>{{n.rank}}
-									<br/><span class="icon"><i class="fas fa-users" aria-hidden="true"></i></span>{{n.neighbor.minplayers}}-{{n.neighbor.maxplayers}}
-									<br/>&nbsp;
-								</span>
-								<span>
-									<span class="icon"><i class="fas fa-arrows-alt-h" aria-hidden="true"></i></span>{{n.distance|floatformat:3}}
-									<br/><span class="icon"><i class="fas fa-clock" aria-hidden="true"></i></span>{% if n.neighbor.minplaytime and n.neighbor.maxplaytime and n.neighbor.minplaytime != n.neighbor.maxplaytime %}{{n.neighbor.minplaytime}}-{{n.neighbor.maxplaytime}}{%else%}{{n.neighbor.playingtime}}{%endif%}
-									<br/>&nbsp;
-								</span>
-								<span>
-									<span class="icon"><i class="fas fa-globe" aria-hidden="true"></i></span>{{n.neighbor.usersrated}}
-									<br/><span class="icon"><i class="fas fa-star" aria-hidden="true"></i></span>{{n.neighbor.bayesaverage|floatformat:2}}
-									<br/><a href="{{n.neighbor.bgg_link}}"><span class="icon"><i class="fas fa-external-link-alt"></i></span> BGG</a>
-								</span>
-							</div>
-								<!--averageweight-->
-						</div>
-						<div class="media-right">
-							<figure class="image is-96x96">
-								<a href="?id={{n.neighbor.pk}}"><img src="{{n.neighbor.thumbnail}}" style="height: 100%; object-fit: cover;" /></a>
-							</figure>
-						</div>
-					</article>
-				</div>
-			</div>
-		{% endfor %}
-		</div>
-	</article>
-	<article class="content">
-		{% if user.is_staff %}
-		<p><a class="button is-warning" href="{% url 'bg_rec:unpickle' %}">Unpickle Data</a></p>
-		{% endif %}
-	</article>
-</section>
+<div id="root"></div>
+{% endblock %}
+
+{% block script %}
+	{{ block.super }}
+	{% render_bundle 'vendors' 'js' 'BG_REC' %}
+	{% render_bundle 'main' 'js' 'BG_REC' %}
+	{% render_bundle 'runtime~main' 'js' 'BG_REC' %}
 {% endblock %}
