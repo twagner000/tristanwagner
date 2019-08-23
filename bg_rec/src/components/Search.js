@@ -1,6 +1,6 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
-import {Form} from 'react-bulma-components';
+import {Field} from 'rbx';
 import {components as SelectComponents} from 'react-select';
 import AsyncSelect from 'react-select/async';
 import {connect} from 'react-redux';
@@ -44,25 +44,23 @@ class Search extends React.Component {
 	render() {
 		//AsyncSelect for speed
 		return (
-			<React.Fragment>
-				<Form.Field>
-					<AsyncSelect
-						cacheOptions
-						defaultOptions
-						loadOptions={this.loadOptions}
-						className="control"
-						name="game"
-						aria-label="Game"
-						placeholder="Select a game..."
-						required
-						getOptionLabel={option => option.name}
-						getOptionValue={option => option.objectid}
-						onChange={this.handleChange}
-						autoFocus
-						components={{Option}}
-					/>
-				</Form.Field>
-			</React.Fragment>
+			<Field>
+				<AsyncSelect
+					cacheOptions
+					defaultOptions
+					loadOptions={this.loadOptions}
+					className="control"
+					name="game"
+					aria-label="Game"
+					placeholder="Select a game..."
+					required
+					getOptionLabel={option => option.name}
+					getOptionValue={option => option.objectid}
+					onChange={this.handleChange}
+					autoFocus
+					components={{Option}}
+				/>
+			</Field>
 		)
 	}
 }

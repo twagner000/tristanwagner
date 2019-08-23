@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Switch, BrowserRouter } from 'react-router-dom';
-import { Section, Container, Heading } from 'react-bulma-components';
+import { Section, Container, Title } from "rbx";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
@@ -22,7 +22,7 @@ class App extends React.Component {
 				<Container>
 					<Provider store={store}>
 						<BrowserRouter basename={BASE_URL}>
-							<Heading>Board Game Recommender</Heading>
+							<Title>Board Game Recommender</Title>
 							<Search />
 							<Switch>
 								<Route exact path="/game/:id" component={Results} />

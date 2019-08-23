@@ -1,5 +1,5 @@
 import React from 'react';
-import {Content} from 'react-bulma-components';
+import {Content} from 'rbx';
 
 const Home = () => {
 	return (

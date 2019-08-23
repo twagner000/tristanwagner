@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Content, Icon, Media, Level, Table} from 'react-bulma-components';
+import {Content, Icon, Media, Level, Table} from 'rbx';
 import {connect} from 'react-redux';
 
 import {games} from "../actions";
@@ -23,7 +23,7 @@ class Game extends React.Component {
 		let game = this.props.game;
 		let distance = this.props.distance;
 		return (
-			<tr>
+			<Table.Row>
 				{distance
 					? (<td><Link to={`/game/${game.objectid}/`}>{game.name}</Link></td>)
 					: (<td>{game.name}</td>)}
@@ -32,7 +32,7 @@ class Game extends React.Component {
 				<td>{Game.players(game)}</td>
 				<td>{Game.playtime(game)}</td>
 				<td><a href={`https://boardgamegeek.com/boardgame/${game.objectid}`}><Icon><i className="fas fa-external-link-alt"></i></Icon></a></td>
-			</tr>
+			</Table.Row>
 		);
 	}
 }
@@ -84,27 +84,30 @@ class Results extends React.Component {
 					</Level>
 					<small>
 						<Table>
-							<thead>
-								<tr>
+							<Table.Head>
+								<Table.Row>
 									<th>Game</th>
 								{this.table_headers.map(({icon, description}, i) => (
 									<th key={i} title={description}><Icon><i className={icon}></i></Icon></th>
 								))}
-								</tr>
-							</thead>
-							<tbody>
+								</Table.Row>
+							</Table.Head>
+							<Table.Body>
 								<Game game={game} key={game.objectid} />
 								{game.gameneighbor_set.map((game_neighbor) => (
 								<Game game={game_neighbor.neighbor} distance={game_neighbor.distance} key={game_neighbor.neighbor.objectid} />
 								))}
-							</tbody>
+							</Table.Body>
 						</Table>
 					</small>
 					
 					<p>&nbsp;</p>
 					<h4>Columns Explained</h4>
 					{this.table_headers.map(({icon, description}, i) => (
-					<Media key={i}><Media.Item position="left"><Icon><i className={icon}></i></Icon></Media.Item><Media.Item>{description}</Media.Item></Media>
+					<Media key={i}>
+						<Media.Item align="left"><Icon><i className={icon}></i></Icon></Media.Item>
+						<Media.Item align="content">{description}</Media.Item>
+					</Media>
 					))}
 				</Content>
 			);
