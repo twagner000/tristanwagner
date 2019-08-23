@@ -21,7 +21,7 @@ WEBPACK_LOADER = {
             'STATS_FILE': str(APPS_DIR.path('timetracker','webpack-stats.dev.json')),
         },
     'BG_REC': {
-            'BUNDLE_DIR_NAME': 'bg_rec_bundles/',
+            'BUNDLE_DIR_NAME': '/',
             'STATS_FILE': str(APPS_DIR.path('bg_rec','webpack-stats.dev.json')),
         },
 }

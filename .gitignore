@@ -1,6 +1,6 @@
 node_modules/
 boardgames.pkl
-webpack-stats*.json
+webpack-stats*.dev.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -1,4 +1,22 @@
-const BundleTracker = require('webpack-bundle-tracker');
+const path = require('path')
+const each = require('lodash/fp/each')
+const BundleTrackerPlugin = require('webpack-bundle-tracker');
+
+// https://github.com/ezhome/webpack-bundle-tracker/issues/25
+class RelativeBundleTrackerPlugin extends BundleTrackerPlugin {
+	convertPathChunks(chunks){
+		each(each(chunk => {
+			chunk.path = path.relative(this.options.path, chunk.path)
+		}))(chunks)
+	}
+	writeOutput(compiler, contents) {
+		if (contents.status === 'done')  {
+			this.convertPathChunks(contents.chunks)
+		}
+
+		super.writeOutput(compiler, contents)
+	}
+}
 
 module.exports = {
 	webpack: (config, env) => {
@@ -8,7 +26,7 @@ module.exports = {
 			config.output.publicPath = 'http://localhost:3000/';
 			
 			config.plugins.push(
-				new BundleTracker({
+				new BundleTrackerPlugin({
 					path: __dirname,
 					filename: 'webpack-stats.dev.json',
 				}),
@@ -18,10 +36,8 @@ module.exports = {
 			config.entry.push(require.resolve('webpack-dev-server/client') + '?http://localhost:3000');
 			config.entry.push(require.resolve('webpack/hot/dev-server'));
 		} else if (env === 'production') {
-			config.output.publicPath = '/static/bg_rec_bundles/';
-			
 			config.plugins.push(
-				new BundleTracker({
+				new RelativeBundleTrackerPlugin({
 					path: __dirname,
 					filename: 'webpack-stats.prod.json',
 				}),
