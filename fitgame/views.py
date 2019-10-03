@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.shortcuts import redirect, render
 from django.conf import settings
 from fitbit import Fitbit
+from . import models
 
 
 @login_required
@@ -36,10 +37,10 @@ def complete(request):
         return redirect(reverse('fitgame:fitbit-error'))
 
     #check if fitbit_user already exists
-    if UserFitbit.objects.filter(fitbit_user=fitbit_user).exists():
+    if models.UserFitbit.objects.filter(fitbit_user=fitbit_user).exists():
         return redirect(reverse('fitgame:fitbit-error'))
 
-    fbuser, _ = UserFitbit.objects.update_or_create(user=request.user, defaults={
+    fbuser, _ = models.UserFitbit.objects.update_or_create(user=request.user, defaults={
         'fitbit_user': fitbit_user,
         'access_token': access_token,
         'refresh_token': token['refresh_token'],
@@ -55,7 +56,7 @@ def logout(request):
     """
     try:
         fbuser = request.user.userfitbit
-    except UserFitbit.DoesNotExist:
+    except models.UserFitbit.DoesNotExist:
         pass
     else:
         fbuser.delete()
