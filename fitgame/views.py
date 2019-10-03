@@ -22,11 +22,13 @@ def complete(request):
     """
     Store credentials. Fitbit sends a callback to this URL after user authorization.
     """
+    print('hello')
     try:
         code = request.GET['code']
     except KeyError:
         return redirect(reverse('fitgame:fitbit-error'))
 
+    print('hello2')
     callback_uri = request.build_absolute_uri(reverse('fitgame:fitbit-complete'))
     fb = Fitbit(settings.FITAPP_CONSUMER_KEY, settings.FITAPP_CONSUMER_SECRET, callback_uri=callback_uri)
     try:
@@ -36,6 +38,7 @@ def complete(request):
     except KeyError:
         return redirect(reverse('fitgame:fitbit-error'))
 
+    print('hello3')
     #check if fitbit_user already exists
     if models.UserFitbit.objects.filter(fitbit_user=fitbit_user).exists():
         return redirect(reverse('fitgame:fitbit-error'))
