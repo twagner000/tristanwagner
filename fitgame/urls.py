@@ -20,5 +20,6 @@ urlpatterns = [
     path('logout/', views.logout, name='fitbit-logout'),
 
     # Fitbit data retrieval
-    path('get_steps/', views.get_steps, name='fitbit-steps')
+    path('get_steps/', views.get_steps, name='fitbit-steps'),
+    path('get_activities/', views.get_activities, name='fitbit-activities'),
 ]

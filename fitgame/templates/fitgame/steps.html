@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<section class="section container">
+	<h1 class="title">Fitness Game: Steps</h1>
+	<article class="content">
+		<table class="table">
+			<thead>
+				<tr><th>Date</th><th>Steps</th></tr>
+			</thead>
+			<tbody>
+			{% for i in steps %}
+				<tr><td>{{i.dateTime}}</td><td>{{i.value}}</td></tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</article>
+</section>
+{% endblock %}

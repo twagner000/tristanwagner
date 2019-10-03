@@ -18,3 +18,12 @@ class UserFitbit(models.Model):
         self.refresh_token = token['refresh_token']
         self.expires_at = token['expires_at']
         self.save()
+        
+    def get_user_data(self):
+        return {
+            'user_id': self.fitbit_user,
+            'access_token': self.access_token,
+            'refresh_token': self.refresh_token,
+            'expires_at': self.expires_at,
+            'refresh_cb': self.refresh_cb,
+        }
