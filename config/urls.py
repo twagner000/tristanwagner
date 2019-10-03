@@ -32,6 +32,7 @@ urlpatterns = [
     path('mpatrol/', include('mpatrol.urls', namespace='mpatrol')),
     path('timetracker/', include('timetracker.urls')),
     path('bg_rec/', include('bg_rec.urls')),
+    path('fitgame/', include('fitgame.urls')),
 ]
 
 router = ExtendedDefaultRouter()

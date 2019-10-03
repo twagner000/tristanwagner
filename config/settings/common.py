@@ -29,6 +29,7 @@ THIRD_PARTY_APPS = (
     'django_cron',
     'djangobower',
     'webpack_loader',
+    #'fitapp',
     #'allauth',  # registration
     #'allauth.account',  # registration
     #'allauth.socialaccount',  # registration
@@ -46,6 +47,7 @@ LOCAL_APPS = (
     'bgg_stats',
     'timetracker',
     'bg_rec',
+    'fitgame',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -192,6 +194,9 @@ CRON_CLASSES = [
 # Your common stuff: Below this line define 3rd party library settings
 BGG_USER = env('BGG_USER')
 PROJECT_EULER_USER = env('PROJECT_EULER_USER')
+
+FITAPP_CONSUMER_KEY = env("FITAPP_CONSUMER_KEY")
+FITAPP_CONSUMER_SECRET = env("FITAPP_CONSUMER_SECRET")
 
 BOWER_INSTALLED_APPS = (
     #'calendar-heatmap',
