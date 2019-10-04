@@ -11,5 +11,5 @@ app_name = 'triworld'
 #urlpatterns = router.urls + [
 urlpatterns = [
     re_path('^(?!api).*$', TemplateView.as_view(template_name="triworld/index.html"), name='index'),
-    #path('api/unpickle', views.UnpickleView.as_view(), name='unpickle'),
+    path('api/new_world', views.NewWorldView.as_view(), name='new-world'),
 ]
