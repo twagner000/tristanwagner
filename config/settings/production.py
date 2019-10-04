@@ -31,4 +31,8 @@ WEBPACK_LOADER = {
             'BUNDLE_DIR_NAME': 'bg_rec_bundles/',
             'STATS_FILE': str(APPS_DIR.path('bg_rec','webpack-stats.prod.json')),
         },
+    'TRIWORLD': {
+            'BUNDLE_DIR_NAME': 'triworld_bundles/',
+            'STATS_FILE': str(APPS_DIR.path('triworld','webpack-stats.prod.json')),
+        },
 }

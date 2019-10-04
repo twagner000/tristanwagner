@@ -33,6 +33,7 @@ urlpatterns = [
     path('timetracker/', include('timetracker.urls')),
     path('bg_rec/', include('bg_rec.urls')),
     path('fitgame/', include('fitgame.urls')),
+    path('triworld/', include('triworld.urls')),
 ]
 
 router = ExtendedDefaultRouter()

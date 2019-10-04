@@ -48,6 +48,7 @@ LOCAL_APPS = (
     'timetracker',
     'bg_rec',
     'fitgame',
+    'triworld',
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -156,6 +157,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     str(APPS_DIR.path('static')),
     str(APPS_DIR.path('bg_rec','build','static')),
+    str(APPS_DIR.path('triworld','build','static')),
     #str(ROOT_DIR.path('mpatrolfrontend/dist')),
 )
 
