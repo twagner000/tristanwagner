@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<section class="section container">
+	<h1 class="title">Face View</h1>
+	<article class="content">
+		<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="400" height="400">
+			<style>
+				.tri { stroke-width: .05; stroke: #888; fill: #4c4; }
+				.tri-sea { fill: #bbf; }
+			</style>
+			<rect width="100%" height="100%" style="fill: none; stroke-width: 1; stroke: #000;" />
+			<g transform="scale(30)">
+				{% for t in mjtri %}
+				<path d="M {{t.major_col}} {{t.major_row}} 
+						{% if t.is_down%}
+							h 1 l -.5 1 z
+						{% else %}
+							m 0 1 h 1 l -.5 -1 z
+						{% endif %}
+					"
+					class="tri{% if t.sea%} tri-sea{% endif %}" />
+				{% endfor %}
+			</g>
+		</svg>
+	</article>
+</section>
+{% endblock %}

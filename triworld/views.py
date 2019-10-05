@@ -4,6 +4,18 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from . import models
 
 
+class FaceView(PermissionRequiredMixin, TemplateView):
+    permission_required = 'is_staff'
+    template_name = 'triworld/face.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['mjtri'] = models.MajorTri.objects.filter(world=8, face_ring=1, face_index=0)
+        
+        return context
+        
+        
 class NewWorldView(PermissionRequiredMixin, TemplateView):
     permission_required = 'is_staff'
     template_name = 'triworld/new_world.html'
@@ -22,11 +34,16 @@ class NewWorldView(PermissionRequiredMixin, TemplateView):
                     for mjcol in range(2*n-1):
                         if 2*mjrow+mjcol>2*n-2:
                             continue
+                            
                         sea = True
+                        
+                        #polar caps
+                        if face_ring in (0,3) and mjrow>=n-(n//3):
+                            sea = False
                         
                         #home continent
                         if face_ring==1 and face_index==0:
-                            if 2*mjrow+mjcol>n//3 and mjcol<2*n-2*(n//3) and mjrow<n-(n//3):
+                            if 2*mjrow+mjcol>2*(n//3)-2 and mjcol<2*n-2*(n//3) and mjrow<n-(n//3):
                                 sea = False
                         
                         mjtri.append(models.MajorTri(

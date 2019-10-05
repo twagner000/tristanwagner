@@ -8,6 +8,9 @@ class World(models.Model):
     class Meta:
         ordering = ['-date_created']
         
+    def __str__(self):
+        return 'w{}'.format(self.pk)
+        
         
 class MajorTri(models.Model):
     world = models.ForeignKey('World', on_delete=models.CASCADE, editable=False)
@@ -16,9 +19,6 @@ class MajorTri(models.Model):
     major_row = models.PositiveSmallIntegerField(editable=False)
     major_col = models.PositiveSmallIntegerField(editable=False)
     sea = models.BooleanField(default=True, editable=False)
-    
-    def __str__(self):
-        return 'w{} f{},{} mj({},{})'.format(self.world.pk, self.face_ring, self.face_index, self.major_row, self.major_col)
     
     class Meta:
         ordering = ['world','face_ring','face_index','major_row','major_col']
@@ -29,6 +29,14 @@ class MajorTri(models.Model):
             models.Index(fields=['world']),
         ]
     
+    def __str__(self):
+        return 'w{} f{},{} mj({},{})'.format(self.world.pk, self.face_ring, self.face_index, self.major_row, self.major_col)
+    
+    def face_is_down(self):
+        return self.face_ring%2 > 0
+    
+    def is_down(self):
+        return self.face_ring%2 != self.major_col%2
     
 class MinorTri(models.Model):
     major_tri = models.ForeignKey('MajorTri', on_delete=models.CASCADE)

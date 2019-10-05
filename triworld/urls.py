@@ -12,4 +12,5 @@ app_name = 'triworld'
 urlpatterns = [
     re_path('^(?!api).*$', TemplateView.as_view(template_name="triworld/index.html"), name='index'),
     path('api/new_world', views.NewWorldView.as_view(), name='new-world'),
+    path('api/face', views.FaceView.as_view(), name='face'),
 ]
