@@ -1,6 +1,6 @@
 #from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from rest_framework import serializers
-#import json
+import json
 
 from . import models
 
@@ -14,7 +14,7 @@ class WorldSerializer(serializers.ModelSerializer):
 class BriefFaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Face
-        fields = ('id', 'face_ring', 'face_index')        
+        fields = ('id', 'face_ring', 'face_index')
         
         
 class MajorTriSerializer(serializers.ModelSerializer):
@@ -24,18 +24,23 @@ class MajorTriSerializer(serializers.ModelSerializer):
 
 
 class FaceSerializer(BriefFaceSerializer):
+    points_down = serializers.SerializerMethodField()
     map = serializers.SerializerMethodField()
+    neighbor_ids = serializers.SerializerMethodField()
     
     class Meta(BriefFaceSerializer.Meta):
-        fields = BriefFaceSerializer.Meta.fields + ('points_down', 'map', )
+        fields = BriefFaceSerializer.Meta.fields + ('points_down', 'neighbor_ids', 'map')
+        
+    def get_points_down(self,obj):
+        return obj.faceext.points_down
+        
+    def get_neighbor_ids(self,obj):
+        return json.loads(obj.faceext.neighbor_ids)
         
     def get_map(self,obj):
-        n = obj.world.major_dim
-        adj_faces = obj.adj_faces()
-        all_tri = obj.majortri_set
-        rows = [all_tri.filter(major_row=(ri-2 if obj.points_down() else n-1-ri)) for ri in range(n*4//3)]
-        serialized_rows = [MajorTriSerializer(x, many=True).data for x in rows]
-        return {'adj_faces': BriefFaceSerializer(obj.adj_faces(), many=True).data, 'rows': serialized_rows}
+        f = obj.faceext.refresh()
+        f.save()
+        return json.loads(obj.faceext.map)
 
 
 

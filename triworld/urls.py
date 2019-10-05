@@ -18,7 +18,7 @@ world.register('face', api.FaceViewSet, base_name='world-face', parents_query_lo
 
 urlpatterns = router.urls + [
     re_path('^(?!api).*$', TemplateView.as_view(template_name="triworld/index.html"), name='index'),
-    path('api/new_world', views.NewWorldView.as_view(), name='new-world'),
+    #path('api/new_world', views.NewWorldView.as_view(), name='new-world'),
     path('api/face', views.FaceMapView.as_view(), name='face'),
     path('api/world/<world__pk>/face/<face_ring>/<face_index>', api.FaceView.as_view(), name='world-face-detail'),
 ]

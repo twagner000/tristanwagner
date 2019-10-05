@@ -1,13 +1,58 @@
-from rest_framework import viewsets, permissions, generics
-from rest_framework_extensions.mixins import NestedViewSetMixin
 from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, mixins, permissions, generics
+from rest_framework.response import Response
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
 from . import serializers, models
 
-class WorldViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class WorldViewSet(NestedViewSetMixin,
+                    mixins.CreateModelMixin,
+                    mixins.ListModelMixin,
+                    mixins.RetrieveModelMixin,
+                    viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = models.World.objects.all()
     serializer_class = serializers.WorldSerializer
+    
+    def create(self, request, *args, **kwargs):
+        new_world = models.World()
+        new_world.save()
+        n = new_world.major_dim
+        
+        mjtri = []
+        for face_ring in range(4):
+            for face_index in range(5):
+                face = models.Face(world=new_world, face_ring=face_ring, face_index=face_index)
+                face.save()
+                for mjrow in range(n):
+                    for mjcol in range(2*n-1):
+                        if 2*mjrow+mjcol>2*n-2:
+                            continue
+                            
+                        sea = True
+                        
+                        #polar caps
+                        if face_ring in (0,3) and mjrow>=n-(n//3):
+                            sea = False
+                        
+                        #home continent
+                        if face_ring==1 and face_index==0:
+                            if 2*mjrow+mjcol>2*(n//3)-2 and mjcol<2*n-2*(n//3) and mjrow<n-(n//3):
+                                sea = False
+                        
+                        mjtri.append(models.MajorTri(
+                            face=face,
+                            major_row=mjrow,
+                            major_col=mjcol,
+                            sea=sea,
+                            ))
+        models.MajorTri.objects.bulk_create(mjtri)
+        
+        #create FaceExt object for each Face
+        models.FaceExt.objects.bulk_create([models.FaceExt(face=f).refresh() for f in new_world.face_set.all()])
+        
+        return Response(serializers.WorldSerializer(new_world).data)
+        
         
 class FaceViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
@@ -34,14 +79,3 @@ class FaceView(generics.RetrieveAPIView):
         obj = get_object_or_404(queryset, **filter)
         self.check_object_permissions(self.request, obj)
         return obj
-        
-"""    def get_queryset(self):
-        return models.Player.objects.filter(user=self.request.user, game__ended_date__isnull=True)
-        
-    def retrieve(self, request, pk=None):
-        player = self.get_object()
-        now = constants.pacific.localize(datetime.datetime.now())
-        if not player.score_last_updated or (now - player.score_last_updated) > constants.refresh_score_timedelta:
-            player.score_last_updated = now #dummy value to trigger refresh in model save()
-            player.save()
-        return super().retrieve(request,pk)"""
