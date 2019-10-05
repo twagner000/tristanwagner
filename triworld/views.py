@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from . import models
 
 
-class FaceView(PermissionRequiredMixin, TemplateView):
+class FaceMapView(PermissionRequiredMixin, TemplateView):
     permission_required = 'is_staff'
     template_name = 'triworld/face.html'
 
@@ -30,6 +30,8 @@ class NewWorldView(PermissionRequiredMixin, TemplateView):
         mjtri = []
         for face_ring in range(4):
             for face_index in range(5):
+                face = models.Face(world=new_world, face_ring=face_ring, face_index=face_index)
+                face.save()
                 for mjrow in range(n):
                     for mjcol in range(2*n-1):
                         if 2*mjrow+mjcol>2*n-2:
@@ -47,9 +49,7 @@ class NewWorldView(PermissionRequiredMixin, TemplateView):
                                 sea = False
                         
                         mjtri.append(models.MajorTri(
-                            world=new_world,
-                            face_ring=face_ring,
-                            face_index=face_index,
+                            face=face,
                             major_row=mjrow,
                             major_col=mjcol,
                             sea=sea,
@@ -57,6 +57,6 @@ class NewWorldView(PermissionRequiredMixin, TemplateView):
         models.MajorTri.objects.bulk_create(mjtri)
 
         context['new_world'] = new_world
-        context['mjtri_count'] = new_world.majortri_set.all().count()
+        context['mjtri_count'] = len(mjtri)
         
         return context

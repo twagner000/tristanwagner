@@ -20,7 +20,7 @@ class MapFace extends React.Component {
 			<Content>
 				<Link to="/" className="is-pulled-right delete"></Link>
 				<h4>Map</h4>
-				<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="400" height="400">
+				<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width={box_width} height={box_width}>
 					<rect width="100%" height="100%" style={{fill: 'none', strokeWidth: 1, stroke: '#000'}} />
 					{rows.map((r,ri) => (
 					<g key={ri} transform={"translate("+(margin+(Math.abs(2/3*n-.5-ri)-.5)*b/2)+" "+(margin+ri*h)+")"}>
