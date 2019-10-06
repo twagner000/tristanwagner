@@ -31,6 +31,9 @@ class Face(models.Model):
     
     def __str__(self):
         return '{} f({},{})'.format(self.world, self.face_ring, self.face_index)
+        
+    def points_down(self):
+        return self.face_ring%2 > 0
             
             
 class FaceExt(models.Model):
@@ -46,7 +49,7 @@ class FaceExt(models.Model):
         indexes = [models.Index(fields=['face']),]
     
     def refresh(self):
-        self.points_down = self.face.face_ring%2 > 0
+        self.points_down = self.face.points_down()
     
         #populate neighbor_ids
         r = self.face.face_ring
@@ -59,34 +62,24 @@ class FaceExt(models.Model):
         else:
             self.neighbor_ids = json.dumps([None, horiz_counterclock.pk, None, horiz.pk, None, horiz_clockwise.pk])
             
-        #populate map
+        #populate map (tri names are accurate if center face points down)
         n = self.face.world.major_dim
-        rn = n*4//3
-        cn_max = n*8//3-1
-        
         center_tri = self.face.majortri_set
-        horiz_tri = horiz.majortri_set
-        horiz_cc_tri = horiz_counterclock.majortri_set
-        horiz_cl_tri = horiz_clockwise.majortri_set
+        top_tri = horiz.majortri_set
+        left_tri = horiz_counterclock.majortri_set
+        right_tri = horiz_clockwise.majortri_set
         
         map = []
-        for ri in range(rn):
-            cn = int(cn_max-2*abs(rn//2-.5-ri)+1)
-            tri_ri = ri-2 if self.points_down else n-1-ri
-            #fill in tris from center face and horiz adj face
-            if tri_ri<0:
-                row = list(tri.dict_for_static() for tri in horiz_tri.filter(major_row=-tri_ri-1))
-                row.reverse()
+        reverse_if_points_up = lambda x: x if self.points_down else reversed(x)
+        for ri in reverse_if_points_up(range(-n//3,n)):
+            if ri<0:
+                row = list(reversed(top_tri.filter(major_row=-1-ri)))
             else:
-                row = list(tri.dict_for_static() for tri in center_tri.filter(major_row=tri_ri))
-            if not self.points_down:
-                row.reverse()
-                
-            #fill in side adj faces
-            n_missing = cn-len(row)
-            row = [None]*(n_missing//2)+row+[None]*(cn-len(row)-n_missing//2)
-            
-            
+                row = list(reversed(left_tri.filter(major_row=n-1-ri, major_col__lt=n*2//3)))
+                print(type(row))
+                row += list(center_tri.filter(major_row=ri))
+                row += list(reversed(right_tri.filter(major_row=n-1-ri, major_col__gt=2*(ri-n//3))))
+            row = [tri.dict_for_static() for tri in reverse_if_points_up(row)]
             map.append(row)
             
         self.map = json.dumps(map)
