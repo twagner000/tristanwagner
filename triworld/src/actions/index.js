@@ -1,3 +1,3 @@
-import * as games from "./games";
+import * as mapface from "./mapface";
 
-export {games}
+export {mapface}

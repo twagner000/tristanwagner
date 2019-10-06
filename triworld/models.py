@@ -60,14 +60,37 @@ class FaceExt(models.Model):
             self.neighbor_ids = json.dumps([None, horiz_counterclock.pk, None, horiz.pk, None, horiz_clockwise.pk])
             
         #populate map
+        n = self.face.world.major_dim
+        rn = n*4//3
+        cn_max = n*8//3-1
         
-        """n = obj.world.major_dim
-        adj_faces = obj.adj_faces()
-        all_tri = obj.majortri_set
-        rows = [all_tri.filter(major_row=(ri-2 if obj.points_down() else n-1-ri)) for ri in range(n*4//3)]
-        serialized_rows = [MajorTriSerializer(x, many=True).data for x in rows]
-        return {'adj_faces': BriefFaceSerializer(obj.adj_faces(), many=True).data, 'rows': serialized_rows}
-        """
+        center_tri = self.face.majortri_set
+        horiz_tri = horiz.majortri_set
+        horiz_cc_tri = horiz_counterclock.majortri_set
+        horiz_cl_tri = horiz_clockwise.majortri_set
+        
+        map = []
+        for ri in range(rn):
+            cn = int(cn_max-2*abs(rn//2-.5-ri)+1)
+            tri_ri = ri-2 if self.points_down else n-1-ri
+            #fill in tris from center face and horiz adj face
+            if tri_ri<0:
+                row = list(tri.dict_for_static() for tri in horiz_tri.filter(major_row=-tri_ri-1))
+                row.reverse()
+            else:
+                row = list(tri.dict_for_static() for tri in center_tri.filter(major_row=tri_ri))
+            if not self.points_down:
+                row.reverse()
+                
+            #fill in side adj faces
+            n_missing = cn-len(row)
+            row = [None]*(n_missing//2)+row+[None]*(cn-len(row)-n_missing//2)
+            
+            
+            map.append(row)
+            
+        self.map = json.dumps(map)
+        
         return self
         
 
@@ -76,6 +99,9 @@ class MajorTri(models.Model):
     major_row = models.PositiveSmallIntegerField()
     major_col = models.PositiveSmallIntegerField()
     sea = models.BooleanField(default=True)
+    
+    serializer_fields = ('id', 'major_row', 'major_col', 'sea', 'points_down')
+    serializer_method_fields = ('points_down', )
     
     class Meta:
         ordering = ['face','major_row','major_col']
@@ -89,7 +115,10 @@ class MajorTri(models.Model):
         return '{} mj({},{})'.format(self.face, self.major_row, self.major_col)
     
     def points_down(self):
-        return self.face.face_ring%2 != self.major_col%2    
+        return self.face.face_ring%2 != self.major_col%2
+        
+    def dict_for_static(self):
+        return dict((k, getattr(self,k)() if k in self.serializer_method_fields else getattr(self,k)) for k in self.serializer_fields)
     
 
 class MinorTri(models.Model):

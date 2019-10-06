@@ -1,12 +1,10 @@
 const initialState = {
-	gameList: [],
-	gameListLoaded: false,
-	game: null,
-	isFetchingGame: false,
+	map: null,
+	isFetchingMap: false,
 };
 
 
-export default function games(state=initialState, action) {
+export default function mapface(state=initialState, action) {
 	let newState = Object.assign({},state);
 	switch (action.type) {
 		
@@ -15,13 +13,13 @@ export default function games(state=initialState, action) {
 			newState.gameListLoaded = true;
 			return newState;
 			
-		case 'FETCH_GAME_REQUEST':
-			newState.isFetchingGame = true;
+		case 'FETCH_MAPFACE_REQUEST':
+			newState.isFetchingMap = true;
 			return newState;
 			
-		case 'FETCH_GAME_SUCCESS':
-			newState.game = action.game;
-			newState.isFetchingGame = false;
+		case 'FETCH_MAPFACE_SUCCESS':
+			newState.map = action.map;
+			newState.isFetchingMap = false;
 			return newState;
 		
 		default:

@@ -4,7 +4,7 @@ import MapFace from "./MapFace";
 
 const Home = () => {
 	return (
-		<MapFace/>
+		<p>Hello.</p>
 	)
 }
 

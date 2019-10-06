@@ -12,19 +12,19 @@ export const fetchGames = () => {
     }
 }
 
-export const startGameRefresh = () => {
-	return {type: 'FETCH_GAME_REQUEST'};
+export const startMapFaceRefresh = () => {
+	return {type: 'FETCH_MAPFACE_REQUEST'};
 }
 
-export const fetchGame = (id) => {
+export const fetchMapFace = (world, ring, index) => {
     return dispatch => {
         let headers = {"Content-Type": "application/json"};
-        return fetch(`/bg_rec/api/game/${id}`, {headers, })
+        return fetch(`/triworld/api/world/${world}/face/${ring}/${index}`, {headers, })
             .then(res => res.json())
-            .then(game => {
+            .then(map => {
                 return dispatch({
-                    type: 'FETCH_GAME_SUCCESS',
-                    game
+                    type: 'FETCH_MAPFACE_SUCCESS',
+                    map
                 })
             })
     }

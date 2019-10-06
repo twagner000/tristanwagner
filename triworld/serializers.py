@@ -15,24 +15,26 @@ class BriefFaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Face
         fields = ('id', 'face_ring', 'face_index')
-        
-        
-class MajorTriSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.MajorTri
-        fields = ('id', 'major_row', 'major_col', 'sea')
 
 
 class FaceSerializer(BriefFaceSerializer):
+    world_id = serializers.SerializerMethodField()
     points_down = serializers.SerializerMethodField()
+    major_dim = serializers.SerializerMethodField()
     map = serializers.SerializerMethodField()
     neighbor_ids = serializers.SerializerMethodField()
     
     class Meta(BriefFaceSerializer.Meta):
-        fields = BriefFaceSerializer.Meta.fields + ('points_down', 'neighbor_ids', 'map')
+        fields = BriefFaceSerializer.Meta.fields + ('world_id', 'points_down', 'major_dim', 'neighbor_ids', 'map')
+        
+    def get_world_id(self,obj):
+        return obj.world.id
         
     def get_points_down(self,obj):
         return obj.faceext.points_down
+        
+    def get_major_dim(self,obj):
+        return obj.world.major_dim
         
     def get_neighbor_ids(self,obj):
         return json.loads(obj.faceext.neighbor_ids)
@@ -42,6 +44,11 @@ class FaceSerializer(BriefFaceSerializer):
         f.save()
         return json.loads(obj.faceext.map)
 
+
+class MajorTriSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.MajorTri
+        fields = models.MajorTri.serializer_fields
 
 
 """class GamePlayerSerializer(BriefGameSerializer):

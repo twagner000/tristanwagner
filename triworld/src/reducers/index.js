@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
-import games from "./games";
+import mapface from "./mapface";
 
 
-const bgRecApp = combineReducers({
-  games,
+const triWorldApp = combineReducers({
+  mapface,
 })
 
-export default bgRecApp;
+export default triWorldApp;
