@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Switch, BrowserRouter, Link } from 'react-router-dom';
-import { Section, Container, Title, Level, Icon } from "rbx";
+import { Section, Container, Title, Level, Icon, Button } from "rbx";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
@@ -15,6 +15,8 @@ let store = createStore(triWorldApp, applyMiddleware(thunk));
 
 const BASE_URL = '/triworld';
 
+//<Level.Item><Icon><i className="fas fa-caret-square-down"></i></Icon></Level.Item>
+
 class App extends React.Component {
 	render() {
 		return (
@@ -22,12 +24,25 @@ class App extends React.Component {
 				<Container>
 					<Provider store={store}>
 						<BrowserRouter basename={BASE_URL}>
-							<Title><Icon><i className="fas fa-hiking"></i></Icon> TriWorld</Title>
 							<Level>
-								<Level.Item align="left"><Link to="/w/12/map/f/0-0">0-0</Link></Level.Item>
-								<Level.Item align="left"><Link to="/w/12/map/f/1-0">1-0</Link></Level.Item>
-								<Level.Item align="left"><Link to="/w/12/map/f/2-0">2-0</Link></Level.Item>
-								<Level.Item align="left"><Link to="/w/12/map/f/3-0">3-0</Link></Level.Item>
+								<Level.Item><Button as={Link} to="/"><Icon><i className="fas fa-hiking"></i></Icon><span>TriWorld</span></Button></Level.Item>
+								<Level.Item>
+									<Button.Group hasAddons>
+										<Button as={Link} to="/" state="active"><Icon><i className="fas fa-search-minus"></i></Icon></Button>
+										<Button as={Link} to="/" disabled><Icon><i className="fas fa-search-plus"></i></Icon></Button>
+										<Button as={Link} to="/" disabled><Icon><i className="fas fa-gem"></i></Icon></Button>
+									</Button.Group>
+								</Level.Item>
+								
+								<Level.Item>
+									<Button.Group hasAddons>
+										<Button static><Icon><i className="fas fa-ring"></i></Icon></Button>
+										<Button as={Link} to="/w/12/map/f/0-0" className="button">0</Button>
+										<Button as={Link} to="/w/12/map/f/1-0" className="button">1</Button>
+										<Button as={Link} to="/w/12/map/f/2-0" className="button">2</Button>
+										<Button as={Link} to="/w/12/map/f/3-0" className="button">3</Button>
+									</Button.Group>
+								</Level.Item>
 							</Level>
 							<Switch>
 								<Route exact path="/w/:world/map/f/:ring-:index" component={MapFace} />
