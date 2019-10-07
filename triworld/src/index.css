@@ -2,3 +2,4 @@
 .tri-land { fill: #ad8; }
 .tri-sea { fill: #bdf; stroke-dasharray: 3,3; }
 .tri-text { font-size: .5rem; fill: #999; }
+.adj-face-circle { stroke-width: 2; stroke: #aaa; fill: #eee; }

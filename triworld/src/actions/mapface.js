@@ -16,10 +16,10 @@ export const startMapFaceRefresh = () => {
 	return {type: 'FETCH_MAPFACE_REQUEST'};
 }
 
-export const fetchMapFace = (world, ring, index) => {
+export const fetchMapFace = (world_id, face_id) => {
     return dispatch => {
         let headers = {"Content-Type": "application/json"};
-        return fetch(`/triworld/api/world/${world}/face/${ring}/${index}`, {headers, })
+        return fetch(`/triworld/api/world/${world_id}/face/${face_id}`, {headers, })
             .then(res => res.json())
             .then(map => {
                 return dispatch({

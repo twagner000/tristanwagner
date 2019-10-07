@@ -21,6 +21,12 @@ class Face(models.Model):
     face_ring = models.PositiveSmallIntegerField()
     face_index = models.PositiveSmallIntegerField()
     
+    #cached fields (neighbor names are accurate if current face points down)
+    _neigh_top = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_top_set')
+    _neigh_left = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_left_set')
+    _neigh_right = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_right_set')
+    _map = models.TextField(blank=True)
+    
     class Meta:
         ordering = ['world','face_ring','face_index']
         unique_together = ['world','face_ring','face_index']
@@ -34,57 +40,41 @@ class Face(models.Model):
         
     def points_down(self):
         return self.face_ring%2 > 0
-            
-            
-class FaceExt(models.Model):
-    face = models.OneToOneField('Face', primary_key=True, on_delete=models.CASCADE)
-    points_down = models.BooleanField(default=None)
-    
-    #for json_data, use json.dumps(pyvar) or pyvar = json.loads(self.json_data)
-    neighbor_ids = models.TextField(default='null')
-    map = models.TextField(default='null')
-    
-    class Meta:
-        ordering = ['face']
-        indexes = [models.Index(fields=['face']),]
-    
-    def refresh(self):
-        self.points_down = self.face.points_down()
-    
-        #populate neighbor_ids
-        r = self.face.face_ring
-        i = self.face.face_index
-        horiz = Face.objects.get(world=self.face.world, face_ring=r+1-2*(r%2), face_index=i)
-        horiz_counterclock = Face.objects.get(world=self.face.world, face_ring=ADJ_RING[r], face_index=(i+1-2*(r%2))%5)
-        horiz_clockwise = Face.objects.get(world=self.face.world, face_ring=ADJ_RING[r], face_index=(i-1+2*(r%2))%5)
-        if r%2:
-            self.neighbor_ids = json.dumps([horiz.pk, None, horiz_clockwise.pk, None, horiz_counterclock.pk, None])
-        else:
-            self.neighbor_ids = json.dumps([None, horiz_counterclock.pk, None, horiz.pk, None, horiz_clockwise.pk])
-            
-        #populate map (tri names are accurate if center face points down)
-        n = self.face.world.major_dim
-        center_tri = self.face.majortri_set
-        top_tri = horiz.majortri_set
-        left_tri = horiz_counterclock.majortri_set
-        right_tri = horiz_clockwise.majortri_set
         
-        map = []
-        reverse_if_points_up = lambda x: x if self.points_down else reversed(x)
-        for ri in reverse_if_points_up(range(-n//3,n)):
-            if ri<0:
-                row = list(reversed(top_tri.filter(major_row=-1-ri)))
-            else:
-                row = list(reversed(left_tri.filter(major_row=n-1-ri, major_col__lt=n*2//3)))
-                print(type(row))
-                row += list(center_tri.filter(major_row=ri))
-                row += list(reversed(right_tri.filter(major_row=n-1-ri, major_col__gt=2*(ri-n//3))))
-            row = [tri.dict_for_static() for tri in reverse_if_points_up(row)]
-            map.append(row)
+    def neighbors(self):
+        if not self._neigh_top or not self._neigh_left or not self._neigh_right:
+            r = self.face_ring
+            i = self.face_index
+            self._neigh_top = Face.objects.get(world=self.world, face_ring=r+1-2*(r%2), face_index=i)
+            self._neigh_left = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=(i+1-2*(r%2))%5)
+            self._neigh_right = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=(i-1+2*(r%2))%5)
+            self.save()
+        return {'top':self._neigh_top, 'left':self._neigh_left, 'right':self._neigh_right}
             
-        self.map = json.dumps(map)
+    def neighbor_ids(self):
+        return dict((k,v.pk) for k,v in self.neighbors().items())
         
-        return self
+    def map(self):
+        if not self._map:
+            n = self.world.major_dim
+            tris = dict((k,v.majortri_set) for k,v in self.neighbors().items())
+            tris['center'] = self.majortri_set
+            
+            map = []
+            reverse_if_points_up = lambda x: x if self.points_down() else reversed(x)
+            for ri in reverse_if_points_up(range(-n//3,n)):
+                if ri<0:
+                    row = list(reversed(tris['top'].filter(major_row=-1-ri)))
+                else:
+                    row = list(reversed(tris['left'].filter(major_row=n-1-ri, major_col__lt=n*2//3)))
+                    row += list(tris['center'].filter(major_row=ri))
+                    row += list(reversed(tris['right'].filter(major_row=n-1-ri, major_col__gt=2*(ri-n//3))))
+                row = [tri.dict_for_static() for tri in reverse_if_points_up(row)]
+                map.append(row)
+                
+            self._map = json.dumps(map)
+            self.save()
+        return json.loads(self._map)
         
 
 class MajorTri(models.Model):
@@ -93,8 +83,8 @@ class MajorTri(models.Model):
     major_col = models.PositiveSmallIntegerField()
     sea = models.BooleanField(default=True)
     
-    serializer_fields = ('id', 'major_row', 'major_col', 'sea', 'points_down')
-    serializer_method_fields = ('points_down', )
+    serializer_fields = ('id', 'major_row', 'major_col', 'sea')
+    serializer_method_fields = tuple()
     
     class Meta:
         ordering = ['face','major_row','major_col']

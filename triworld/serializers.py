@@ -5,6 +5,14 @@ import json
 from . import models
 
 
+class JSONTextField(serializers.Field):
+    def to_internal_value(self, obj):
+        return json.dumps(obj)
+
+    def to_representation(self, data):
+        return json.loads(data) if data else None
+
+
 class WorldSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.World
@@ -19,10 +27,7 @@ class BriefFaceSerializer(serializers.ModelSerializer):
 
 class FaceSerializer(BriefFaceSerializer):
     world_id = serializers.SerializerMethodField()
-    points_down = serializers.SerializerMethodField()
     major_dim = serializers.SerializerMethodField()
-    map = serializers.SerializerMethodField()
-    neighbor_ids = serializers.SerializerMethodField()
     
     class Meta(BriefFaceSerializer.Meta):
         fields = BriefFaceSerializer.Meta.fields + ('world_id', 'points_down', 'major_dim', 'neighbor_ids', 'map')
@@ -30,19 +35,8 @@ class FaceSerializer(BriefFaceSerializer):
     def get_world_id(self,obj):
         return obj.world.id
         
-    def get_points_down(self,obj):
-        return obj.faceext.points_down
-        
     def get_major_dim(self,obj):
         return obj.world.major_dim
-        
-    def get_neighbor_ids(self,obj):
-        return json.loads(obj.faceext.neighbor_ids)
-        
-    def get_map(self,obj):
-        f = obj.faceext.refresh()
-        f.save()
-        return json.loads(obj.faceext.map)
 
 
 class MajorTriSerializer(serializers.ModelSerializer):

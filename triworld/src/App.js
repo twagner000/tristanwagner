@@ -33,19 +33,9 @@ class App extends React.Component {
 										<Button as={Link} to="/" disabled><Icon><i className="fas fa-gem"></i></Icon></Button>
 									</Button.Group>
 								</Level.Item>
-								
-								<Level.Item>
-									<Button.Group hasAddons>
-										<Button static><Icon><i className="fas fa-ring"></i></Icon></Button>
-										<Button as={Link} to="/w/12/map/f/0-0" className="button">0</Button>
-										<Button as={Link} to="/w/12/map/f/1-0" className="button">1</Button>
-										<Button as={Link} to="/w/12/map/f/2-0" className="button">2</Button>
-										<Button as={Link} to="/w/12/map/f/3-0" className="button">3</Button>
-									</Button.Group>
-								</Level.Item>
 							</Level>
 							<Switch>
-								<Route exact path="/w/:world/map/f/:ring-:index" component={MapFace} />
+								<Route exact path="/w/:world_id/map/f/:face_id" component={MapFace} />
 								<Route component={Home} />
 							</Switch>
 						</BrowserRouter>

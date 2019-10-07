@@ -1,10 +1,13 @@
 import React from 'react';
-import {Content} from 'rbx';
-import MapFace from "./MapFace";
+import {Link} from 'react-router-dom';
+import {Content, Button} from 'rbx';
 
 const Home = () => {
 	return (
-		<p>Hello.</p>
+		<Content>
+			<p>Hello.</p>
+			<p><Button as={Link} to="/w/12/map/f/206">Map</Button></p>
+		</Content>
 	)
 }
 
