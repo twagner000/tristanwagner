@@ -5,14 +5,6 @@ import json
 from . import models
 
 
-class JSONTextField(serializers.Field):
-    def to_internal_value(self, obj):
-        return json.dumps(obj)
-
-    def to_representation(self, data):
-        return json.loads(data) if data else None
-
-
 class WorldSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.World
@@ -28,6 +20,7 @@ class BriefFaceSerializer(serializers.ModelSerializer):
 class FaceSerializer(BriefFaceSerializer):
     world_id = serializers.SerializerMethodField()
     major_dim = serializers.SerializerMethodField()
+    map = serializers.SerializerMethodField()
     
     class Meta(BriefFaceSerializer.Meta):
         fields = BriefFaceSerializer.Meta.fields + ('world_id', 'points_down', 'major_dim', 'neighbor_ids', 'map')
@@ -37,12 +30,22 @@ class FaceSerializer(BriefFaceSerializer):
         
     def get_major_dim(self,obj):
         return obj.world.major_dim
+        
+    def get_map(self,obj):
+        map = obj.map()
+        #do this in serializer so that can use MajorTriSerializer to generate stored JSON
+        if not map or True:
+            map = obj.generate_map()
+            map = [MajorTriSerializer(row, many=True).data for row in map]
+            obj._map = json.dumps(map)
+            obj.save()
+        return map
 
 
 class MajorTriSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MajorTri
-        fields = models.MajorTri.serializer_fields
+        fields = ('id', 'face', 'major_row', 'major_col', 'sea', 'get_r2_left', 'get_r2_right')
 
 
 """class GamePlayerSerializer(BriefGameSerializer):

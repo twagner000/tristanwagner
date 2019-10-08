@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F
 import json
 
 ADJ_RING = {0:0, 1:2, 2:1, 3:3}
@@ -6,7 +7,7 @@ ADJ_RING = {0:0, 1:2, 2:1, 3:3}
 class World(models.Model):
     #dimensions should be multiples of 3 for evenly distributed start locations
     major_dim = models.PositiveSmallIntegerField(default=6, help_text="Number of major triangles per face edge.")
-    minor_dim = models.PositiveSmallIntegerField(default=6, help_text="Number of minor triangles per major triangle edge.")
+    minor_dim = models.PositiveSmallIntegerField(default=9, help_text="Number of minor triangles per major triangle edge.")
     date_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     
     class Meta:
@@ -42,12 +43,13 @@ class Face(models.Model):
         return self.face_ring%2 > 0
         
     def neighbors(self):
-        if not self._neigh_top or not self._neigh_left or not self._neigh_right:
+        if not self._neigh_top or not self._neigh_left or not self._neigh_right or True:
+            print("updating neighbors")
             r = self.face_ring
             i = self.face_index
             self._neigh_top = Face.objects.get(world=self.world, face_ring=r+1-2*(r%2), face_index=i)
             self._neigh_left = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=(i+1-2*(r%2))%5)
-            self._neigh_right = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=(i-1+2*(r%2))%5)
+            self._neigh_right = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=i if r%3 else (i-1+2*(r%2))%5)
             self.save()
         return {'top':self._neigh_top, 'left':self._neigh_left, 'right':self._neigh_right}
             
@@ -55,26 +57,52 @@ class Face(models.Model):
         return dict((k,v.pk) for k,v in self.neighbors().items())
         
     def map(self):
-        if not self._map:
-            n = self.world.major_dim
-            tris = dict((k,v.majortri_set) for k,v in self.neighbors().items())
-            tris['center'] = self.majortri_set
+        return None if not self._map else json.loads(self._map)
+        
+    def generate_map(self):
+        print("generating map for {}".format(str(self)))
+        n = self.world.major_dim
+        tris = dict((k,v.majortri_set) for k,v in self.neighbors().items())
+        tris['center'] = self.majortri_set
+        if self.face_ring in (0,3): #polar
+            tris['left'] = tris['left'].annotate(r2=F('major_col')/2, c2=2*F('major_row') + F('major_col')%2).order_by('r2','c2')
+            tris['right'] = tris['right'].annotate(r2=F('major_row')+(F('major_col')+1)/2, c2=F('major_col')).order_by('r2','c2')
+        else:
+            tris['left'] = tris['left'].annotate(r2=F('major_row'), c2=F('major_col')).reverse()
+            tris['right'] = tris['right'].annotate(r2=F('major_row'), c2=F('major_col')).reverse()
             
-            map = []
-            reverse_if_points_up = lambda x: x if self.points_down() else reversed(x)
-            for ri in reverse_if_points_up(range(-n//3,n)):
-                if ri<0:
-                    row = list(reversed(tris['top'].filter(major_row=-1-ri)))
-                else:
-                    row = list(reversed(tris['left'].filter(major_row=n-1-ri, major_col__lt=n*2//3)))
+        if self.points_down():
+            tris['top'] = tris['top'].reverse()
+        else:
+            tris['center'] = tris['center'].reverse()
+            tris['left'] = tris['left'].reverse()
+            tris['right'] = tris['right'].reverse()
+        
+        map = []
+        reverse_if_points_up = lambda x: x if self.points_down() else reversed(x)
+        for ri in reverse_if_points_up(range(-n//3,n)):
+            if ri<0:
+                row = list(tris['top'].filter(major_row=-1-ri))
+            else:
+                if self.face_ring == 0:
+                    row = list(tris['right'].filter(r2=ri, c2__lt=n*2//3))
                     row += list(tris['center'].filter(major_row=ri))
-                    row += list(reversed(tris['right'].filter(major_row=n-1-ri, major_col__gt=2*(ri-n//3))))
-                row = [tri.dict_for_static() for tri in reverse_if_points_up(row)]
-                map.append(row)
-                
-            self._map = json.dumps(map)
-            self.save()
-        return json.loads(self._map)
+                    row += list(tris['left'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
+                elif self.face_ring == 1:
+                    row = list(tris['left'].filter(r2=n-1-ri, c2__lt=n*2//3))
+                    row += list(tris['center'].filter(major_row=ri))
+                    row += list(tris['right'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
+                elif self.face_ring == 2:
+                    row = list(tris['right'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
+                    row += list(tris['center'].filter(major_row=ri))
+                    row += list(tris['left'].filter(r2=n-1-ri, c2__lt=n*2//3))
+                elif self.face_ring == 3:
+                    row = list(tris['left'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
+                    row += list(tris['center'].filter(major_row=ri))
+                    row += list(tris['right'].filter(r2=ri, c2__lt=n*2//3))
+            map.append(row)
+        
+        return map
         
 
 class MajorTri(models.Model):
@@ -82,9 +110,6 @@ class MajorTri(models.Model):
     major_row = models.PositiveSmallIntegerField()
     major_col = models.PositiveSmallIntegerField()
     sea = models.BooleanField(default=True)
-    
-    serializer_fields = ('id', 'major_row', 'major_col', 'sea')
-    serializer_method_fields = tuple()
     
     class Meta:
         ordering = ['face','major_row','major_col']
@@ -96,13 +121,13 @@ class MajorTri(models.Model):
     
     def __str__(self):
         return '{} mj({},{})'.format(self.face, self.major_row, self.major_col)
-    
-    def points_down(self):
-        return self.face.face_ring%2 != self.major_col%2
         
-    def dict_for_static(self):
-        return dict((k, getattr(self,k)() if k in self.serializer_method_fields else getattr(self,k)) for k in self.serializer_fields)
-    
+    def get_r2_left(self):
+        return self.major_col//2
+        
+    def get_r2_right(self):
+        return self.major_row + (self.major_col+1)//2
+
 
 class MinorTri(models.Model):
     major_tri = models.ForeignKey('MajorTri', on_delete=models.CASCADE)

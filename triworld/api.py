@@ -47,10 +47,7 @@ class WorldViewSet(NestedViewSetMixin,
                             sea=sea,
                             ))
         models.MajorTri.objects.bulk_create(mjtri)
-        
-        #create FaceExt object for each Face
-        models.FaceExt.objects.bulk_create([models.FaceExt(face=f).refresh() for f in new_world.face_set.all()])
-        
+                
         return Response(serializers.WorldSerializer(new_world).data)
         
         

@@ -106,18 +106,16 @@ class MapFace extends React.Component {
 					</Column>
 					<Column>
 						<Content>
+							<h5>Face</h5>
+							<table className="table">
+								<tbody>
+									<tr><th>ID</th><td>{this.props.map.id}</td></tr>
+									<tr><th>Ring</th><td>{this.props.map.face_ring}</td></tr>
+									<tr><th>Index</th><td>{this.props.map.face_index}</td></tr>
+								</tbody>
+							</table>
 							<h5>Selected MajorTri</h5>
-							{this.state.tri_selected ? (
-								<table className="table">
-									<tbody>
-										<tr><th>ID</th><td>{this.state.tri_selected.id}</td></tr>
-										<tr><th>Row</th><td>{this.state.tri_selected.major_row}</td></tr>
-										<tr><th>Col</th><td>{this.state.tri_selected.major_col}</td></tr>
-										<tr><th>Sea</th><td>{this.state.tri_selected.sea.toString()}</td></tr>
-										<tr><th>Fields</th><td>{Object.keys(this.state.tri_selected).join(', ')}</td></tr>
-									</tbody>
-								</table>
-							) : ""}
+							<p>{JSON.stringify(this.state.tri_selected).replace(/,"/g,', "')}</p>
 						</Content>
 					</Column>
 				</Column.Group>
