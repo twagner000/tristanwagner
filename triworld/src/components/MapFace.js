@@ -52,7 +52,6 @@ class MapFace extends React.Component {
 				this.props.showFace(face_id);
 			} else if (!this.props.isFetchingFace) {
 				this.props.fetchFace(this.props.match.params.world_id,face_id);
-				console.log('fetching face');
 			}
 		}
 	}
@@ -141,13 +140,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-        fetchFace: (world_id,id) => {
-			dispatch(mapface.startFaceRequest());
-            dispatch(mapface.fetchFace(world_id,id));
-        },
-		showFace: (id) => {
-			dispatch(mapface.showFace(id));
-		},
+        fetchFace: (world_id,id) => dispatch(mapface.fetchFace(world_id,id)),
+		showFace: (id) => dispatch(mapface.showFace(id)),
     }
 }
 
