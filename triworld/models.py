@@ -43,8 +43,7 @@ class Face(models.Model):
         return self.face_ring%2 > 0
         
     def neighbors(self):
-        if not self._neigh_top or not self._neigh_left or not self._neigh_right or True:
-            print("updating neighbors")
+        if not self._neigh_top or not self._neigh_left or not self._neigh_right:
             r = self.face_ring
             i = self.face_index
             self._neigh_top = Face.objects.get(world=self.world, face_ring=r+1-2*(r%2), face_index=i)
@@ -60,7 +59,6 @@ class Face(models.Model):
         return None if not self._map else json.loads(self._map)
         
     def generate_map(self):
-        print("generating map for {}".format(str(self)))
         n = self.world.major_dim
         tris = dict((k,v.majortri_set) for k,v in self.neighbors().items())
         tris['center'] = self.majortri_set

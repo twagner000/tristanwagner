@@ -34,7 +34,7 @@ class FaceSerializer(BriefFaceSerializer):
     def get_map(self,obj):
         map = obj.map()
         #do this in serializer so that can use MajorTriSerializer to generate stored JSON
-        if not map or True:
+        if not map:
             map = obj.generate_map()
             map = [MajorTriSerializer(row, many=True).data for row in map]
             obj._map = json.dumps(map)
