@@ -1,0 +1,3 @@
+export const FETCH_FACE_REQUEST = "FETCH_FACE_REQUEST";
+export const FETCH_FACE_SUCCESS = "FETCH_FACE_SUCCESS";
+export const SHOW_FACE = "SHOW_FACE";

@@ -1,25 +1,28 @@
+import { SHOW_FACE, FETCH_FACE_REQUEST, FETCH_FACE_SUCCESS } from "../constants/action-types";
+
 const initialState = {
-	map: null,
-	isFetchingMap: false,
+	isFetchingFace: false,
+	activeFace: null,
+	faces: {},
 };
 
 
 export default function mapface(state=initialState, action) {
 	let newState = Object.assign({},state);
 	switch (action.type) {
-		
-		case 'FETCH_GAMES':
-			newState.gameList = action.gameList;
-			newState.gameListLoaded = true;
+		case SHOW_FACE:
+			newState.activeFace = state.faces[action.id];
 			return newState;
 			
-		case 'FETCH_MAPFACE_REQUEST':
-			newState.isFetchingMap = true;
+		case FETCH_FACE_REQUEST:
+			newState.isFetchingFace = true;
 			return newState;
 			
-		case 'FETCH_MAPFACE_SUCCESS':
-			newState.map = action.map;
-			newState.isFetchingMap = false;
+		case FETCH_FACE_SUCCESS:
+			newState.faces = Object.assign({}, state.faces);
+			newState.faces[action.face.id] = action.face;
+			newState.activeFace = action.face;
+			newState.isFetchingFace = false;
 			return newState;
 		
 		default:

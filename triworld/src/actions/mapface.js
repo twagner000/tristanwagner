@@ -1,30 +1,22 @@
-export const fetchGames = () => {
-    return dispatch => {
-        let headers = {"Content-Type": "application/json"};
-        return fetch("/bg_rec/api/game/", {headers, })
-            .then(res => res.json())
-            .then(gameList => {
-                return dispatch({
-                    type: 'FETCH_GAMES',
-                    gameList
-                })
-            })
-    }
+import { SHOW_FACE, FETCH_FACE_REQUEST, FETCH_FACE_SUCCESS } from "../constants/action-types";
+
+export const startFaceRequest = () => {
+	return {type: FETCH_FACE_REQUEST};
 }
 
-export const startMapFaceRefresh = () => {
-	return {type: 'FETCH_MAPFACE_REQUEST'};
+export const showFace = (id) => {
+	return {type: SHOW_FACE, id};
 }
 
-export const fetchMapFace = (world_id, face_id) => {
+export const fetchFace = (world_id, id) => {
     return dispatch => {
         let headers = {"Content-Type": "application/json"};
-        return fetch(`/triworld/api/world/${world_id}/face/${face_id}`, {headers, })
+        return fetch(`/triworld/api/world/${world_id}/face/${id}`, {headers, })
             .then(res => res.json())
-            .then(map => {
+            .then(face => {
                 return dispatch({
-                    type: 'FETCH_MAPFACE_SUCCESS',
-                    map
+                    type: FETCH_FACE_SUCCESS,
+                    face
                 })
             })
     }

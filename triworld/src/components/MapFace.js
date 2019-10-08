@@ -46,8 +46,14 @@ class MapFace extends React.Component {
 	}
 	
 	checkForUpdate = () => {
-		if (!this.props.isFetchingMap && (this.props.map == null || parseInt(this.props.match.params.world_id) !== this.props.map.world_id || parseInt(this.props.match.params.face_id) !== this.props.map.id)) {
-			this.props.loadMapFace(this.props.match.params.world_id,this.props.match.params.face_id);
+		const face_id = parseInt(this.props.match.params.face_id);
+		if (face_id !== (this.props.activeFace && this.props.activeFace.id)) {			
+			if (face_id in this.props.faces) {
+				this.props.showFace(face_id);
+			} else if (!this.props.isFetchingFace) {
+				this.props.fetchFace(this.props.match.params.world_id,face_id);
+				console.log('fetching face');
+			}
 		}
 	}
 		
@@ -66,18 +72,19 @@ class MapFace extends React.Component {
 	}
 	
 	render() {
-		const map = this.props.map;
-		if (!map) {
+		const face = this.props.activeFace;
+		//console.log(`rendering face ${map.id}`);
+		if (!face) {
 			return "";
 		} else {
 			const box_width = 400;
 			const v_margin = 30;
 			const h_margin = 10;
-			const n = this.props.map.major_dim;
-			const fpd = this.props.map.points_down; //face points down
+			const n = face.major_dim;
+			const fpd = face.points_down; //face points down
 			const b = (box_width-2*h_margin)/(8/3*n)*2; //scale triangle size
 			const h = b*Math.sqrt(3)/2;
-			const rows = this.props.map.map;
+			const rows = face.map;
 			for (let ri=0; ri<rows.length; ri++) {
 				for (let ci=0; ci<rows[ri].length; ci++) {
 					rows[ri][ci].tpd = (ci+parseInt(2*ri/rows.length))%2>0;
@@ -97,9 +104,9 @@ class MapFace extends React.Component {
 									<MajorTri tri={c} base={b} height={h} handleClick={this.handleClick} />
 										</g>
 									))}
-									{((ri===0 && fpd) || (ri===rows.length-1 && !fpd)) ? <g transform={"translate("+(b/2*(r.length/2+.5))+" "+(fpd?0:h)+")"}><AdjFaceLink direction="top" world_id={this.props.match.params.world_id} face_id={this.props.map.neighbor_ids.top} /></g> : "" }
-									{((ri===rows.length*3/4 && fpd) || (ri===rows.length/4 && !fpd)) ? <g transform={"translate("+(fpd ? 0 : b*r.length/2)+" 0)"}><AdjFaceLink direction="left" world_id={this.props.match.params.world_id} face_id={this.props.map.neighbor_ids.left} /></g> : "" }
-									{((ri===rows.length*3/4 && fpd) || (ri===rows.length/4 && !fpd)) ? <g transform={"translate("+(!fpd ? b/2 : b*(r.length+1)/2)+" 0)"}><AdjFaceLink direction="right" world_id={this.props.match.params.world_id} face_id={this.props.map.neighbor_ids.right} /></g> : "" }
+									{((ri===0 && fpd) || (ri===rows.length-1 && !fpd)) ? <g transform={"translate("+(b/2*(r.length/2+.5))+" "+(fpd?0:h)+")"}><AdjFaceLink direction="top" world_id={this.props.match.params.world_id} face_id={face.neighbor_ids.top} /></g> : "" }
+									{((ri===rows.length*3/4 && fpd) || (ri===rows.length/4 && !fpd)) ? <g transform={"translate("+(fpd ? 0 : b*r.length/2)+" 0)"}><AdjFaceLink direction="left" world_id={this.props.match.params.world_id} face_id={face.neighbor_ids.left} /></g> : "" }
+									{((ri===rows.length*3/4 && fpd) || (ri===rows.length/4 && !fpd)) ? <g transform={"translate("+(!fpd ? b/2 : b*(r.length+1)/2)+" 0)"}><AdjFaceLink direction="right" world_id={this.props.match.params.world_id} face_id={face.neighbor_ids.right} /></g> : "" }
 								</g>
 							))}
 						</svg>
@@ -109,9 +116,9 @@ class MapFace extends React.Component {
 							<h5>Face</h5>
 							<table className="table">
 								<tbody>
-									<tr><th>ID</th><td>{this.props.map.id}</td></tr>
-									<tr><th>Ring</th><td>{this.props.map.face_ring}</td></tr>
-									<tr><th>Index</th><td>{this.props.map.face_index}</td></tr>
+									<tr><th>ID</th><td>{face.id}</td></tr>
+									<tr><th>Ring</th><td>{face.face_ring}</td></tr>
+									<tr><th>Index</th><td>{face.face_index}</td></tr>
 								</tbody>
 							</table>
 							<h5>Selected MajorTri</h5>
@@ -126,17 +133,21 @@ class MapFace extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		map: state.mapface.map,
-		isFetchingMap: state.mapface.isFetchingMap,
+		activeFace: state.mapface.activeFace,
+		faces: state.mapface.faces,
+		isFetchingFace: state.mapface.isFetchingFace,
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-        loadMapFace: (world_id,face_id) => {
-			dispatch(mapface.startMapFaceRefresh());
-            dispatch(mapface.fetchMapFace(world_id,face_id));
+        fetchFace: (world_id,id) => {
+			dispatch(mapface.startFaceRequest());
+            dispatch(mapface.fetchFace(world_id,id));
         },
+		showFace: (id) => {
+			dispatch(mapface.showFace(id));
+		},
     }
 }
 
