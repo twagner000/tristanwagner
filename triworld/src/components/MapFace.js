@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import {Content, Icon, Media, Level, Button, Column} from 'rbx';
 import {connect} from 'react-redux';
 
-import {mapface} from "../actions";
+import {map} from "../actions";
 
 class AdjFaceLink extends React.Component {
 	render() {
@@ -15,7 +15,7 @@ class AdjFaceLink extends React.Component {
 		
 		const r = 10;
 		return (
-			<Link to={"/w/"+this.props.world_id+"/map/f/"+this.props.face_id}>
+			<Link to={`/map/f/${this.props.face_id}`}>
 				<circle r={r} className="adj-face-circle" />
 			</Link>
 		);
@@ -26,12 +26,13 @@ class MajorTri extends React.Component {
 	
 	render() {
 		const tri = this.props.tri;
-		const b = this.props.base;
-		const h = this.props.height;
+		const b = this.props.base*.92;
+		const h = this.props.height*.95;
+		//<text x={b/2} y={h/2} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.major_row},{tri.major_col}</text>
 		return (
 			<g onClick={this.props.handleClick(this)}>
 				<path key={tri.id} d={"M 0 "+(tri.tpd ? 0 : h)+" h "+b+" l "+(-b/2)+" "+(tri.tpd ? h : -h)+" z"} className={"tri"+(tri.sea ? " tri-sea" : " tri-land")} />
-				<text x={b/2} y={h/2} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.major_row},{tri.major_col}</text>
+				
 			</g>
 		);
 	}
@@ -47,12 +48,8 @@ class MapFace extends React.Component {
 	
 	checkForUpdate = () => {
 		const face_id = parseInt(this.props.match.params.face_id);
-		if (face_id !== (this.props.activeFace && this.props.activeFace.id)) {			
-			if (face_id in this.props.faces) {
-				this.props.showFace(face_id);
-			} else if (!this.props.isFetchingFace) {
-				this.props.fetchFace(this.props.match.params.world_id,face_id);
-			}
+		if (face_id !== (this.props.activeFace && this.props.activeFace.id) && !this.props.isFetchingFace) {
+			this.props.fetchFace(face_id);
 		}
 	}
 		
@@ -72,7 +69,6 @@ class MapFace extends React.Component {
 	
 	render() {
 		const face = this.props.activeFace;
-		//console.log(`rendering face ${map.id}`);
 		if (!face) {
 			return "";
 		} else {
@@ -132,16 +128,15 @@ class MapFace extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		activeFace: state.mapface.activeFace,
-		faces: state.mapface.faces,
-		isFetchingFace: state.mapface.isFetchingFace,
+		activeFace: state.map.activeFace,
+		faces: state.map.faces,
+		isFetchingFace: state.map.isFetchingFace,
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-        fetchFace: (world_id,id) => dispatch(mapface.fetchFace(world_id,id)),
-		showFace: (id) => dispatch(mapface.showFace(id)),
+        fetchFace: (id) => dispatch(map.fetchFace(id)),
     }
 }
 

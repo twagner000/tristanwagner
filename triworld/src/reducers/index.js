@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
-import mapface from "./mapface";
+import map from "./map";
 
 
 const triWorldApp = combineReducers({
-  mapface,
+  map,
 })
 
 export default triWorldApp;

@@ -8,6 +8,7 @@ import thunk from "redux-thunk";
 import triWorldApp from "./reducers";
 
 //import Search from "./components/Search";
+import TriWorldNav from "./components/TriWorldNav";
 import Home from "./components/Home";
 import MapFace from "./components/MapFace";
 
@@ -24,18 +25,9 @@ class App extends React.Component {
 				<Container>
 					<Provider store={store}>
 						<BrowserRouter basename={BASE_URL}>
-							<Level>
-								<Level.Item><Button as={Link} to="/"><Icon><i className="fas fa-hiking"></i></Icon><span>TriWorld</span></Button></Level.Item>
-								<Level.Item>
-									<Button.Group hasAddons>
-										<Button as={Link} to="/" state="active"><Icon><i className="fas fa-search-minus"></i></Icon></Button>
-										<Button as={Link} to="/" disabled><Icon><i className="fas fa-search-plus"></i></Icon></Button>
-										<Button as={Link} to="/" disabled><Icon><i className="fas fa-gem"></i></Icon></Button>
-									</Button.Group>
-								</Level.Item>
-							</Level>
+							<TriWorldNav />
 							<Switch>
-								<Route exact path="/w/:world_id/map/f/:face_id" component={MapFace} />
+								<Route exact path="/map/f/:face_id" component={MapFace} />
 								<Route component={Home} />
 							</Switch>
 						</BrowserRouter>

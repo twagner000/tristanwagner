@@ -1,3 +1,3 @@
-import * as mapface from "./mapface";
+import * as map from "./map";
 
-export {mapface}
+export {map}

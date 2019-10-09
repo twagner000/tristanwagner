@@ -51,7 +51,7 @@ class WorldViewSet(NestedViewSetMixin,
         return Response(serializers.WorldSerializer(new_world).data)
         
         
-class FaceViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class FaceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = models.Face.objects.all()
     
@@ -61,7 +61,7 @@ class FaceViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
         else:
             return serializers.BriefFaceSerializer
             
-            
+"""            
 class FaceView(generics.RetrieveAPIView):
     permission_classes = [permissions.AllowAny]
     queryset = models.Face.objects.all()
@@ -76,3 +76,4 @@ class FaceView(generics.RetrieveAPIView):
         obj = get_object_or_404(queryset, **filter)
         self.check_object_permissions(self.request, obj)
         return obj
+"""

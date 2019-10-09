@@ -1,6 +1,7 @@
 .tri { stroke-width: 1; stroke: #eee; fill: none; }
-.tri-land { fill: #ad8; }
-.tri-mountain { fill: #bb9; }
-.tri-sea { fill: #bdf; stroke-dasharray: 3,3; }
+.tri:hover { stroke-width: 2; stroke: #a33; stroke-dasharray: none;}
+.tri-land { stroke: none; fill: #ad8; }
+.tri-mountain { stroke: none; fill: #bb9; }
+.tri-sea { stroke: none; fill: #bdf; } /*stroke-dasharray: 3,3; */
 .tri-text { font-size: .5rem; fill: #999; }
 .adj-face-circle { stroke-width: 2; stroke: #aaa; fill: #eee; }

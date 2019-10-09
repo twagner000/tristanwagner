@@ -1,3 +1,4 @@
+"""
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 import json
@@ -15,3 +16,4 @@ class FaceMapView(PermissionRequiredMixin, TemplateView):
         context['mjtri'] = models.MajorTri.objects.filter(world=8, face_ring=1, face_index=0)
         
         return context
+"""

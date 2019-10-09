@@ -16,6 +16,9 @@ class World(models.Model):
     def __str__(self):
         return 'w{}'.format(self.pk)
         
+    def home_face_id(self):
+        return self.face_set.get(face_ring=1, face_index=0).id
+        
         
 class Face(models.Model):
     world = models.ForeignKey('World', on_delete=models.CASCADE)
@@ -119,12 +122,6 @@ class MajorTri(models.Model):
     
     def __str__(self):
         return '{} mj({},{})'.format(self.face, self.major_row, self.major_col)
-        
-    def get_r2_left(self):
-        return self.major_col//2
-        
-    def get_r2_right(self):
-        return self.major_row + (self.major_col+1)//2
 
 
 class MinorTri(models.Model):

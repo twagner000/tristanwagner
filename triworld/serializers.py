@@ -8,7 +8,7 @@ from . import models
 class WorldSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.World
-        fields = ('id', 'major_dim', 'minor_dim', 'date_created')
+        fields = ('id', 'major_dim', 'minor_dim', 'date_created', 'home_face_id')
 
 
 class BriefFaceSerializer(serializers.ModelSerializer):
@@ -45,7 +45,7 @@ class FaceSerializer(BriefFaceSerializer):
 class MajorTriSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MajorTri
-        fields = ('id', 'face', 'major_row', 'major_col', 'sea', 'get_r2_left', 'get_r2_right')
+        fields = ('id', 'face', 'major_row', 'major_col', 'sea')
 
 
 """class GamePlayerSerializer(BriefGameSerializer):
