@@ -10,7 +10,7 @@ class FaceAdmin(admin.ModelAdmin):
     list_filter = ('world',)
     
 class MajorTriAdmin(admin.ModelAdmin):
-    list_display = ('face','major_row','major_col','sea')
+    list_display = ('face','i','sea')
     list_filter = ('face',)
 
 

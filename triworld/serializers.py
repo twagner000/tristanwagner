@@ -9,12 +9,22 @@ class WorldSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.World
         fields = ('id', 'major_dim', 'minor_dim', 'date_created', 'home_face_id')
+        
+    def validate_major_dim(self,value):
+        if not value%3==0 or value <= 0:
+            raise serializers.ValidationError("Major dimension must be a postive multiple of 3.")
+        return value
+        
+    def validate_minor_dim(self,value):
+        if not value%3==0 or value <= 0:
+            raise serializers.ValidationError("Minor dimension must be a postive multiple of 3.")
+        return value
 
 
 class BriefFaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Face
-        fields = ('id', 'face_ring', 'face_index')
+        fields = ('id', 'ring', 'ring_i')
 
 
 class FaceSerializer(BriefFaceSerializer):
@@ -22,7 +32,7 @@ class FaceSerializer(BriefFaceSerializer):
     major_dim = serializers.SerializerMethodField()
     
     class Meta(BriefFaceSerializer.Meta):
-        fields = BriefFaceSerializer.Meta.fields + ('world_id', 'points_down', 'major_dim', 'neighbor_ids', 'majortri_ids')
+        fields = BriefFaceSerializer.Meta.fields + ('world_id', 'fpd', 'major_dim', 'neighbor_ids', 'majortri_ids')
         
     def get_world_id(self,obj):
         return obj.world.id
@@ -34,8 +44,8 @@ class FaceSerializer(BriefFaceSerializer):
 class MajorTriSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MajorTri
-        #fields reserved for js: i, ri, ci, rn, tpd
-        fields = ('id', 'face', 'major_row', 'major_col', 'sea', 'neighbor_ids')
+        #fields reserved for js: ri, ci, rn, tpd
+        fields = ('id', 'face', 'i', 'sea', 'neighbor_ids')
 
 
 """class GamePlayerSerializer(BriefGameSerializer):

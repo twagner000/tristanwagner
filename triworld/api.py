@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, permissions, generics
+from rest_framework import viewsets, mixins, permissions, generics, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
@@ -16,40 +16,41 @@ class WorldViewSet(NestedViewSetMixin,
     serializer_class = serializers.WorldSerializer
     
     def create(self, request, *args, **kwargs):
-        new_world = models.World()
-        new_world.save()
-        n = new_world.major_dim
-        
-        mjtri = []
-        for face_ring in range(4):
-            for face_index in range(5):
-                face = models.Face(world=new_world, face_ring=face_ring, face_index=face_index)
-                face.save()
-                for mjrow in range(n):
-                    for mjcol in range(2*n-1):
-                        if 2*mjrow+mjcol>2*n-2:
-                            continue
-                            
+        serializer = serializers.WorldSerializer(data=request.data)
+        if serializer.is_valid():
+            world = models.World(major_dim=serializer.validated_data['major_dim'], minor_dim=serializer.validated_data['minor_dim'])
+            world.save()
+            n = world.major_dim
+            
+            mjtri = []
+            for ring in range(4):
+                for ring_i in range(5):
+                    face = models.Face(world=world, ring=ring, ring_i=ring_i)
+                    face.save()
+                    fpd = face.fpd()
+                    for mji in range(n*n):
                         sea = True
-                        
+                            
                         #polar caps
-                        if face_ring in (0,3) and mjrow>=n-(n//3):
+                        if (ring==0 and mji<n*n//9) or (ring==3 and mji>=n*n*8//9):
                             sea = False
                         
                         #home continent
-                        if face_ring==1 and face_index==0:
-                            if 2*mjrow+mjcol>2*(n//3)-2 and mjcol<2*n-2*(n//3) and mjrow<n-(n//3):
+                        if ring==1 and ring_i==0:
+                            ri,ci = models.MajorTri.static_rci(mji,n,fpd)
+                            if 2*ri+ci>2*(n//3)-2 and ci<2*n-2*(n//3) and ri<n-(n//3):
                                 sea = False
                         
                         mjtri.append(models.MajorTri(
                             face=face,
-                            major_row=mjrow,
-                            major_col=mjcol,
+                            i=mji,
                             sea=sea,
                             ))
-        models.MajorTri.objects.bulk_create(mjtri)
-                
-        return Response(serializers.WorldSerializer(new_world).data)
+            models.MajorTri.objects.bulk_create(mjtri)
+                    
+            return Response(serializers.WorldSerializer(world).data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         
 class FaceViewSet(viewsets.ReadOnlyModelViewSet):

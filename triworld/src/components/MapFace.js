@@ -20,69 +20,78 @@ const MajorTri = (props) => {
 	const b = props.base;
 	const h = props.height;
 	//<text x={b/2} y={h/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.id}</text>
-	//<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.i}</text>
 	return (
 		<g onClick={props.handleClick(tri.id)} className="tri-g">
 			<path d={`M 0 ${tri.tpd?0:h} h ${b} l ${-b/2} ${tri.tpd?h:-h} z`} className={"tri"+(tri.sea ? " tri-sea" : " tri-land")} />
+			<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.i}</text>
 		</g>
 	);
 }
 
 const FaceSection = (props) => {
 	const { n, fpd, b, h } = props.p;
+	
+	//cfpd means 'current face points down' VISUALLY (fpd and ring refer to the center face)
+	const cfpd = (props.section==="center") ? fpd : !fpd;
+	
 	const calc = {
 		"top_bot":{
-			origin:`translate(${b*n/6} ${fpd?h*n/3:h*n})`,
+			origin:`translate(${b*n/6} ${fpd?-h*n*2/3:h*n})`,
 			outline:`M 0 0 h ${b*n} l ${-b} ${fpd?-h*n/3:h*n/3} h ${-b*n*2/3} z`,},
 		"left":{
-			origin:`translate(${b*n/6} ${fpd?h*n/3:h*n})`,
+			origin:`translate(${-b*n/3} ${fpd?h*n/3:0})`,
 			outline:`M 0 0 l ${-b*n/6} ${fpd?h*n/3:-h*n/3} l ${b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${b*n/3} z`,},
 		"right":{
-			origin:`translate(${b*n*7/6} ${fpd?h*n/3:h*n})`,
+			origin:`translate(${b*n*2/3} ${fpd?h*n/3:0})`,
 			outline:`M 0 0 l ${b*n/6} ${fpd?h*n/3:-h*n/3} l ${-b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${-b*n/3} z`,},
 		"center":{
-			origin:`translate(${b*n/6} ${fpd?h*n/3:h*n})`,
-			outline:`M 0 0 h ${b*n} l ${-b*n/2} ${fpd?h*n:-h*n} z`,},};
+			origin:`translate(${b*n/6} ${fpd?h*n/3:0})`,
+			outline:`M 0 ${fpd?0:h*n} h ${b*n} l ${-b*n/2} ${fpd?h*n:-h*n} z`,},};
 	
-	for (let i=0; i<props.tris.length; i++) {
-		let tri = props.tris[i];
-		tri.i = i;
-		tri.ri = n-1-parseInt(Math.sqrt(n*n-i-1));
-		tri.ci = i-(n*n-Math.pow(n-tri.ri,2));
-		if ((props.ring===0 || props.ring===3) && props.section==="left") {
-			const new_ri = parseInt(tri.ci/2);
-			tri.ci = 2*tri.ri + tri.ci%2;
-			tri.ri = new_ri;
+	for (const tri of props.tris) {
+		//basic row and column indices, if face points up (pu) or down (pd) visually
+		const ripu = parseInt(Math.sqrt(tri.i));
+		const ripd = n-1-parseInt(Math.sqrt(n*n-1-tri.i));
+		const cipu = tri.i-ripu*ripu;
+		const cipd = tri.i-(n*n-(n-ripd)*(n-ripd));
+		
+		tri.ri = (cfpd) ? ripd : ripu;
+		tri.ci = (cfpd) ? cipd : cipu;
+		
+		//special rotations for polar side faces
+		if (props.ring===0 && props.section==="left") {
+			tri.ri = parseInt((tri.i-ripu*ripu)/2);
+			tri.ci = 2*n-2 - 2*ripu + cipu%2;
+		} else if (props.ring===0 && props.section==="right") {
+			tri.ri = parseInt(((ripu+1)*(ripu+1)-tri.i-1)/2)
+			tri.ci = cipu;
+		} else if (props.ring===3 && props.section==="left") {
+			tri.ri = n-1-parseInt((tri.i - (n*n - (n-ripd)*(n-ripd)))/2);
+			tri.ci = 2*ripd + (tri.i-(n*n-(n-ripd)*(n-ripd)))%2;
+		} else if (props.ring===3 && props.section==="right") {
+			tri.ri = n-1-parseInt((n*n - (n-1-ripd)*(n-1-ripd) -tri.i-1)/2)
+			tri.ci = cipd;
 		}
-		if ((props.ring===0 || props.ring===3) && props.section==="right") {
-			tri.ri = n-1-tri.ri-parseInt((tri.ci+1)/2);
-		}
-		tri.rn = 2*n-1-2*tri.ri;
+		
+		tri.rn = cfpd ? 2*n-1-2*tri.ri : tri.ri*2+1;
 		
 		//tpd means 'triangle points down'
-		tri.tpd = (props.section==="center") ? (fpd !== (tri.ci%2>0)): (fpd === (tri.ci%2>0));
+		tri.tpd = cfpd !== (tri.ci%2>0);
 	}
 	
 	//filter just the relevant triangles for this view
 	const tris = props.tris.filter((tri) => { switch (props.section) {
-		case "top_bot": return tri.i < n*n*5/9;
+		case "top_bot": return fpd ? tri.i>=n*n*4/9 : tri.i<n*n*5/9;
 		case "left": return tri.ci >= tri.rn - n*2/3;
 		case "right": return tri.ci < n*2/3;
 		default: return true;
 	}});
 	
-	const tri_pos = (tri) => { switch (props.section) {
-			case "top_bot": return `translate(${b*tri.ri/2+b*tri.ci/2} ${fpd?-h*(tri.ri+1):h*tri.ri})`;
-			case "left": return `translate(${b*(n-1-tri.ri+tri.ci-tri.rn)/2} ${fpd?h*(n-1-tri.ri):h*(tri.ri-n)})`;
-			case "right": return `translate(${b*(-n+tri.ri+tri.ci)/2} ${fpd?h*(n-1-tri.ri):h*(tri.ri-n)})`;
-			default: return `translate(${b*tri.ri/2+b*tri.ci/2} ${fpd?h*tri.ri:-h*(tri.ri+1)})`;
-		}};
-	
 	return (
 		<g transform={calc[props.section].origin} className="face">
-			<path d={calc[props.section].outline} className="face-outline"/>
+			<path d={`M 0 ${cfpd?0:h*n} h ${b*n} l ${-b*n/2} ${cfpd?h*n:-h*n} z`} className="face-outline"/>
 			{tris.map((tri) => (
-				<g key={tri.id} transform={tri_pos(tri)}>
+				<g key={tri.id} transform={`translate(${cfpd?b*tri.ri/2+b*tri.ci/2:b*(n-1-tri.ri)/2+b*tri.ci/2} ${h*tri.ri})`}>
 					<MajorTri tri={tri} base={b} height={h} handleClick={props.handleClick} />
 				</g>
 			))}
@@ -126,7 +135,7 @@ class MapFace extends React.Component {
 			const v_margin = 30;
 			const h_margin = 10;
 			const n = face.major_dim;
-			const fpd = face.points_down;
+			const fpd = face.fpd;
 			const b = (box_width-2*h_margin)/(8/3*n)*2; //scale triangle size
 			const h = b*Math.sqrt(3)/2;
 			
@@ -138,10 +147,10 @@ class MapFace extends React.Component {
 					<Column>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width={box_width} height={box_width}>
 							<g transform={`translate(${h_margin} ${v_margin})`}>
-								<FaceSection section="top_bot" ring={face.face_ring} tris={tris.top_bot} p={p} handleClick={this.handleClick} />
-								<FaceSection section="left" ring={face.face_ring} tris={tris.left} p={p} handleClick={this.handleClick} />
-								<FaceSection section="right" ring={face.face_ring} tris={tris.right} p={p} handleClick={this.handleClick} />
-								<FaceSection section="center" ring={face.face_ring} tris={tris.center} p={{n,fpd,b,h}} handleClick={this.handleClick} />
+								<FaceSection section="top_bot" ring={face.ring} tris={tris.top_bot} p={p} handleClick={this.handleClick} />
+								<FaceSection section="left" ring={face.ring} tris={tris.left} p={p} handleClick={this.handleClick} />
+								<FaceSection section="right" ring={face.ring} tris={tris.right} p={p} handleClick={this.handleClick} />
+								<FaceSection section="center" ring={face.ring} tris={tris.center} p={p} handleClick={this.handleClick} />
 								
 								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink direction="top" face_id={face.neighbor_ids.top_bot} /></g>
 								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="left" face_id={face.neighbor_ids.left} /></g>
@@ -155,8 +164,8 @@ class MapFace extends React.Component {
 							<table className="table">
 								<tbody>
 									<tr><th>ID</th><td>{face.id}</td></tr>
-									<tr><th>Ring</th><td>{face.face_ring}</td></tr>
-									<tr><th>Index</th><td>{face.face_index}</td></tr>
+									<tr><th>Ring</th><td>{face.ring}</td></tr>
+									<tr><th>Index</th><td>{face.ring_i}</td></tr>
 								</tbody>
 							</table>
 							<h5>Selected MajorTri</h5>

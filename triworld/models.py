@@ -6,8 +6,8 @@ ADJ_RING = {0:0, 1:2, 2:1, 3:3}
 
 class World(models.Model):
     #dimensions should be multiples of 3 for evenly distributed start locations
-    major_dim = models.PositiveSmallIntegerField(default=6, help_text="Number of major triangles per face edge.")
-    minor_dim = models.PositiveSmallIntegerField(default=9, help_text="Number of minor triangles per major triangle edge.")
+    major_dim = models.PositiveSmallIntegerField(help_text="Number of major triangles per face edge.")
+    minor_dim = models.PositiveSmallIntegerField(help_text="Number of minor triangles per major triangle edge.")
     date_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     
     class Meta:
@@ -17,32 +17,39 @@ class World(models.Model):
         return 'w{}'.format(self.pk)
         
     def home_face_id(self):
-        return self.face_set.get(face_ring=1, face_index=0).id
+        return self.face_set.get(ring=1, ring_i=0).id
         
         
 class Face(models.Model):
     world = models.ForeignKey('World', on_delete=models.CASCADE)
-    face_ring = models.PositiveSmallIntegerField()
-    face_index = models.PositiveSmallIntegerField()
+    ring = models.PositiveSmallIntegerField()
+    ring_i = models.PositiveSmallIntegerField()
     
     #cached fields
-    _neigh_top_bottom = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_top_set')
+    _neigh_top_bot = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_top_bot_set')
     _neigh_left = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_left_set')
     _neigh_right = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_right_set')
     
     class Meta:
-        ordering = ['world','face_ring','face_index']
-        unique_together = ['world','face_ring','face_index']
+        ordering = ['world','ring','ring_i']
+        unique_together = ['world','ring','ring_i']
         indexes = [
-            models.Index(fields=['world','face_ring','face_index']),
+            models.Index(fields=['world','ring','ring_i']),
             models.Index(fields=['world']),
         ]
     
     def __str__(self):
-        return '{} f({},{})'.format(self.world, self.face_ring, self.face_index)
+        return '{} f({},{})'.format(self.world, self.ring, self.ring_i)
+        
+    @staticmethod
+    def static_fpd(ring):
+        return ring%2>0
+        
+    def fpd(self): #face points down
+        return self.static_fpd(self.ring)
         
     def clear_cache(self):
-        self._neigh_top_bottom = None
+        self._neigh_top_bot = None
         self._neigh_left = None
         self._neigh_right = None
         self.save()
@@ -51,18 +58,15 @@ class Face(models.Model):
         for tri in self.majortri_set.all():
             tri.clear_cache()
         
-    def points_down(self):
-        return self.face_ring%2 > 0
-        
     def neighbors(self,include_self=False):
-        if not self._neigh_top_bottom or not self._neigh_left or not self._neigh_right:
-            r = self.face_ring
-            i = self.face_index
-            self._neigh_top_bottom = Face.objects.get(world=self.world, face_ring=r+1-2*(r%2), face_index=i)
-            self._neigh_left = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=i if r==2 else (i-1)%5)
-            self._neigh_right = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=i if r==1 else (i+1)%5)
+        if not self._neigh_top_bot or not self._neigh_left or not self._neigh_right:
+            r = self.ring
+            i = self.ring_i
+            self._neigh_top_bot = Face.objects.get(world=self.world, ring=r+1-2*(r%2), ring_i=i)
+            self._neigh_left = Face.objects.get(world=self.world, ring=ADJ_RING[r], ring_i=i if r==2 else (i-1)%5)
+            self._neigh_right = Face.objects.get(world=self.world, ring=ADJ_RING[r], ring_i=i if r==1 else (i+1)%5)
             self.save()
-        neighbors = {'top_bot':self._neigh_top_bottom, 'left':self._neigh_left, 'right':self._neigh_right}
+        neighbors = {'top_bot':self._neigh_top_bot, 'left':self._neigh_left, 'right':self._neigh_right}
         if include_self:
             neighbors['center'] = self
         return neighbors
@@ -71,43 +75,51 @@ class Face(models.Model):
         return dict((k,v.pk) for k,v in self.neighbors().items())
         
     def majortri_ids(self):
-        return dict((k,f.majortri_set.all().values('id', 'sea')) for k,f in self.neighbors(include_self=True).items())
+        return dict((k,f.majortri_set.all().values('id', 'i', 'sea')) for k,f in self.neighbors(include_self=True).items())
 
         
 
 class MajorTri(models.Model):
     face = models.ForeignKey('Face', on_delete=models.CASCADE)
-    major_row = models.PositiveSmallIntegerField()
-    major_col = models.PositiveSmallIntegerField()
+    i = models.PositiveSmallIntegerField() #index (in face)
     sea = models.BooleanField(default=True)
     
     #cached fields (neighbor names are accurate if current FACE points down)
-    _neigh_top_bottom = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_top_set')
+    _neigh_top_bot = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_top_bot_set')
     _neigh_left = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_left_set')
     _neigh_right = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_right_set')
     _map = models.TextField(blank=True)
 
     
     class Meta:
-        ordering = ['face','major_row','major_col']
-        unique_together = ['face','major_row','major_col']
+        ordering = ['face','i']
+        unique_together = ['face','i']
         indexes = [
-            models.Index(fields=['face','major_row','major_col']),
+            models.Index(fields=['face','i']),
             models.Index(fields=['face']),
         ]
     
     def __str__(self):
-        return '{} mj({},{})'.format(self.face, self.major_row, self.major_col)
+        return '{} mj({})'.format(self.face, self.i)
+        
+    @staticmethod
+    def static_rci(i, n, tpd):
+        ri = n-1-int((n*n-i-1)**0.5) if tpd else int((n*n-i-1)**0.5)
+        ci = i-n*n+(n-ri)**2
+        return ri,ci
+        
+    def rci(self): #row column index
+        return self.static_rci(self.i, self.face.major_dim, self.face.tpd())
         
     def clear_cache(self):
-        self._neigh_top_bottom = None
+        self._neigh_top_bot = None
         self._neigh_left = None
         self._neigh_right = None
         self._map = ''
         self.save()
         
     def neighbors(self):
-        if not self._neigh_top_bottom or not self._neigh_left or not self._neigh_right:
+        if not self._neigh_top_bot or not self._neigh_left or not self._neigh_right:
             n = self.face.world.major_dim
             r = self.major_row
             c = self.major_col
@@ -138,7 +150,7 @@ class MajorTri(models.Model):
                 #update model
                 setattr(self, '_neigh_{}'.format(dir), MajorTri.objects.get(face=nei_face, major_row=nei_r, major_col=nei_c))
             self.save()
-        return {'top_bot':self._neigh_top_bottom, 'left':self._neigh_left, 'right':self._neigh_right}
+        return {'top_bot':self._neigh_top_bot, 'left':self._neigh_left, 'right':self._neigh_right}
             
     def neighbor_ids(self):
         return dict((k,None if not v else v.pk) for k,v in self.neighbors().items())
@@ -146,18 +158,17 @@ class MajorTri(models.Model):
 
 class MinorTri(models.Model):
     major_tri = models.ForeignKey('MajorTri', on_delete=models.CASCADE)
-    minor_row = models.PositiveSmallIntegerField()
-    minor_col = models.PositiveSmallIntegerField()
+    i = models.PositiveSmallIntegerField()
     #land_terrain
     #under_terrain
     
     def __str__(self):
-        return '{} mn({},{})'.format(self.majortri, self.minor_row, self.minor_col)
+        return '{} mn({})'.format(self.majortri, self.i)
     
     class Meta:
-        ordering = ['major_tri','minor_row','minor_col']
-        unique_together = ['major_tri','minor_row','minor_col']
+        ordering = ['major_tri','i']
+        unique_together = ['major_tri','i']
         indexes = [
-            models.Index(fields=['major_tri','minor_row','minor_col']),
+            models.Index(fields=['major_tri','i']),
             models.Index(fields=['major_tri']),
         ]
