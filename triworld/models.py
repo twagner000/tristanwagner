@@ -29,7 +29,6 @@ class Face(models.Model):
     _neigh_top_bottom = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_top_set')
     _neigh_left = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_left_set')
     _neigh_right = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='face_right_set')
-    _map = models.TextField(blank=True)
     
     class Meta:
         ordering = ['world','face_ring','face_index']
@@ -46,7 +45,6 @@ class Face(models.Model):
         self._neigh_top_bottom = None
         self._neigh_left = None
         self._neigh_right = None
-        self._map = ''
         self.save()
         
         #clear cache for all child MajorTri
@@ -56,7 +54,7 @@ class Face(models.Model):
     def points_down(self):
         return self.face_ring%2 > 0
         
-    def neighbors(self):
+    def neighbors(self,include_self=False):
         if not self._neigh_top_bottom or not self._neigh_left or not self._neigh_right:
             r = self.face_ring
             i = self.face_index
@@ -64,57 +62,17 @@ class Face(models.Model):
             self._neigh_left = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=i if r==2 else (i-1)%5)
             self._neigh_right = Face.objects.get(world=self.world, face_ring=ADJ_RING[r], face_index=i if r==1 else (i+1)%5)
             self.save()
-        return {'top_bot':self._neigh_top_bottom, 'left':self._neigh_left, 'right':self._neigh_right}
-            
+        neighbors = {'top_bot':self._neigh_top_bottom, 'left':self._neigh_left, 'right':self._neigh_right}
+        if include_self:
+            neighbors['center'] = self
+        return neighbors
+        
     def neighbor_ids(self):
         return dict((k,v.pk) for k,v in self.neighbors().items())
         
-    def map(self):
-        return None if not self._map else json.loads(self._map)
-        
-    def generate_map(self):
-        n = self.world.major_dim
-        tris = dict((k,v.majortri_set) for k,v in self.neighbors().items())
-        tris['center'] = self.majortri_set
-        if self.face_ring in (0,3): #polar
-            tris['left'] = tris['left'].annotate(r2=F('major_col')/2, c2=2*F('major_row') + F('major_col')%2).order_by('r2','c2')
-            tris['right'] = tris['right'].annotate(r2=F('major_row')+(F('major_col')+1)/2, c2=F('major_col')).order_by('r2','c2')
-        else:
-            tris['left'] = tris['left'].annotate(r2=F('major_row'), c2=F('major_col')).reverse()
-            tris['right'] = tris['right'].annotate(r2=F('major_row'), c2=F('major_col')).reverse()
-            
-        if self.points_down():
-            tris['top_bot'] = tris['top_bot'].reverse()
-        else:
-            tris['center'] = tris['center'].reverse()
-            tris['left'] = tris['left'].reverse()
-            tris['right'] = tris['right'].reverse()
-        
-        map = []
-        reverse_if_points_up = lambda x: x if self.points_down() else reversed(x)
-        for ri in reverse_if_points_up(range(-n//3,n)):
-            if ri<0:
-                row = list(tris['top_bot'].filter(major_row=-1-ri))
-            else:
-                if self.face_ring == 0:
-                    row = list(tris['right'].filter(r2=ri, c2__lt=n*2//3))
-                    row += list(tris['center'].filter(major_row=ri))
-                    row += list(tris['left'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
-                elif self.face_ring == 1:
-                    row = list(tris['left'].filter(r2=n-1-ri, c2__lt=n*2//3))
-                    row += list(tris['center'].filter(major_row=ri))
-                    row += list(tris['right'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
-                elif self.face_ring == 2:
-                    row = list(tris['right'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
-                    row += list(tris['center'].filter(major_row=ri))
-                    row += list(tris['left'].filter(r2=n-1-ri, c2__lt=n*2//3))
-                elif self.face_ring == 3:
-                    row = list(tris['left'].filter(r2=n-1-ri, c2__gt=2*(ri-n//3)))
-                    row += list(tris['center'].filter(major_row=ri))
-                    row += list(tris['right'].filter(r2=ri, c2__lt=n*2//3))
-            map.append(row)
-        
-        return map
+    def majortri_ids(self):
+        return dict((k,f.majortri_set.all().values('id', 'sea')) for k,f in self.neighbors(include_self=True).items())
+
         
 
 class MajorTri(models.Model):

@@ -1,4 +1,4 @@
-import { REQUEST_FACE, RECEIVE_FACE, REQUEST_WORLD_LIST, RECEIVE_WORLD_LIST } from "../constants/action-types";
+import { REQUEST_FACE, RECEIVE_FACE, REQUEST_WORLD_LIST, RECEIVE_WORLD_LIST, SELECT_MAJORTRI } from "../constants/action-types";
 
 const initialState = {
 	isFetchingFace: false,
@@ -6,6 +6,7 @@ const initialState = {
 	faces: {},
 	isFetchingWorldList: false,
 	worlds: [],
+	selectedMajorTri: null,
 };
 
 
@@ -23,6 +24,7 @@ export default function map(state=initialState, action) {
 				newState.faces = Object.assign({}, state.faces);
 				newState.faces[action.face.id] = action.face;
 			}
+			newState.selectedMajorTri = null;
 			return newState;
 			
 		case REQUEST_WORLD_LIST:
@@ -32,6 +34,10 @@ export default function map(state=initialState, action) {
 		case RECEIVE_WORLD_LIST:
 			newState.isFetchingWorldList = false;
 			newState.worlds = action.worlds;
+			return newState;
+			
+		case SELECT_MAJORTRI:
+			newState.selectedMajorTri = action.id;
 			return newState;
 		
 		default:

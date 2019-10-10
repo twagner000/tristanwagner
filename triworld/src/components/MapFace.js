@@ -1,43 +1,96 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Content, Icon, Media, Level, Button, Column} from 'rbx';
+import {Content, Icon, Media, Level, Button, Column, PageLoader} from 'rbx';
 import {connect} from 'react-redux';
 
 import {map} from "../actions";
 
-class AdjFaceLink extends React.Component {
-	render() {
-		//const color_list = {"top":"#f00", "left":"#0f0", "right":"#00f", "default":"#000"};
-		//const color = (this.props.direction && this.props.direction in color_list) ? color_list[this.props.direction] : "default";
-		
-		const r = 10;
-		return (
-			<Link to={`/map/f/${this.props.face_id}`}>
-				<circle r={r} className="adj-face-circle" />
-			</Link>
-		);
-	}
+const AdjFaceLink = (props) => {
+	//const color_list = {"top":"#f00", "left":"#0f0", "right":"#00f", "default":"#000"};
+	//const color = (this.props.direction && this.props.direction in color_list) ? color_list[this.props.direction] : "default";
+	return (
+		<Link to={`/map/f/${props.face_id}`}>
+			<circle r={10} className="adj-face-circle" />
+		</Link>
+	);
 }
 
-class MajorTri extends React.Component {
+const MajorTri = (props) => {
+	const tri = props.tri;
+	const b = props.base;
+	const h = props.height;
+	//<text x={b/2} y={h/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.id}</text>
+	//<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.i}</text>
+	return (
+		<g onClick={props.handleClick(tri.id)} className="tri-g">
+			<path d={`M 0 ${tri.tpd?0:h} h ${b} l ${-b/2} ${tri.tpd?h:-h} z`} className={"tri"+(tri.sea ? " tri-sea" : " tri-land")} />
+		</g>
+	);
+}
+
+const FaceSection = (props) => {
+	const { n, fpd, b, h } = props.p;
+	const calc = {
+		"top_bot":{
+			origin:`translate(${b*n/6} ${fpd?h*n/3:h*n})`,
+			outline:`M 0 0 h ${b*n} l ${-b} ${fpd?-h*n/3:h*n/3} h ${-b*n*2/3} z`,},
+		"left":{
+			origin:`translate(${b*n/6} ${fpd?h*n/3:h*n})`,
+			outline:`M 0 0 l ${-b*n/6} ${fpd?h*n/3:-h*n/3} l ${b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${b*n/3} z`,},
+		"right":{
+			origin:`translate(${b*n*7/6} ${fpd?h*n/3:h*n})`,
+			outline:`M 0 0 l ${b*n/6} ${fpd?h*n/3:-h*n/3} l ${-b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${-b*n/3} z`,},
+		"center":{
+			origin:`translate(${b*n/6} ${fpd?h*n/3:h*n})`,
+			outline:`M 0 0 h ${b*n} l ${-b*n/2} ${fpd?h*n:-h*n} z`,},};
 	
-	render() {
-		const tri = this.props.tri;
-		const b = this.props.base;
-		const h = this.props.height;
-		return (
-			<g onClick={this.props.handleClick(this)} className="tri-g">
-				<path key={tri.id} d={"M 0 "+(tri.tpd ? 0 : h)+" h "+b+" l "+(-b/2)+" "+(tri.tpd ? h : -h)+" z"} className={"tri"+(tri.sea ? " tri-sea" : " tri-land")} />
-				<text x={b/2} y={h/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.face}</text>
-				<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.major_row},{tri.major_col}</text>
-			</g>
-		);
+	for (let i=0; i<props.tris.length; i++) {
+		let tri = props.tris[i];
+		tri.i = i;
+		tri.ri = n-1-parseInt(Math.sqrt(n*n-i-1));
+		tri.ci = i-(n*n-Math.pow(n-tri.ri,2));
+		if ((props.ring===0 || props.ring===3) && props.section==="left") {
+			const new_ri = parseInt(tri.ci/2);
+			tri.ci = 2*tri.ri + tri.ci%2;
+			tri.ri = new_ri;
+		}
+		if ((props.ring===0 || props.ring===3) && props.section==="right") {
+			tri.ri = n-1-tri.ri-parseInt((tri.ci+1)/2);
+		}
+		tri.rn = 2*n-1-2*tri.ri;
+		
+		//tpd means 'triangle points down'
+		tri.tpd = (props.section==="center") ? (fpd !== (tri.ci%2>0)): (fpd === (tri.ci%2>0));
 	}
+	
+	//filter just the relevant triangles for this view
+	const tris = props.tris.filter((tri) => { switch (props.section) {
+		case "top_bot": return tri.i < n*n*5/9;
+		case "left": return tri.ci >= tri.rn - n*2/3;
+		case "right": return tri.ci < n*2/3;
+		default: return true;
+	}});
+	
+	const tri_pos = (tri) => { switch (props.section) {
+			case "top_bot": return `translate(${b*tri.ri/2+b*tri.ci/2} ${fpd?-h*(tri.ri+1):h*tri.ri})`;
+			case "left": return `translate(${b*(n-1-tri.ri+tri.ci-tri.rn)/2} ${fpd?h*(n-1-tri.ri):h*(tri.ri-n)})`;
+			case "right": return `translate(${b*(-n+tri.ri+tri.ci)/2} ${fpd?h*(n-1-tri.ri):h*(tri.ri-n)})`;
+			default: return `translate(${b*tri.ri/2+b*tri.ci/2} ${fpd?h*tri.ri:-h*(tri.ri+1)})`;
+		}};
+	
+	return (
+		<g transform={calc[props.section].origin} className="face">
+			<path d={calc[props.section].outline} className="face-outline"/>
+			{tris.map((tri) => (
+				<g key={tri.id} transform={tri_pos(tri)}>
+					<MajorTri tri={tri} base={b} height={h} handleClick={props.handleClick} />
+				</g>
+			))}
+		</g>
+	);
 }
 
 class MapFace extends React.Component {
-	state = {tri_selected: null};
-	
 	constructor(props) {
 		super(props);
 		this.handleClick = this.handleClick.bind(this);
@@ -58,47 +111,38 @@ class MapFace extends React.Component {
 		this.checkForUpdate();
     }
 	
-	handleClick(tri) {
+	handleClick(id) {
 		return (e) => {
-			this.setState({tri_selected: tri.props.tri});
+			this.props.selectMajorTri(id);
 		}
 	}
 	
 	render() {
 		const face = this.props.activeFace;
-		if (!face) {
-			return "";
+		if (!face || this.props.isFetchingFace) {
+			return <PageLoader active color="white"></PageLoader>;
 		} else {
 			const box_width = 400;
 			const v_margin = 30;
 			const h_margin = 10;
 			const n = face.major_dim;
-			const fpd = face.points_down; //face points down
+			const fpd = face.points_down;
 			const b = (box_width-2*h_margin)/(8/3*n)*2; //scale triangle size
 			const h = b*Math.sqrt(3)/2;
-			const rows = face.map;
-			for (let ri=0; ri<rows.length; ri++) {
-				for (let ci=0; ci<rows[ri].length; ci++) {
-					rows[ri][ci].tpd = (ci+parseInt(2*ri/rows.length))%2>0;
-				}
-			}
 			
-			//alt underground ideas: gem (not in fontawesome: stairs, pick/shovel)
-			//<rect width="100%" height="100%" style={{fill: 'none', strokeWidth: 1, stroke: '#000'}} />
+			const tris = face.majortri_ids;
+			const p = {n,fpd,b,h};
+			
 			return (
 				<Column.Group>
 					<Column>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width={box_width} height={box_width}>
 							<g transform={`translate(${h_margin} ${v_margin})`}>
-								{rows.map((r,ri) => (
-									<g key={ri} transform={"translate("+((Math.abs(2/3*n-.5-ri)-.5)*b/2)+" "+(ri*h)+")"}>
-										{r.map((c,ci) => (
-											<g key={ci} transform={"translate("+b*ci/2+" 0)"}>
-										<MajorTri tri={c} base={b} height={h} handleClick={this.handleClick} />
-											</g>
-										))}
-									</g>
-								))}
+								<FaceSection section="top_bot" ring={face.face_ring} tris={tris.top_bot} p={p} handleClick={this.handleClick} />
+								<FaceSection section="left" ring={face.face_ring} tris={tris.left} p={p} handleClick={this.handleClick} />
+								<FaceSection section="right" ring={face.face_ring} tris={tris.right} p={p} handleClick={this.handleClick} />
+								<FaceSection section="center" ring={face.face_ring} tris={tris.center} p={{n,fpd,b,h}} handleClick={this.handleClick} />
+								
 								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink direction="top" face_id={face.neighbor_ids.top_bot} /></g>
 								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="left" face_id={face.neighbor_ids.left} /></g>
 								<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="right" face_id={face.neighbor_ids.right} /></g>
@@ -116,7 +160,7 @@ class MapFace extends React.Component {
 								</tbody>
 							</table>
 							<h5>Selected MajorTri</h5>
-							<p>{JSON.stringify(this.state.tri_selected).replace(/,"/g,', "')}</p>
+							<p>{JSON.stringify(this.props.selectedMajorTri).replace(/,"/g,', "')}</p>
 						</Content>
 					</Column>
 				</Column.Group>
@@ -130,12 +174,14 @@ const mapStateToProps = state => {
 		activeFace: state.map.activeFace,
 		faces: state.map.faces,
 		isFetchingFace: state.map.isFetchingFace,
+		selectedMajorTri: state.map.selectedMajorTri,
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
         fetchFace: (id) => dispatch(map.fetchFace(id)),
+        selectMajorTri: (id) => dispatch(map.selectMajorTri(id)),
     }
 }
 

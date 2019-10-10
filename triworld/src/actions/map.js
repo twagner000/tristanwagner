@@ -1,4 +1,4 @@
-import { REQUEST_FACE, RECEIVE_FACE, REQUEST_WORLD_LIST, RECEIVE_WORLD_LIST } from "../constants/action-types";
+import { REQUEST_FACE, RECEIVE_FACE, REQUEST_WORLD_LIST, RECEIVE_WORLD_LIST, SELECT_MAJORTRI } from "../constants/action-types";
 
 export const fetchFace = (id) => {
     return (dispatch, getState) => {
@@ -33,4 +33,8 @@ export const fetchWorldList = () => {
 			.then(response => response.json())
 			.then(worlds => dispatch({type: RECEIVE_WORLD_LIST, worlds}));
     }
+}
+
+export const selectMajorTri = (id) => {
+	return {type: SELECT_MAJORTRI, id};
 }

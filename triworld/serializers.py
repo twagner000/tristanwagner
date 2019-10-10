@@ -20,31 +20,21 @@ class BriefFaceSerializer(serializers.ModelSerializer):
 class FaceSerializer(BriefFaceSerializer):
     world_id = serializers.SerializerMethodField()
     major_dim = serializers.SerializerMethodField()
-    map = serializers.SerializerMethodField()
     
     class Meta(BriefFaceSerializer.Meta):
-        fields = BriefFaceSerializer.Meta.fields + ('world_id', 'points_down', 'major_dim', 'neighbor_ids', 'map')
+        fields = BriefFaceSerializer.Meta.fields + ('world_id', 'points_down', 'major_dim', 'neighbor_ids', 'majortri_ids')
         
     def get_world_id(self,obj):
         return obj.world.id
         
     def get_major_dim(self,obj):
         return obj.world.major_dim
-        
-    def get_map(self,obj):
-        map = obj.map()
-        #do this in serializer so that can use MajorTriSerializer to generate stored JSON
-        if not map:
-            map = obj.generate_map()
-            map = [MajorTriSerializer(row, many=True).data for row in map]
-            obj._map = json.dumps(map)
-            obj.save()
-        return map
 
 
 class MajorTriSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MajorTri
+        #fields reserved for js: i, ri, ci, rn, tpd
         fields = ('id', 'face', 'major_row', 'major_col', 'sea', 'neighbor_ids')
 
 
