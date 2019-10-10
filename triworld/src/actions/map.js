@@ -9,9 +9,17 @@ export const fetchFace = (id) => {
 			dispatch({type: RECEIVE_FACE, face: faces[id], from_cache: true});
 		} else {
 			let headers = {"Content-Type": "application/json"};
+			/*
 			return fetch(`/triworld/api/face/${id}/`, {headers, })
 				.then(response => response.json())
 				.then(face => dispatch({type: RECEIVE_FACE, face, from_cache: false}));
+			*/
+			return fetch(`/triworld/api/face/${id}/clear_cache/`, {headers, })
+				.then(response => {
+					return fetch(`/triworld/api/face/${id}/`, {headers, })
+						.then(response => response.json())
+						.then(face => dispatch({type: RECEIVE_FACE, face, from_cache: false}));
+				});
 		}
     }
 }

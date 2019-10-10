@@ -10,9 +10,6 @@ class AdjFaceLink extends React.Component {
 		//const color_list = {"top":"#f00", "left":"#0f0", "right":"#00f", "default":"#000"};
 		//const color = (this.props.direction && this.props.direction in color_list) ? color_list[this.props.direction] : "default";
 		
-		//<g transform="rotate(0)"><path d={`M ${-r} 0 l ${r} ${-r} l ${r} ${r} z`} style={{stroke: "#000", strokeWidth: 2, fill: "#eee"}} /></g>
-		//<text className="tri-text" dominantBaseline="middle" textAnchor="middle">{this.props.direction[0].toUpperCase()}</text>
-		
 		const r = 10;
 		return (
 			<Link to={`/map/f/${this.props.face_id}`}>
@@ -26,13 +23,13 @@ class MajorTri extends React.Component {
 	
 	render() {
 		const tri = this.props.tri;
-		const b = this.props.base*.92;
-		const h = this.props.height*.95;
-		//<text x={b/2} y={h/2} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.major_row},{tri.major_col}</text>
+		const b = this.props.base;
+		const h = this.props.height;
 		return (
-			<g onClick={this.props.handleClick(this)}>
+			<g onClick={this.props.handleClick(this)} className="tri-g">
 				<path key={tri.id} d={"M 0 "+(tri.tpd ? 0 : h)+" h "+b+" l "+(-b/2)+" "+(tri.tpd ? h : -h)+" z"} className={"tri"+(tri.sea ? " tri-sea" : " tri-land")} />
-				
+				<text x={b/2} y={h/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.face}</text>
+				<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.major_row},{tri.major_col}</text>
 			</g>
 		);
 	}
@@ -92,18 +89,20 @@ class MapFace extends React.Component {
 				<Column.Group>
 					<Column>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width={box_width} height={box_width}>
-							{rows.map((r,ri) => (
-								<g key={ri} transform={"translate("+(h_margin+(Math.abs(2/3*n-.5-ri)-.5)*b/2)+" "+(v_margin+ri*h)+")"}>
-									{r.map((c,ci) => (
-										<g key={ci} transform={"translate("+b*ci/2+" 0)"}>
-									<MajorTri tri={c} base={b} height={h} handleClick={this.handleClick} />
-										</g>
-									))}
-									{((ri===0 && fpd) || (ri===rows.length-1 && !fpd)) ? <g transform={"translate("+(b/2*(r.length/2+.5))+" "+(fpd?0:h)+")"}><AdjFaceLink direction="top" world_id={this.props.match.params.world_id} face_id={face.neighbor_ids.top} /></g> : "" }
-									{((ri===rows.length*3/4 && fpd) || (ri===rows.length/4 && !fpd)) ? <g transform={"translate("+(fpd ? 0 : b*r.length/2)+" 0)"}><AdjFaceLink direction="left" world_id={this.props.match.params.world_id} face_id={face.neighbor_ids.left} /></g> : "" }
-									{((ri===rows.length*3/4 && fpd) || (ri===rows.length/4 && !fpd)) ? <g transform={"translate("+(!fpd ? b/2 : b*(r.length+1)/2)+" 0)"}><AdjFaceLink direction="right" world_id={this.props.match.params.world_id} face_id={face.neighbor_ids.right} /></g> : "" }
-								</g>
-							))}
+							<g transform={`translate(${h_margin} ${v_margin})`}>
+								{rows.map((r,ri) => (
+									<g key={ri} transform={"translate("+((Math.abs(2/3*n-.5-ri)-.5)*b/2)+" "+(ri*h)+")"}>
+										{r.map((c,ci) => (
+											<g key={ci} transform={"translate("+b*ci/2+" 0)"}>
+										<MajorTri tri={c} base={b} height={h} handleClick={this.handleClick} />
+											</g>
+										))}
+									</g>
+								))}
+								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink direction="top" face_id={face.neighbor_ids.top_bot} /></g>
+								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="left" face_id={face.neighbor_ids.left} /></g>
+								<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="right" face_id={face.neighbor_ids.right} /></g>
+							</g>
 						</svg>
 					</Column>
 					<Column>

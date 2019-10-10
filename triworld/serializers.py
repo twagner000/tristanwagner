@@ -45,7 +45,7 @@ class FaceSerializer(BriefFaceSerializer):
 class MajorTriSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MajorTri
-        fields = ('id', 'face', 'major_row', 'major_col', 'sea')
+        fields = ('id', 'face', 'major_row', 'major_col', 'sea', 'neighbor_ids')
 
 
 """class GamePlayerSerializer(BriefGameSerializer):

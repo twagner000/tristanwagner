@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, permissions, generics
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
@@ -60,6 +61,12 @@ class FaceViewSet(viewsets.ReadOnlyModelViewSet):
             return serializers.FaceSerializer
         else:
             return serializers.BriefFaceSerializer
+            
+    @action(detail=True)
+    def clear_cache(self, request, pk=None):
+        self.get_object().clear_cache()
+        print('cache cleared')
+        return Response({'status': 'cache cleared'})
             
 """            
 class FaceView(generics.RetrieveAPIView):
