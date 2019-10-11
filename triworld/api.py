@@ -13,10 +13,15 @@ class WorldViewSet(NestedViewSetMixin,
                     viewsets.GenericViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = models.World.objects.all()
-    serializer_class = serializers.WorldSerializer
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return serializers.WorldSerializer
+        else:
+            return serializers.BriefWorldSerializer
     
     def create(self, request, *args, **kwargs):
-        serializer = serializers.WorldSerializer(data=request.data)
+        serializer = serializers.BriefWorldSerializer(data=request.data)
         if serializer.is_valid():
             world = models.World(major_dim=serializer.validated_data['major_dim'], minor_dim=serializer.validated_data['minor_dim'])
             world.save()
@@ -48,40 +53,12 @@ class WorldViewSet(NestedViewSetMixin,
                             ))
             models.MajorTri.objects.bulk_create(mjtri)
                     
-            return Response(serializers.WorldSerializer(world).data, status=status.HTTP_201_CREATED)
+            return Response(serializers.BriefWorldSerializer(world).data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        
-class FaceViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [permissions.AllowAny]
-    queryset = models.Face.objects.all()
-    
-    def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return serializers.FaceSerializer
-        else:
-            return serializers.BriefFaceSerializer
-            
     @action(detail=True)
     def clear_cache(self, request, pk=None):
         self.get_object().clear_cache()
-        print('cache cleared')
+        print('world cache cleared')
         return Response({'status': 'cache cleared'})
-            
-"""            
-class FaceView(generics.RetrieveAPIView):
-    permission_classes = [permissions.AllowAny]
-    queryset = models.Face.objects.all()
-    serializer_class = serializers.FaceSerializer
-    
-    def get_object(self):
-        queryset = self.get_queryset()
-        filter = {}
-        for field in ('world__pk','face_ring','face_index'):
-            filter[field] = self.kwargs[field]
-
-        obj = get_object_or_404(queryset, **filter)
-        self.check_object_permissions(self.request, obj)
-        return obj
-"""

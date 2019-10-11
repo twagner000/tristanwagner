@@ -1,6 +1,6 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import {Content, Icon, Media, Level, Button, Column, PageLoader} from 'rbx';
+import {Link, Redirect} from 'react-router-dom';
+import {Content, Icon, Media, Level, Button, Column, PageLoader, Title} from 'rbx';
 import {connect} from 'react-redux';
 
 import {map} from "../actions";
@@ -9,9 +9,9 @@ const AdjFaceLink = (props) => {
 	//const color_list = {"top":"#f00", "left":"#0f0", "right":"#00f", "default":"#000"};
 	//const color = (this.props.direction && this.props.direction in color_list) ? color_list[this.props.direction] : "default";
 	return (
-		<Link to={`/map/f/${props.face_id}`}>
-			<circle r={10} className="adj-face-circle" />
-		</Link>
+		<g className="button" onClick={() => props.handleClick(props.face_id)}>
+			<circle r={10} className="adj-face-circle"/>
+		</g>
 	);
 }
 
@@ -105,20 +105,11 @@ class MapFace extends React.Component {
 		this.handleClick = this.handleClick.bind(this);
 	}
 	
-	checkForUpdate = () => {
-		const face_id = parseInt(this.props.match.params.face_id);
-		if (face_id !== (this.props.activeFace && this.props.activeFace.id) && !this.props.isFetchingFace) {
-			this.props.fetchFace(face_id);
+	componentDidMount() {
+		if (!this.props.world) {
+			this.props.history.push('/');
 		}
 	}
-		
-	componentDidMount() {
-        this.checkForUpdate();
-    }
-	
-	componentDidUpdate() {
-		this.checkForUpdate();
-    }
 	
 	handleClick(id) {
 		return (e) => {
@@ -127,19 +118,18 @@ class MapFace extends React.Component {
 	}
 	
 	render() {
-		const face = this.props.activeFace;
-		if (!face || this.props.isFetchingFace) {
-			return <PageLoader active color="white"></PageLoader>;
+		if (!this.props.world) {
+			return ""
 		} else {
+			const n = this.props.world.major_dim;
+			const face = this.props.currentFace;
 			const box_width = 400;
 			const v_margin = 30;
 			const h_margin = 10;
-			const n = face.major_dim;
 			const fpd = face.fpd;
 			const b = (box_width-2*h_margin)/(8/3*n)*2; //scale triangle size
 			const h = b*Math.sqrt(3)/2;
 			
-			const tris = face.majortri_ids;
 			const p = {n,fpd,b,h};
 			
 			return (
@@ -147,14 +137,14 @@ class MapFace extends React.Component {
 					<Column>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width={box_width} height={box_width}>
 							<g transform={`translate(${h_margin} ${v_margin})`}>
-								<FaceSection section="top_bot" ring={face.ring} tris={tris.top_bot} p={p} handleClick={this.handleClick} />
-								<FaceSection section="left" ring={face.ring} tris={tris.left} p={p} handleClick={this.handleClick} />
-								<FaceSection section="right" ring={face.ring} tris={tris.right} p={p} handleClick={this.handleClick} />
-								<FaceSection section="center" ring={face.ring} tris={tris.center} p={p} handleClick={this.handleClick} />
+								<FaceSection section="top_bot" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.top_bot].majortris} p={p} handleClick={this.handleClick} />
+								<FaceSection section="left" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.left].majortris} p={p} handleClick={this.handleClick} />
+								<FaceSection section="right" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.right].majortris} p={p} handleClick={this.handleClick} />
+								<FaceSection section="center" ring={face.ring} tris={face.majortris} p={p} handleClick={this.handleClick} />
 								
-								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink direction="top" face_id={face.neighbor_ids.top_bot} /></g>
-								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="left" face_id={face.neighbor_ids.left} /></g>
-								<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="right" face_id={face.neighbor_ids.right} /></g>
+								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink direction="top_bot" face_id={face.neighbor_ids.top_bot} handleClick={this.props.selectFace} /></g>
+								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="left" face_id={face.neighbor_ids.left} handleClick={this.props.selectFace} /></g>
+								<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="right" face_id={face.neighbor_ids.right} handleClick={this.props.selectFace} /></g>
 							</g>
 						</svg>
 					</Column>
@@ -169,7 +159,7 @@ class MapFace extends React.Component {
 								</tbody>
 							</table>
 							<h5>Selected MajorTri</h5>
-							<p>{JSON.stringify(this.props.selectedMajorTri).replace(/,"/g,', "')}</p>
+							<p>{JSON.stringify(this.props.currentMajorTri).replace(/,"/g,', "')}</p>
 						</Content>
 					</Column>
 				</Column.Group>
@@ -180,16 +170,15 @@ class MapFace extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		activeFace: state.map.activeFace,
-		faces: state.map.faces,
-		isFetchingFace: state.map.isFetchingFace,
-		selectedMajorTri: state.map.selectedMajorTri,
+		world: state.map.world,
+		currentFace: state.map.currentFace,
+		currentMajorTri: state.map.currentMajorTri,
 	}
 }
 
 const mapDispatchToProps = dispatch => {
 	return {
-        fetchFace: (id) => dispatch(map.fetchFace(id)),
+        selectFace: (id) => dispatch(map.selectFace(id)),
         selectMajorTri: (id) => dispatch(map.selectMajorTri(id)),
     }
 }

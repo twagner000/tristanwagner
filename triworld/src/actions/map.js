@@ -1,28 +1,8 @@
-import { REQUEST_FACE, RECEIVE_FACE, REQUEST_WORLD_LIST, RECEIVE_WORLD_LIST, SELECT_MAJORTRI } from "../constants/action-types";
+import { REQUEST_WORLD_LIST, RECEIVE_WORLD_LIST } from "../constants/action-types";
+import { REQUEST_WORLD, RECEIVE_WORLD } from "../constants/action-types";
+import { SELECT_FACE, SELECT_MAJORTRI } from "../constants/action-types";
 
-export const fetchFace = (id) => {
-    return (dispatch, getState) => {
-		dispatch({type: REQUEST_FACE, id});
-		
-		const faces = getState().map.faces;
-		if (id in faces) {
-			dispatch({type: RECEIVE_FACE, face: faces[id], from_cache: true});
-		} else {
-			let headers = {"Content-Type": "application/json"};
-			/*
-			return fetch(`/triworld/api/face/${id}/`, {headers, })
-				.then(response => response.json())
-				.then(face => dispatch({type: RECEIVE_FACE, face, from_cache: false}));
-			*/
-			return fetch(`/triworld/api/face/${id}/clear_cache/`, {headers, })
-				.then(response => {
-					return fetch(`/triworld/api/face/${id}/`, {headers, })
-						.then(response => response.json())
-						.then(face => dispatch({type: RECEIVE_FACE, face, from_cache: false}));
-				});
-		}
-    }
-}
+
 
 export const fetchWorldList = () => {
     return dispatch => {
@@ -35,6 +15,19 @@ export const fetchWorldList = () => {
     }
 }
 
-export const selectMajorTri = (id) => {
-	return {type: SELECT_MAJORTRI, id};
+export const fetchWorld = (id, history) => {
+    return dispatch => {
+		dispatch({type: REQUEST_WORLD});
+		
+		let headers = {"Content-Type": "application/json"};
+		return fetch(`/triworld/api/world/${id}/`, {headers, })
+			.then(response => response.json())
+			.then(world => {
+				return dispatch({type: RECEIVE_WORLD, world});
+			});
+    }
 }
+
+export const selectFace = (id) => ({type: SELECT_FACE, id});
+
+export const selectMajorTri = (id) => ({type: SELECT_MAJORTRI, id});

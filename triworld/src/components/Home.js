@@ -1,5 +1,5 @@
 import React from 'react';
-//import {Link} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import {Content} from 'rbx';
 
 
@@ -8,6 +8,7 @@ class Home extends React.Component {
 		return (
 			<Content>
 				<p>Hello. Select a world above.</p>
+				<Redirect to="/world/28" />
 			</Content>
 		);
 	}

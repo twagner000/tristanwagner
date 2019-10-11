@@ -74,8 +74,8 @@ class Face(models.Model):
     def neighbor_ids(self):
         return dict((k,v.pk) for k,v in self.neighbors().items())
         
-    def majortri_ids(self):
-        return dict((k,f.majortri_set.all().values('id', 'i', 'sea')) for k,f in self.neighbors(include_self=True).items())
+    def majortris(self):
+        return self.majortri_set.all().values('id', 'i', 'sea')
 
         
 

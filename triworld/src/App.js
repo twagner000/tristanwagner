@@ -7,16 +7,15 @@ import thunk from "redux-thunk";
 
 import triWorldApp from "./reducers";
 
-//import Search from "./components/Search";
 import TriWorldNav from "./components/TriWorldNav";
 import Home from "./components/Home";
+import LoadWorld from "./components/LoadWorld";
 import MapFace from "./components/MapFace";
 
 let store = createStore(triWorldApp, applyMiddleware(thunk));
 
 const BASE_URL = '/triworld';
 
-//<Level.Item><Icon><i className="fas fa-caret-square-down"></i></Icon></Level.Item>
 
 class App extends React.Component {
 	render() {
@@ -27,7 +26,8 @@ class App extends React.Component {
 						<BrowserRouter basename={BASE_URL}>
 							<TriWorldNav />
 							<Switch>
-								<Route exact path="/map/f/:face_id" component={MapFace} />
+								<Route exact path="/world/:world_id" component={LoadWorld} />
+								<Route exact path="/map/face" component={MapFace} />
 								<Route component={Home} />
 							</Switch>
 						</BrowserRouter>

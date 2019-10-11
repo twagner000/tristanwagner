@@ -10,9 +10,7 @@ app_name = 'triworld'
 
 router = ExtendedDefaultRouter()
 router.register('api/world', api.WorldViewSet, base_name='world')
-router.register('api/face', api.FaceViewSet, base_name='face')
 
 urlpatterns = [
     re_path('^(?!api).*$', TemplateView.as_view(template_name="triworld/index.html"), name='index'),
-    #path('api/world/<int:world__pk>/face/<int:face_ring>/<int:face_index>', api.FaceView.as_view(), name='world-face-detail'),
 ] + router.urls
