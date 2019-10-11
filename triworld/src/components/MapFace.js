@@ -6,11 +6,12 @@ import {connect} from 'react-redux';
 import {map} from "../actions";
 
 const AdjFaceLink = (props) => {
-	//const color_list = {"top":"#f00", "left":"#0f0", "right":"#00f", "default":"#000"};
-	//const color = (this.props.direction && this.props.direction in color_list) ? color_list[this.props.direction] : "default";
+	const r = 10;
+	const b = r*Math.sqrt(3)/2;
 	return (
-		<g className="button" onClick={() => props.handleClick(props.face_id)}>
-			<circle r={10} className="adj-face-circle"/>
+		<g className="button" transform={`rotate(${props.rotation})`} onClick={() => props.handleClick(props.face_id)}>
+			<circle r={r} className="adj-face-circle"/>
+			<path d={`M ${-b} ${r/2} l ${b} ${-r} l ${b} ${r}`} className="adj-face-circle"/>
 		</g>
 	);
 }
@@ -142,9 +143,9 @@ class MapFace extends React.Component {
 								<FaceSection section="right" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.right].majortris} p={p} handleClick={this.handleClick} />
 								<FaceSection section="center" ring={face.ring} tris={face.majortris} p={p} handleClick={this.handleClick} />
 								
-								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink direction="top_bot" face_id={face.neighbor_ids.top_bot} handleClick={this.props.selectFace} /></g>
-								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="left" face_id={face.neighbor_ids.left} handleClick={this.props.selectFace} /></g>
-								<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink direction="right" face_id={face.neighbor_ids.right} handleClick={this.props.selectFace} /></g>
+								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink rotation={fpd?0:180} face_id={face.neighbor_ids.top_bot} handleClick={this.props.selectFace} /></g>
+								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?-120:-60} face_id={face.neighbor_ids.left} handleClick={this.props.selectFace} /></g>
+								<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?120:60} face_id={face.neighbor_ids.right} handleClick={this.props.selectFace} /></g>
 							</g>
 						</svg>
 					</Column>
