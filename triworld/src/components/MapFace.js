@@ -37,13 +37,13 @@ const FaceSection = (props) => {
 	const calc = {
 		"top_bot":{
 			origin:`translate(${b*n/6} ${fpd?-h*n*2/3:h*n})`,
-			outline:`M 0 0 h ${b*n} l ${-b} ${fpd?-h*n/3:h*n/3} h ${-b*n*2/3} z`,},
+			outline:`M 0 ${fpd?h*n:0} h ${b*n} l ${-b} ${fpd?-h*n/3:h*n/3} h ${-b*n*2/3} z`,},
 		"left":{
 			origin:`translate(${-b*n/3} ${fpd?h*n/3:0})`,
-			outline:`M 0 0 l ${-b*n/6} ${fpd?h*n/3:-h*n/3} l ${b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${b*n/3} z`,},
+			outline:`M ${b*n/2} ${fpd?0:h*n} l ${-b*n/6} ${fpd?h*n/3:-h*n/3} l ${b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${b*n/3} z`,},
 		"right":{
 			origin:`translate(${b*n*2/3} ${fpd?h*n/3:0})`,
-			outline:`M 0 0 l ${b*n/6} ${fpd?h*n/3:-h*n/3} l ${-b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${-b*n/3} z`,},
+			outline:`M ${b*n/2} ${fpd?0:h*n} l ${b*n/6} ${fpd?h*n/3:-h*n/3} l ${-b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${-b*n/3} z`,},
 		"center":{
 			origin:`translate(${b*n/6} ${fpd?h*n/3:0})`,
 			outline:`M 0 ${fpd?0:h*n} h ${b*n} l ${-b*n/2} ${fpd?h*n:-h*n} z`,},};
@@ -88,13 +88,13 @@ const FaceSection = (props) => {
 	}});
 	
 	return (
-		<g transform={calc[props.section].origin} className="face">
-			<path d={`M 0 ${cfpd?0:h*n} h ${b*n} l ${-b*n/2} ${cfpd?h*n:-h*n} z`} className="face-outline"/>
+		<g transform={calc[props.section].origin} className={`face face-${props.section.replace("_","-")}`}>
 			{tris.map((tri) => (
 				<g key={tri.id} transform={`translate(${cfpd?b*tri.ri/2+b*tri.ci/2:b*(n-1-tri.ri)/2+b*tri.ci/2} ${h*tri.ri})`}>
 					<MajorTri tri={tri} base={b} height={h} handleClick={props.handleClick} />
 				</g>
 			))}
+			<path d={calc[props.section].outline} className="face-outline" />
 		</g>
 	);
 }
