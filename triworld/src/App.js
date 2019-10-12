@@ -20,8 +20,8 @@ const BASE_URL = '/triworld';
 class App extends React.Component {
 	render() {
 		return (
-			<Section>
-				<Container>
+			<div className="game-outer-container">
+				<div className="game-inner-container">
 					<Provider store={store}>
 						<BrowserRouter basename={BASE_URL}>
 							<TriWorldNav />
@@ -32,8 +32,8 @@ class App extends React.Component {
 							</Switch>
 						</BrowserRouter>
 					</Provider>
-				</Container>
-			</Section>
+				</div>
+			</div>
 		);
 	}
 }

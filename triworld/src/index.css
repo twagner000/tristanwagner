@@ -1,3 +1,7 @@
+.game-outer-container {text-align: center; }
+.game-inner-container {width: 100vmin; max-width: 400px; display: inline-block; text-align: initial; }
+
+
 .tri { stroke-width: 1; stroke: #eee; fill: none; }
 .tri-g:hover .tri { stroke-width: 2; stroke: #a33; stroke-dasharray: none;}
 .tri-land { stroke: none; fill: #ad8; }

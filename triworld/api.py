@@ -51,7 +51,8 @@ class WorldViewSet(NestedViewSetMixin,
                             i=mji,
                             sea=sea,
                             ))
-            models.MajorTri.objects.bulk_create(mjtri)
+            mjtri = models.MajorTri.objects.bulk_create(mjtri)
+            world.update_cache()
                     
             return Response(serializers.BriefWorldSerializer(world).data, status=status.HTTP_201_CREATED)
         else:

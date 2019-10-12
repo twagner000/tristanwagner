@@ -13,7 +13,7 @@ class TriWorldNav extends React.Component {
 //<Level.Item><Icon><i className="fas fa-caret-square-down"></i></Icon></Level.Item>
 	render() {
 		return (
-			<Level>
+			<Level breakpoint="mobile">
 				<Level.Item>
 					<Button as={Link} to="/"><Icon><i className="fas fa-hiking"></i></Icon><span>TriWorld</span></Button>
 				</Level.Item>
