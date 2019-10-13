@@ -134,36 +134,48 @@ class MapFace extends React.Component {
 			const p = {n,fpd,mw,b,h};
 			
 			return (
-				<React.Fragment>
-					<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" viewBox={`0 0 ${mw} ${mw}`}>
-						<g transform={`translate(${h_margin} ${v_margin})`}>
-							<FaceSection section="top_bot" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.top_bot].majortris} p={p} handleClick={this.handleClick} />
-							<FaceSection section="left" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.left].majortris} p={p} handleClick={this.handleClick} />
-							<FaceSection section="right" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.right].majortris} p={p} handleClick={this.handleClick} />
-							<FaceSection section="center" ring={face.ring} tris={face.majortris} p={p} handleClick={this.handleClick} />
+				<Column.Group>
+					<Column>
+						<Level>
+							<Level.Item>
+								<Button.Group hasAddons>
+									<Button as={Link} to="/" state="active"><Icon><i className="fas fa-search-minus"></i></Icon></Button>
+									<Button as={Link} to="/" disabled><Icon><i className="fas fa-search-plus"></i></Icon></Button>
+									<Button as={Link} to="/" disabled><Icon><i className="fas fa-gem"></i></Icon></Button>
+								</Button.Group>
+							</Level.Item>
+						</Level>
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" viewBox={`0 0 ${mw} ${mw}`}>
+							<g transform={`translate(${h_margin} ${v_margin})`}>
+								<FaceSection section="top_bot" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.top_bot].majortris} p={p} handleClick={this.handleClick} />
+								<FaceSection section="left" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.left].majortris} p={p} handleClick={this.handleClick} />
+								<FaceSection section="right" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.right].majortris} p={p} handleClick={this.handleClick} />
+								<FaceSection section="center" ring={face.ring} tris={face.majortris} p={p} handleClick={this.handleClick} />
+								
+								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink rotation={fpd?0:180} face_id={face.neighbor_ids.top_bot} handleClick={this.props.selectFace} /></g>
+								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?-120:-60} face_id={face.neighbor_ids.left} handleClick={this.props.selectFace} /></g>
+								<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?120:60} face_id={face.neighbor_ids.right} handleClick={this.props.selectFace} /></g>
+							</g>
+						</svg>
+					</Column>
+					<Column>
+						<Content>
+							<h5>Face {face.id} ({face.ring}, {face.ring_i})</h5>
+							<h5>Selected MajorTri {this.props.currentMajorTri && this.props.currentMajorTri.id}</h5>
+							{!this.props.currentMajorTri || !this.props.currentMajorTri.neighbor_ids ? "" : (							
+								<table className="table">
+									<tbody>
+									{Object.entries(this.props.currentMajorTri.neighbor_ids).map((v) => (
+										<tr key={v[0]}><th>{v[0]}</th><td>{v[1]}</td></tr>
+									))}
+									</tbody>
+								</table>
+							)}
+							<p>{JSON.stringify(this.props.currentMajorTri).replace(/,"/g,', "')}</p>
 							
-							<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink rotation={fpd?0:180} face_id={face.neighbor_ids.top_bot} handleClick={this.props.selectFace} /></g>
-							<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?-120:-60} face_id={face.neighbor_ids.left} handleClick={this.props.selectFace} /></g>
-							<g transform={`translate(${b*n*7/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?120:60} face_id={face.neighbor_ids.right} handleClick={this.props.selectFace} /></g>
-						</g>
-					</svg>
-
-					<Content>
-						<h5>Face {face.id} ({face.ring}, {face.ring_i})</h5>
-						<h5>Selected MajorTri {this.props.currentMajorTri && this.props.currentMajorTri.id}</h5>
-						{!this.props.currentMajorTri || !this.props.currentMajorTri.neighbor_ids ? "" : (							
-							<table className="table">
-								<tbody>
-								{Object.entries(this.props.currentMajorTri.neighbor_ids).map((v) => (
-									<tr key={v[0]}><th>{v[0]}</th><td>{v[1]}</td></tr>
-								))}
-								</tbody>
-							</table>
-						)}
-						<p>{JSON.stringify(this.props.currentMajorTri).replace(/,"/g,', "')}</p>
-						
-					</Content>
-				</React.Fragment>
+						</Content>
+					</Column>
+				</Column.Group>
 			);
 		}
 	}

@@ -14,31 +14,24 @@ class TriWorldNav extends React.Component {
 	render() {
 		return (
 			<Level breakpoint="mobile">
-				<Level.Item>
-					<Button as={Link} to="/"><Icon><i className="fas fa-hiking"></i></Icon><span>TriWorld</span></Button>
-				</Level.Item>
-				<Level.Item>
-					<Dropdown>
-						<Dropdown.Trigger>
-							<Button>
-								<Icon><i className="fas fa-globe"></i></Icon>
-								<Icon size="small"><i className="fas fa-angle-down"></i></Icon>
-							</Button>
-						</Dropdown.Trigger>
-						<Dropdown.Menu>
-							<Dropdown.Content>
-								{this.props.worlds.map((w,ci) => (
-									<Dropdown.Item key={w.id} as={Link} to={`/world/${w.id}`}>{w.id} ({w.major_dim}x{w.minor_dim})</Dropdown.Item>
-								))}
-							</Dropdown.Content>
-						</Dropdown.Menu>
-					</Dropdown>
-				</Level.Item>
-				<Level.Item>
-					<Button.Group hasAddons>
-						<Button as={Link} to="/" state="active"><Icon><i className="fas fa-search-minus"></i></Icon></Button>
-						<Button as={Link} to="/" disabled><Icon><i className="fas fa-search-plus"></i></Icon></Button>
-						<Button as={Link} to="/" disabled><Icon><i className="fas fa-gem"></i></Icon></Button>
+				<Level.Item align="left">
+					<Button.Group>
+						<Button as={Link} to="/"><Icon><i className="fas fa-hiking"></i></Icon><span>TriWorld</span></Button>
+						<Dropdown>
+							<Dropdown.Trigger>
+								<Button>
+									<Icon><i className="fas fa-globe"></i></Icon>
+									<Icon size="small"><i className="fas fa-angle-down"></i></Icon>
+								</Button>
+							</Dropdown.Trigger>
+							<Dropdown.Menu>
+								<Dropdown.Content>
+									{this.props.worlds.map((w,ci) => (
+										<Dropdown.Item key={w.id} as={Link} to={`/world/${w.id}`}>{w.id} ({w.major_dim}x{w.minor_dim})</Dropdown.Item>
+									))}
+								</Dropdown.Content>
+							</Dropdown.Menu>
+						</Dropdown>
 					</Button.Group>
 				</Level.Item>
 			</Level>
