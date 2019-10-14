@@ -6,4 +6,4 @@
 .tri-text { font-size: .5rem; fill: none; } /*fill: #999;*/
 .adj-face-circle { stroke-width: 2; stroke: #aaa; fill: #eee; }
 
-.face-outline { stroke: none; fill: none; }
+.face-outline { stroke: none; stroke-width: 2; fill: none; }

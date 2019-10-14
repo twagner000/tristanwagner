@@ -31,23 +31,28 @@ const MajorTri = (props) => {
 
 const FaceSection = (props) => {
 	const { n, fpd, b, h } = props.p;
+	const nopo_side = (props.ring===0 && (props.section==='left'||props.section==='right'));
+	const sopo_side = (props.ring===3 && (props.section==='left'||props.section==='right'));
+	const polar_side = nopo_side || sopo_side;
 	
-	//cfpd means 'current face points down' VISUALLY (fpd and ring refer to the center face)
-	const cfpd = (props.section==="center") ? fpd : !fpd;
+	//cfpd means 'current face points down' VISUALLY, before any polar rotation (fpd and ring refer to the center face)
+	const cfpd = (props.section==="center" || polar_side) ? fpd : !fpd;
 	
 	const calc = {
-		"top_bot":{
-			origin:`translate(${b*n/6} ${fpd?-h*n*2/3:h*n})`,
-			outline:`M 0 ${fpd?h*n:0} h ${b*n} l ${-b} ${fpd?-h*n/3:h*n/3} h ${-b*n*2/3} z`,},
-		"left":{
-			origin:`translate(${-b*n/3} ${fpd?h*n/3:0})`,
-			outline:`M ${b*n/2} ${fpd?0:h*n} l ${-b*n/6} ${fpd?h*n/3:-h*n/3} l ${b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${b*n/3} z`,},
-		"right":{
-			origin:`translate(${b*n*2/3} ${fpd?h*n/3:0})`,
-			outline:`M ${b*n/2} ${fpd?0:h*n} l ${b*n/6} ${fpd?h*n/3:-h*n/3} l ${-b*n/3} ${fpd?h*n*2/3:-h*n*2/3} h ${-b*n/3} z`,},
-		"center":{
-			origin:`translate(${b*n/6} ${fpd?h*n/3:0})`,
-			outline:`M 0 ${fpd?0:h*n} h ${b*n} l ${-b*n/2} ${fpd?h*n:-h*n} z`,},};
+			"top_bot":{
+				origin:`translate(${b*n/6} ${cfpd?h*n:h*n/3})`,
+				outline:`M 0 0 h ${b*n} l ${-b} ${cfpd?h*n/3:-h*n/3} h ${-b*n*2/3} z`,},
+			"left":{
+				origin:`translate(${-b*n/3-(polar_side?b*n/2:0)} ${(cfpd?0:h*n*4/3)+(nopo_side?-h*n/3:sopo_side?h*n/3:0)})`,
+				outline:`M ${b*n} 0 h ${-b*n/3} l ${-b*n/3} ${h*n*2/3*(cfpd?1:-1)} l ${b*n/6} ${h*n/3*(cfpd?1:-1)} z`,},
+			"right":{
+				origin:`translate(${b*n*2/3+(polar_side?b*n/2:0)} ${(cfpd?0:h*n*4/3)+(nopo_side?-h*n/3:sopo_side?h*n/3:0)})`,
+				outline:`M 0 0 h ${b*n/3} l ${b*n/3} ${h*n*2/3*(cfpd?1:-1)} l ${-b*n/6} ${h*n/3*(cfpd?1:-1)} z`,},
+			"center":{
+				origin:`translate(${b*n/6} ${cfpd?h*n/3:h*n})`,
+				outline:`M 0 0 h ${b*n} l ${-b*n/2} ${cfpd?h*n:-h*n} z`,},};
+	
+	const transform_rotate = polar_side ? `rotate(${((props.ring===0&&props.section==='left')||(props.ring===3&&props.section==='right'))?60:-60} ${props.section==='left'?b*n:0} 0)` : "";
 	
 	for (const tri of props.tris) {
 		//basic row and column indices, if face points up (pu) or down (pd) visually
@@ -58,22 +63,6 @@ const FaceSection = (props) => {
 		
 		tri.ri = (cfpd) ? ripd : ripu;
 		tri.ci = (cfpd) ? cipd : cipu;
-		
-		//special rotations for polar side faces
-		if (props.ring===0 && props.section==="left") {
-			tri.ri = parseInt((tri.i-ripu*ripu)/2);
-			tri.ci = 2*n-2 - 2*ripu + cipu%2;
-		} else if (props.ring===0 && props.section==="right") {
-			tri.ri = parseInt(((ripu+1)*(ripu+1)-tri.i-1)/2)
-			tri.ci = cipu;
-		} else if (props.ring===3 && props.section==="left") {
-			tri.ri = n-1-parseInt((tri.i - (n*n - (n-ripd)*(n-ripd)))/2);
-			tri.ci = 2*ripd + (tri.i-(n*n-(n-ripd)*(n-ripd)))%2;
-		} else if (props.ring===3 && props.section==="right") {
-			tri.ri = n-1-parseInt((n*n - (n-1-ripd)*(n-1-ripd) -tri.i-1)/2)
-			tri.ci = cipd;
-		}
-		
 		tri.rn = cfpd ? 2*n-1-2*tri.ri : tri.ri*2+1;
 		
 		//tpd means 'triangle points down'
@@ -89,9 +78,9 @@ const FaceSection = (props) => {
 	}});
 	
 	return (
-		<g transform={calc[props.section].origin} className={`face face-${props.section.replace("_","-")}`}>
+		<g transform={`${calc[props.section].origin} ${transform_rotate}`} className={`face face-${props.section.replace("_","-")}`}>
 			{tris.map((tri) => (
-				<g key={tri.id} transform={`translate(${cfpd?b*tri.ri/2+b*tri.ci/2:b*(n-1-tri.ri)/2+b*tri.ci/2} ${h*tri.ri})`}>
+				<g key={tri.id} transform={`translate(${cfpd?b*tri.ri/2+b*tri.ci/2:b*(n-1-tri.ri)/2+b*tri.ci/2} ${cfpd?h*tri.ri:h*(tri.ri-n)})`}>
 					<MajorTri tri={tri} base={b} height={h} handleClick={props.handleClick} />
 				</g>
 			))}
