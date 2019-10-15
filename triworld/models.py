@@ -91,6 +91,8 @@ class MajorTri(models.Model):
     sea = models.BooleanField(default=True)
     
     #cached fields
+    _ri = models.PositiveSmallIntegerField(null=True, blank=True)
+    _ci = models.PositiveSmallIntegerField(null=True, blank=True)
     _neigh_0 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_0_set')
     _neigh_60 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_60_set')
     _neigh_120 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_120_set')
@@ -127,6 +129,8 @@ class MajorTri(models.Model):
             return ri**2+ci
             
     def rci(self): #row column index
+        if self._ri and self._ci:
+            return (self._ri,self._ci)
         return self.static_rci(self.i, self.face.world.major_dim, self.face.fpd())
         
     def tpd(self): #assuming fpd is accurate
@@ -147,6 +151,8 @@ class MajorTri(models.Model):
         fpd = self.face.fpd()
         tpd = self.tpd()
         ri,ci = self.rci()
+        self._ri = ri
+        self._ci = ci
         
         #calculate neighbors
         for dir,dirdict in TRI_NEIGHBORS.items():
