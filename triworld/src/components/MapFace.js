@@ -41,7 +41,7 @@ const FaceSection = (props) => {
 	const calc = {
 			"top_bot":{
 				origin:`translate(${b*n/6} ${cfpd?h*n:h*n/3})`,
-				outline:`M 0 0 h ${b*n} l ${-b} ${cfpd?h*n/3:-h*n/3} h ${-b*n*2/3} z`,},
+				outline:`M 0 0 h ${b*n} l ${-b*n/6} ${cfpd?h*n/3:-h*n/3} h ${-b*n*2/3} z`,},
 			"left":{
 				origin:`translate(${-b*n/3-(polar_side?b*n/2:0)} ${(cfpd?0:h*n*4/3)+(nopo_side?-h*n/3:sopo_side?h*n/3:0)})`,
 				outline:`M ${b*n} 0 h ${-b*n/3} l ${-b*n/3} ${h*n*2/3*(cfpd?1:-1)} l ${b*n/6} ${h*n/3*(cfpd?1:-1)} z`,},

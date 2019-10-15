@@ -25,41 +25,18 @@ class WorldViewSet(NestedViewSetMixin,
         if serializer.is_valid():
             world = models.World(major_dim=serializer.validated_data['major_dim'], minor_dim=serializer.validated_data['minor_dim'])
             world.save()
-            n = world.major_dim
             
-            mjtri = []
-            for ring in range(4):
-                for ring_i in range(5):
-                    face = models.Face(world=world, ring=ring, ring_i=ring_i)
-                    face.save()
-                    fpd = face.fpd()
-                    for mji in range(n*n):
-                        sea = True
-                            
-                        #polar caps
-                        if (ring==0 and mji<n*n//9) or (ring==3 and mji>=n*n*8//9):
-                            sea = False
-                        
-                        #home continent
-                        if ring==1 and ring_i==0:
-                            ri,ci = models.MajorTri.static_rci(mji,n,fpd)
-                            if 2*ri+ci>2*(n//3)-2 and ci<2*n-2*(n//3) and ri<n-(n//3):
-                                sea = False
-                        
-                        mjtri.append(models.MajorTri(
-                            face=face,
-                            i=mji,
-                            sea=sea,
-                            ))
-            mjtri = models.MajorTri.objects.bulk_create(mjtri)
+            models.Face.objects.bulk_create(models.Face(world=world, ring=ring, ring_i=ring_i) for ring in range(4) for ring_i in range(5))
+            models.MajorTri.objects.bulk_create(models.MajorTri(face=face,i=i) for face in world.face_set.all() for i in range(world.major_dim**2))
+            
             world.update_cache()
+            world.add_continents()
                     
             return Response(serializers.BriefWorldSerializer(world).data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
     @action(detail=True)
-    def clear_cache(self, request, pk=None):
-        self.get_object().clear_cache()
-        print('world cache cleared')
-        return Response({'status': 'cache cleared'})
+    def add_continents(self, request, pk=None):
+        self.get_object().add_continents()
+        return Response({'status': 'continents generated'})

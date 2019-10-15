@@ -1,12 +1,15 @@
 from django.db import models
 from django.db.models import F
 import json
+import random
 
 ADJ_RING = {0:0, 1:2, 2:1, 3:3}
 TRI_NEIGHBORS = {
     'top_bot':{'angles':(180,0),'naive':lambda r,c,fpd: ((r+1,c-1) if c%2 else (r-1,c+1)) if fpd else ((r-1,c-1) if c%2 else (r+1,c+1))},
     'left':{'angles':(300,240),'naive':lambda r,c,fpd: (r, c-1)},
     'right':{'angles':(60,120),'naive':lambda r,c,fpd: (r, c+1)},}
+CONTINENT_SEED_RATIO = 0.2 #number of land seed tris as fraction of 1 face
+CONTINENT_LAND_RATIO = 2.0 #number of faces covered
 
 class World(models.Model):
     #dimensions should be multiples of 3 for evenly distributed start locations
@@ -27,7 +30,52 @@ class World(models.Model):
         #update cache for children
         for face in self.face_set.all():
             face.update_cache()
+            
+    def add_continents(self):
+        n = self.major_dim
+        world_tris = MajorTri.objects.filter(face__world=self)
         
+        #clear database
+        world_tris.update(sea=True)
+        
+        #polar caps and home continent
+        polar_cap = world_tris.filter(face__ring=0, _ri__lt=n/3) | world_tris.filter(face__ring=3, _ri__gte=n*2/3)
+        home_continent = world_tris.filter(face__ring=1, face__ring_i=0).exclude(_ci__lte=n*2/3-2-2*F('_ri')).exclude(_ci__gte=n*4/3).exclude(_ri__gte=n*2/3)
+        """(polar_cap | home_continent).update(sea=False)"""
+        
+        #establish opposite continents region
+        #exclude left edges of polar portions to simplify zoomed in maps (only adjacent polar land major tris are polar caps)
+        continent_region = world_tris.filter(face__ring__in=(1,2)).exclude(face__ring=1, face__ring_i=0).exclude(face__ring=2, face__ring_i__in=(0,4))
+        continent_region = continent_region | world_tris.filter(face__ring=0, _ri__gte=n*2/3).exclude(face__ring_i=0).exclude(_ci=0)
+        continent_region = continent_region | world_tris.filter(face__ring=3, _ri__lt=n/3).exclude(face__ring_i=0).exclude(_ci=0)
+        
+        #pick initial seeds
+        seed_region = continent_region.filter(face__ring=1, face__ring_i__in=(2,3)) | continent_region.filter(face__ring=2, face__ring_i__in=(1,3)) #east to west: 2,1  1,2  1,3  2,3
+        seeds = seed_region.filter(id__in=random.sample(list(seed_region.values_list('id',flat=True)),k=int(CONTINENT_SEED_RATIO*n*n)))
+        """seeds.update(sea=False)"""
+        
+        #find initial candidates
+        candidates = set()
+        land = list(seeds.values_list('id',flat=True))
+        
+        def land_candidates(tri):
+            return [nei for nei in tri.neighbors().values() if nei and (nei.id not in land) and (nei in continent_region)]
+        
+        for t in seeds:
+            candidates.update(land_candidates(t))
+        
+        #expand from seeds
+        land_target = int(CONTINENT_LAND_RATIO*n*n)
+        while len(land) < land_target:
+            new_land = random.choice(list(candidates))
+            land.append(new_land.id)
+            candidates.remove(new_land)
+            candidates.update(land_candidates(new_land))
+            
+        #update database
+        (polar_cap | home_continent | continent_region.filter(id__in=land)).update(sea=False)
+        
+            
         
 class Face(models.Model):
     world = models.ForeignKey('World', on_delete=models.CASCADE)
@@ -179,10 +227,12 @@ class MajorTri(models.Model):
             setattr(self, '_neigh_{}'.format(dirdict['angles'][1-int(tpd)]), None)
 
         self.save()
+        
+    def neighbors(self):
+        return dict((angle,getattr(self, '_neigh_{}'.format(angle))) for angle in range(0,360,60))
             
     def neighbor_ids(self):
-        neighbors = dict((angle,getattr(self, '_neigh_{}'.format(angle))) for angle in range(0,360,60))
-        return dict((k,None if not v else v.pk) for k,v in neighbors.items())
+        return dict((k,None if not v else v.pk) for k,v in self.neighbors().items())
 
 
 class MinorTri(models.Model):
