@@ -95,6 +95,7 @@ class MapFace extends React.Component {
 	handleClick(id) {
 		return (e) => {
 			this.props.selectMajorTri(id);
+			this.props.history.push(MAP_MAJORTRI);
 		}
 	}
 	

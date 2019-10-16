@@ -4,7 +4,7 @@
 .tri-ice { stroke: none; fill: #eef; }
 .tri-mountain { stroke: none; fill: #bb9; }
 .tri-sea { stroke: none; fill: #bdf; } /*stroke-dasharray: 3,3; */
-.tri-text { font-size: .5rem; fill: none; } /*fill: #999;*/
+.tri-text { font-size: .5rem; fill: #999; } /*fill: #999;*/
 .adj-face-circle { stroke-width: 2; stroke: #aaa; fill: #eee; }
 
 .face-outline { stroke: #000; fill: none; }

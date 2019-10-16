@@ -7,13 +7,19 @@ import { MAP_FACE } from "../constants/routes";
 import {map} from "../actions";
 
 const MapSection = (props) => {
+	const tpd = !(props.angle%120);
+	const {b,h} = props.p;
+	
 	return (
-		null
+		<g transform={`translate(${!(props.angle%180)?-b/2:(props.angle<180?0:-b)} ${(props.angle===0||props.angle===60||props.angle===300)?-h:0})`}>
+			<path d={`M 0 ${tpd?0:h} h ${b} l ${-b/2} ${tpd?h:-h} z`} className="face-outline" />
+			<text x={b/2} y={h/2} className="tri-text" dominantBaseline="middle" textAnchor="middle">{props.tri && props.tri.id}</text>
+		</g>
 	);
 }
 
 class MapMajorTri extends React.Component {
-	/*constructor(props) {
+	constructor(props) {
 		super(props);
 		this.handleClick = this.handleClick.bind(this);
 	}
@@ -22,7 +28,7 @@ class MapMajorTri extends React.Component {
 		if (!this.props.world) {
 			this.props.history.push('/');
 		}
-		if (!this.props.selectedMajorTri) {
+		if (!this.props.currentMajorTri) {
 			this.props.history.push(MAP_FACE);
 		}
 	}
@@ -31,22 +37,22 @@ class MapMajorTri extends React.Component {
 		return (e) => {
 			this.props.selectMinorTri(id);
 		}
-	}*/
+	}
 	
 	render() {
 		if (!this.props.world) {
 			return ""
 		} else {
-			const n = this.props.world.major_dim;
-			const face = this.props.currentFace;
+			const sn = this.props.world.minor_dim;
 			const mw = 400; //map width for svg scaling
 			const v_margin = 20;
 			const h_margin = 5;
-			const fpd = face.fpd;
-			const b = (mw-2*h_margin)/(8/3*n)*2; //scale triangle size
+			const b = (mw-2*h_margin)/2; //scale triangle size
 			const h = b*Math.sqrt(3)/2;
 			
-			const p = {n,fpd,mw,b,h};
+			const p = {sn,mw,b,h};
+			
+			const tri = this.props.currentMajorTri;
 			
 			return (
 				<Column.Group>
@@ -59,19 +65,18 @@ class MapMajorTri extends React.Component {
 								</Button.Group>
 							</Level.Item>
 						</Level>
-						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" viewBox={`0 0 ${mw} ${mw}`}>
-							<g transform={`translate(${h_margin} ${v_margin})`}>
-								<MapSection p={p} handleClick={this.handleClick} />
-								<MapSection p={p} handleClick={this.handleClick} />
-								<MapSection p={p} handleClick={this.handleClick} />
-								<MapSection p={p} handleClick={this.handleClick} />
-							</g>
+						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" viewBox={`${-mw/2} ${-mw/2} ${mw} ${mw}`}>
+							<MapSection angle={0} tri={tri.tpd?tri:null} p={p} handleClick={this.handleClick} />
+							<MapSection angle={60} p={p} handleClick={this.handleClick} />
+							<MapSection angle={120} p={p} handleClick={this.handleClick} />
+							<MapSection angle={180} tri={!tri.tpd?tri:null} p={p} handleClick={this.handleClick} />
+							<MapSection angle={240} p={p} handleClick={this.handleClick} />
+							<MapSection angle={300} p={p} handleClick={this.handleClick} />
 						</svg>
 					</Column>
 					<Column>
 						<Content>
-							<h5>Face {face.id} ({face.ring}, {face.ring_i})</h5>
-							<h5>Selected MajorTri {this.props.currentMajorTri && this.props.currentMajorTri.id}</h5>
+							<h5>Selected MajorTri {this.props.currentMajorTri.id}</h5>
 							{!this.props.currentMajorTri || !this.props.currentMajorTri.neighbor_ids ? "" : (							
 								<table className="table">
 									<tbody>
