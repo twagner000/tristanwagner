@@ -131,11 +131,6 @@ class Face(models.Model):
         
     def neighbor_ids(self):
         return dict((k,v.pk) for k,v in self.neighbors().items())
-        
-    """
-    def majortris(self):
-        return self.majortri_set.all().values('id', 'i', 'sea')
-    """
 
         
 

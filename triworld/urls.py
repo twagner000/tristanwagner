@@ -9,7 +9,8 @@ from . import views
 app_name = 'triworld'
 
 router = ExtendedDefaultRouter()
-router.register('api/world', api.WorldViewSet, base_name='world')
+world = router.register('api/world', api.WorldViewSet, base_name='world')
+world.register('mjtri', api.MajorTriViewSet, base_name='world-mjtri', parents_query_lookups=['face__world__id'])
 
 urlpatterns = [
     re_path('^(?!api).*$', TemplateView.as_view(template_name="triworld/index.html"), name='index'),

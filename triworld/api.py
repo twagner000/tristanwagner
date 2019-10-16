@@ -43,3 +43,15 @@ class WorldViewSet(NestedViewSetMixin,
     def add_continents(self, request, pk=None):
         self.get_object().add_continents()
         return Response({'status': 'continents generated'})
+        
+class MajorTriViewSet(NestedViewSetMixin, 
+                    mixins.RetrieveModelMixin,
+                    viewsets.GenericViewSet):
+    permission_classes = [permissions.AllowAny]
+    queryset = models.MajorTri.objects.all()
+    serializer_class = serializers.MajorTriSerializer
+
+
+
+
+
