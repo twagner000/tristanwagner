@@ -14,7 +14,7 @@ const initialState = {
 
 const findMajorTri = (faces,majortri_id) => {
 	for (const face of faces) {
-		for (const mjtri of face.majortris) {
+		for (const mjtri of face.majortri_set) {
 			if (mjtri.id === majortri_id) {
 				return mjtri;
 			}

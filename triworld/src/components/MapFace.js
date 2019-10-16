@@ -126,10 +126,10 @@ class MapFace extends React.Component {
 						</Level>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" viewBox={`0 0 ${mw} ${mw}`}>
 							<g transform={`translate(${h_margin} ${v_margin})`}>
-								<FaceSection section="top_bot" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.top_bot].majortris} p={p} handleClick={this.handleClick} />
-								<FaceSection section="left" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.left].majortris} p={p} handleClick={this.handleClick} />
-								<FaceSection section="right" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.right].majortris} p={p} handleClick={this.handleClick} />
-								<FaceSection section="center" ring={face.ring} tris={face.majortris} p={p} handleClick={this.handleClick} />
+								<FaceSection section="top_bot" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.top_bot].majortri_set} p={p} handleClick={this.handleClick} />
+								<FaceSection section="left" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.left].majortri_set} p={p} handleClick={this.handleClick} />
+								<FaceSection section="right" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.right].majortri_set} p={p} handleClick={this.handleClick} />
+								<FaceSection section="center" ring={face.ring} tris={face.majortri_set} p={p} handleClick={this.handleClick} />
 								
 								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink rotation={fpd?0:180} face_id={face.neighbor_ids.top_bot} handleClick={this.props.selectFace} /></g>
 								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?-120:-60} face_id={face.neighbor_ids.left} handleClick={this.props.selectFace} /></g>

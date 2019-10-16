@@ -25,19 +25,15 @@ class BriefMajorTriSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MajorTri
         #fields reserved for js use: rn, tpd
-        #note: angles in neighbor_ids will NOT match for polar sides!!!
-        fields = ('id', 'i', 'ri', 'ci', 'sea', 'ice',) #'neighbor_ids')
+        fields = ('id', 'i', 'ri', 'ci', 'sea', 'ice',)
         
 
 class FaceSerializer(serializers.ModelSerializer):
-    majortris = serializers.SerializerMethodField()
+    majortri_set = BriefMajorTriSerializer(many=True)
     
     class Meta:
         model = models.Face
-        fields = ('id', 'ring', 'ring_i', 'fpd', 'neighbor_ids', 'majortris')
-        
-    def get_majortris(self,obj):
-        return BriefMajorTriSerializer(obj.majortri_set.all(), many=True).data
+        fields = ('id', 'ring', 'ring_i', 'fpd', 'neighbor_ids', 'majortri_set')
 
 
 class WorldSerializer(BriefWorldSerializer):
@@ -58,11 +54,9 @@ class MinorTriSerializer(serializers.ModelSerializer):
         
         
 class MajorTriSerializer(BriefMajorTriSerializer):
-    minortris = serializers.SerializerMethodField()
+    minortri_set = MinorTriSerializer(many=True)
     
     class Meta(BriefMajorTriSerializer.Meta):
-        fields = BriefMajorTriSerializer.Meta.fields + ('minortris',)
-        
-    def get_minortris(self,obj):
-        return MinorTriSerializer(obj.minortri_set.all(), many=True).data
+        #note: angles in neighbor_ids will NOT match for polar sides!!!)
+        fields = BriefMajorTriSerializer.Meta.fields + ('neighbor_ids', 'minortri_set', )
         
