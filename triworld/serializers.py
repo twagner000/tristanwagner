@@ -26,7 +26,7 @@ class MajorTriSerializer(serializers.ModelSerializer):
         model = models.MajorTri
         #fields reserved for js use: ri, ci, rn, tpd
         #note: angles in neighbor_ids will NOT match for polar sides!!!
-        fields = ('id', 'i', 'rci', 'sea', 'ice',) #'neighbor_ids')
+        fields = ('id', 'i', 'ri', 'ci', 'sea', 'ice',) #'neighbor_ids')
         
 
 class FaceSerializer(serializers.ModelSerializer):

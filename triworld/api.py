@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_extensions.mixins import NestedViewSetMixin
 
-from . import serializers, models
+from . import serializers, models, constants
 
 class WorldViewSet(NestedViewSetMixin,
                     mixins.CreateModelMixin,
@@ -27,7 +27,10 @@ class WorldViewSet(NestedViewSetMixin,
             world.save()
             
             models.Face.objects.bulk_create(models.Face(world=world, ring=ring, ring_i=ring_i) for ring in range(4) for ring_i in range(5))
-            models.MajorTri.objects.bulk_create(models.MajorTri(face=face,i=i) for face in world.face_set.all() for i in range(world.major_dim**2))
+            #models.MajorTri.objects.bulk_create(models.MajorTri(face=face,i=i) for face in world.face_set.all() for i in range(world.major_dim**2))
+            
+            rows = constants.row_lists(world.major_dim)
+            models.MajorTri.objects.bulk_create(models.MajorTri(face=face,i=row['r0']+ci,ri=ri,ci=ci) for face in world.face_set.all() for ri,row in enumerate(rows[face.fpd()]) for ci in range(row['rn']))
             
             world.update_cache()
             world.add_continents()

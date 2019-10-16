@@ -17,12 +17,13 @@ const AdjFaceLink = (props) => {
 }
 
 const MajorTri = (props) => {
-	const tri = props.tri;
+	const {tri, cfpd, n} = props;
 	const b = props.base;
 	const h = props.height;
+	
 	//<text x={b/2} y={h/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.id}</text>
 	return (
-		<g onClick={props.handleClick(tri.id)} className="tri-g">
+		<g onClick={props.handleClick(tri.id)} transform={`translate(${cfpd?b*tri.ri/2+b*tri.ci/2:b*(n-1-tri.ri)/2+b*tri.ci/2} ${cfpd?h*tri.ri:h*(tri.ri-n)})`} className="tri-g">
 			<path d={`M 0 ${tri.tpd?0:h} h ${b} l ${-b/2} ${tri.tpd?h:-h} z`} className={`tri ${tri.sea ? "tri-sea" : (tri.ice ? "tri-ice" : "tri-land")}`} />
 			<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.i}</text>
 		</g>
@@ -55,14 +56,7 @@ const FaceSection = (props) => {
 	const transform_rotate = polar_side ? `rotate(${((props.ring===0&&props.section==='left')||(props.ring===3&&props.section==='right'))?60:-60} ${props.section==='left'?b*n:0} 0)` : "";
 	
 	for (const tri of props.tris) {
-		//basic row and column indices, if face points up (pu) or down (pd) visually
-		const ripu = parseInt(Math.sqrt(tri.i));
-		const ripd = n-1-parseInt(Math.sqrt(n*n-1-tri.i));
-		const cipu = tri.i-ripu*ripu;
-		const cipd = tri.i-(n*n-(n-ripd)*(n-ripd));
-		
-		tri.ri = (cfpd) ? ripd : ripu;
-		tri.ci = (cfpd) ? cipd : cipu;
+		//calc number of triangles in row
 		tri.rn = cfpd ? 2*n-1-2*tri.ri : tri.ri*2+1;
 		
 		//tpd means 'triangle points down'
@@ -79,11 +73,7 @@ const FaceSection = (props) => {
 	
 	return (
 		<g transform={`${calc[props.section].origin} ${transform_rotate}`} className={`face face-${props.section.replace("_","-")}`}>
-			{tris.map((tri) => (
-				<g key={tri.id} transform={`translate(${cfpd?b*tri.ri/2+b*tri.ci/2:b*(n-1-tri.ri)/2+b*tri.ci/2} ${cfpd?h*tri.ri:h*(tri.ri-n)})`}>
-					<MajorTri tri={tri} base={b} height={h} handleClick={props.handleClick} />
-				</g>
-			))}
+			{tris.map((tri) => <MajorTri key={tri.id} tri={tri} base={b} height={h} cfpd={cfpd} n={n} handleClick={props.handleClick} /> )}
 			<path d={calc[props.section].outline} className="face-outline" />
 		</g>
 	);
