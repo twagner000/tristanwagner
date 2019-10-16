@@ -23,7 +23,7 @@ const MajorTri = (props) => {
 	//<text x={b/2} y={h/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.id}</text>
 	return (
 		<g onClick={props.handleClick(tri.id)} className="tri-g">
-			<path d={`M 0 ${tri.tpd?0:h} h ${b} l ${-b/2} ${tri.tpd?h:-h} z`} className={"tri"+(tri.sea ? " tri-sea" : " tri-land")} />
+			<path d={`M 0 ${tri.tpd?0:h} h ${b} l ${-b/2} ${tri.tpd?h:-h} z`} className={`tri ${tri.sea ? "tri-sea" : (tri.ice ? "tri-ice" : "tri-land")}`} />
 			<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.i}</text>
 		</g>
 	);

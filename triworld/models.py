@@ -11,6 +11,10 @@ TRI_NEIGHBORS = {
 CONTINENT_SEED_RATIO = 0.2 #number of land seed tris as fraction of 1 face
 CONTINENT_LAND_RATIO = 2.0 #number of faces covered
 
+def row_list(n,pd):
+    return [{'rn':2*(n-1-ri)+1 if pd else 2*ri+1, 'r0':n**2-(n-ri)**2 if pd else ri**2} for ri in range(n)]
+    
+
 class World(models.Model):
     #dimensions should be multiples of 3 for evenly distributed start locations
     major_dim = models.PositiveSmallIntegerField(help_text="Number of major triangles per face edge.")
@@ -33,6 +37,7 @@ class World(models.Model):
             
     def add_continents(self):
         n = self.major_dim
+        sn = self.minor_dim
         world_tris = MajorTri.objects.filter(face__world=self)
         
         #clear database
@@ -74,7 +79,16 @@ class World(models.Model):
             
         #update database
         (polar_cap | home_continent | continent_region.filter(id__in=land)).update(sea=False)
+        polar_cap.update(ice=True)
         
+        #clear MinorTris ("small" tris)
+        MinorTri.objects.filter(major_tri__face__world=self).delete()
+        
+        #add MinorTris
+        rows = dict((tpd,row_list(sn,tpd)) for tpd in (True,False))
+        for tri in home_continent:
+            tpd = tri.tpd()
+            MinorTri.objects.bulk_create(MinorTri(major_tri=tri,i=rows[tpd][ri]['r0']+ci,ri=ri,ci=ci) for ri in range(sn) for ci in range(rows[tpd][ri]['rn']))
             
         
 class Face(models.Model):
@@ -137,6 +151,7 @@ class MajorTri(models.Model):
     face = models.ForeignKey('Face', on_delete=models.CASCADE)
     i = models.PositiveSmallIntegerField() #index (in face)
     sea = models.BooleanField(default=True)
+    ice = models.BooleanField(default=False)
     
     #cached fields
     _ri = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -176,6 +191,7 @@ class MajorTri(models.Model):
         else:
             return ri**2+ci
             
+    
     def rci(self): #row column index
         if self._ri and self._ci:
             return (self._ri,self._ci)
@@ -238,16 +254,19 @@ class MajorTri(models.Model):
 class MinorTri(models.Model):
     major_tri = models.ForeignKey('MajorTri', on_delete=models.CASCADE)
     i = models.PositiveSmallIntegerField()
+    ri = models.PositiveSmallIntegerField()
+    ci = models.PositiveSmallIntegerField()
     #land_terrain
     #under_terrain
     
     def __str__(self):
-        return '{} mn({})'.format(self.majortri, self.i)
+        return '{} mn({})'.format(self.major_tri, self.i)
     
     class Meta:
         ordering = ['major_tri','i']
         unique_together = ['major_tri','i']
         indexes = [
             models.Index(fields=['major_tri','i']),
+            models.Index(fields=['major_tri','ri','ci']),
             models.Index(fields=['major_tri']),
         ]

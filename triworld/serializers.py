@@ -16,8 +16,8 @@ class BriefWorldSerializer(serializers.ModelSerializer):
         return value
         
     def validate_minor_dim(self,value):
-        if not value%3==0 or value <= 0:
-            raise serializers.ValidationError("Minor dimension must be a postive multiple of 3.")
+        if value < 3:
+            raise serializers.ValidationError("Minor dimension must be at least 3.")
         return value
         
         
@@ -26,7 +26,7 @@ class MajorTriSerializer(serializers.ModelSerializer):
         model = models.MajorTri
         #fields reserved for js use: ri, ci, rn, tpd
         #note: angles in neighbor_ids will NOT match for polar sides!!!
-        fields = ('id', 'i', 'rci', 'sea', ) #'neighbor_ids')
+        fields = ('id', 'i', 'rci', 'sea', 'ice',) #'neighbor_ids')
         
 
 class FaceSerializer(serializers.ModelSerializer):
