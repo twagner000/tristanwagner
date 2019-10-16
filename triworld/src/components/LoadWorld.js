@@ -2,6 +2,7 @@ import React from 'react';
 import {PageLoader, Title} from 'rbx';
 import {connect} from 'react-redux';
 
+import { MAP_FACE } from "../constants/routes";
 import {map} from "../actions";
 
 
@@ -12,7 +13,7 @@ class LoadWorld extends React.Component {
 	
 	componentDidUpdate() {
 		if (!this.props.isFetchingWorld && this.props.world) {
-			this.props.history.push('/map/face');
+			this.props.history.push(MAP_FACE);
 		}
 	}
 		

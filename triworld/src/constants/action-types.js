@@ -8,3 +8,4 @@ export const RECEIVE_WORLD = "RECEIVE_WORLD";
 
 export const SELECT_FACE = "SELECT_FACE";
 export const SELECT_MAJORTRI = "SELECT_MAJORTRI";
+export const SELECT_MINORTRI = "SELECT_MINORTRI";

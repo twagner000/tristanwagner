@@ -3,6 +3,7 @@ import {Link, Redirect} from 'react-router-dom';
 import {Content, Icon, Media, Level, Button, Column, PageLoader, Title} from 'rbx';
 import {connect} from 'react-redux';
 
+import { MAP_MAJORTRI } from "../constants/routes";
 import {map} from "../actions";
 
 const AdjFaceLink = (props) => {
@@ -118,9 +119,7 @@ class MapFace extends React.Component {
 						<Level>
 							<Level.Item>
 								<Button.Group hasAddons>
-									<Button as={Link} to="/" state="active"><Icon><i className="fas fa-search-minus"></i></Icon></Button>
-									<Button as={Link} to="/" disabled><Icon><i className="fas fa-search-plus"></i></Icon></Button>
-									<Button as={Link} to="/" disabled><Icon><i className="fas fa-gem"></i></Icon></Button>
+									<Button as={Link} to={MAP_MAJORTRI} disabled={!this.props.currentMajorTri}><Icon><i className="fas fa-search-plus"></i></Icon></Button>
 								</Button.Group>
 							</Level.Item>
 						</Level>

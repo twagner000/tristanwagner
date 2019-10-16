@@ -7,10 +7,14 @@ import thunk from "redux-thunk";
 
 import triWorldApp from "./reducers";
 
+
+import { MAP_FACE, MAP_MAJORTRI } from "./constants/routes";
+
 import TriWorldNav from "./components/TriWorldNav";
 import Home from "./components/Home";
 import LoadWorld from "./components/LoadWorld";
 import MapFace from "./components/MapFace";
+import MapMajorTri from "./components/MapMajorTri";
 
 let store = createStore(triWorldApp, applyMiddleware(thunk));
 
@@ -26,7 +30,8 @@ class App extends React.Component {
 						<TriWorldNav />
 						<Switch>
 							<Route exact path="/world/:world_id" component={LoadWorld} />
-							<Route exact path="/map/face" component={MapFace} />
+							<Route exact path={MAP_FACE} component={MapFace} />
+							<Route exact path={MAP_MAJORTRI} component={MapMajorTri} />
 							<Route component={Home} />
 						</Switch>
 					</BrowserRouter>
