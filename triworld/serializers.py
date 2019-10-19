@@ -22,14 +22,19 @@ class BriefWorldSerializer(serializers.ModelSerializer):
         
         
 class BriefMajorTriSerializer(serializers.ModelSerializer):
+    cached_neighbor_ids = serializers.SerializerMethodField()
+    
     class Meta:
         model = models.MajorTri
         #fields reserved for js use: rn, tpd
-        fields = ('id', 'i', 'ri', 'ci', 'sea', 'ice', 'neighbor_ids',)
+        fields = ('id', 'i', 'ri', 'ci', 'sea', 'ice', 'cached_neighbor_ids',)
+        
+    def get_cached_neighbor_ids(self,obj):
+        return json.loads(obj.cached_neighbor_ids)
         
 
 class FaceSerializer(serializers.ModelSerializer):
-    majortri_set = BriefMajorTriSerializer(many=True)
+    #majortri_set = BriefMajorTriSerializer(many=True)
     
     class Meta:
         model = models.Face
@@ -38,13 +43,18 @@ class FaceSerializer(serializers.ModelSerializer):
 
 class WorldSerializer(BriefWorldSerializer):
     faces = serializers.SerializerMethodField()
+    majortris = serializers.SerializerMethodField()
     
     class Meta(BriefWorldSerializer.Meta):
-        fields = BriefWorldSerializer.Meta.fields + ('home_face_id', 'faces')
+        fields = BriefWorldSerializer.Meta.fields + ('home_face_id', 'faces', 'majortris')
         
     def get_faces(self,obj):
         faces = FaceSerializer(obj.face_set.all(), many=True)
         return dict((f['id'],f) for f in faces.data)
+        
+    def get_majortris(self,obj):
+        majortris = BriefMajorTriSerializer(models.MajorTri.objects.filter(face__world=obj), many=True)
+        return dict((t['id'],t) for t in majortris.data)
         
         
 class MinorTriSerializer(serializers.ModelSerializer):
@@ -59,5 +69,5 @@ class MajorTriSerializer(BriefMajorTriSerializer):
     
     class Meta(BriefMajorTriSerializer.Meta):
         #note: angles in neighbor_ids will NOT match for polar sides!!!)
-        fields = BriefMajorTriSerializer.Meta.fields + ('neighbor_ids', 'minortri_set')
+        fields = BriefMajorTriSerializer.Meta.fields + ('minortri_set',)
         

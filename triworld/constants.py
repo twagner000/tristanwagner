@@ -5,7 +5,7 @@ TRI_NEIGHBORS = {
     'right':{'angles':(60,120),'naive':lambda r,c,fpd: (r, c+1)},}
     
 MJTRI_NEIGHBORS = {
-    0: lambda r,c,tpd: (r-1,0),
+    0: lambda r,c,tpd: (r-1,c),
     30: lambda r,c,tpd: (r-1,c+1),
     60: lambda r,c,tpd: (r-1,c+2,) if tpd else (r,c+1),
     90: lambda r,c,tpd: (r,c+2),

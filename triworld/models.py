@@ -26,6 +26,9 @@ class World(models.Model):
             face.update_cache()
             
     def add_continents(self):
+        #refresh cache
+        self.update_cache()
+        
         n = self.major_dim
         sn = self.minor_dim
         world_tris = MajorTri.objects.filter(face__world=self)
@@ -131,16 +134,16 @@ class Face(models.Model):
             if angle==0:
                 return self._neigh_top_bot
             if angle==120:
-                return self._neigh_left
-            if angle==240:
                 return self._neigh_right
+            if angle==240:
+                return self._neigh_left
         else:
             if angle==180:
                 return self._neigh_top_bot
             if angle==60:
-                return self._neigh_left
-            if angle==300:
                 return self._neigh_right
+            if angle==300:
+                return self._neigh_left
         return None
             
     def neighbors(self):
@@ -160,6 +163,7 @@ class MajorTri(models.Model):
     ice = models.BooleanField(default=False)
     
     neighbors = models.ManyToManyField('self', through='MajorTriNeighbor')
+    cached_neighbor_ids = models.TextField(default='null')
     
     class Meta:
         ordering = ['face','i']
@@ -187,13 +191,28 @@ class MajorTri(models.Model):
             nei_tpd = tpd
             nei_face = self.face
             nei_ri, nei_ci = constants.MJTRI_NEIGHBORS[angle](ri,ci,tpd)
+            
+            #adjust ci
+            if self.face.fpd():
+                if nei_ri>ri:
+                    nei_ci -= 1
+                if nei_ri<ri:
+                    nei_ci += 1
+            else:
+                if nei_ri>ri:
+                    nei_ci += 1
+                if nei_ri<ri:
+                    nei_ci -= 1
+            
             if nei_ri < 0:
                 nei_face = nei_face.neighbor(0)
                 nei_ri += n
+                nei_ci -= 1
                 nei_tpd = not nei_tpd
             if nei_ri >= n:
                 nei_face = nei_face.neighbor(180)
                 nei_ri -= n
+                nei_ci -= 1
                 nei_tpd = not nei_tpd
             if nei_face and nei_ci < 0:
                 nei_face = nei_face.neighbor(240 if nei_tpd else 300)
@@ -211,6 +230,8 @@ class MajorTri(models.Model):
                 print('no neighbor for ',self.face,ri,ci,angle,'; tried',nei_face,nei_ri,nei_ci)
             
         MajorTriNeighbor.objects.bulk_create(neighbors)
+        self.cached_neighbor_ids = json.dumps(self.neighbor_ids())
+        self.save()
                 
         """
         for angle in range(0,360,30):

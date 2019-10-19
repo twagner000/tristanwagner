@@ -26,7 +26,7 @@ const MajorTri = (props) => {
 	return (
 		<g onClick={props.handleClick(tri.id)} transform={`translate(${cfpd?b*tri.ri/2+b*tri.ci/2:b*(n-1-tri.ri)/2+b*tri.ci/2} ${cfpd?h*tri.ri:h*(tri.ri-n)})`} className="tri-g">
 			<path d={`M 0 ${tri.tpd?0:h} h ${b} l ${-b/2} ${tri.tpd?h:-h} z`} className={`tri ${tri.sea ? "tri-sea" : (tri.ice ? "tri-ice" : "tri-land")}`} />
-			<text x={b/2} y={h*2/3} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.i}</text>
+			<text x={b/2} y={h/2} className="tri-text" dominantBaseline="middle" textAnchor="middle">{tri.id}</text>
 		</g>
 	);
 }
@@ -36,6 +36,8 @@ const FaceSection = (props) => {
 	const nopo_side = (props.ring===0 && (props.section==='left'||props.section==='right'));
 	const sopo_side = (props.ring===3 && (props.section==='left'||props.section==='right'));
 	const polar_side = nopo_side || sopo_side;
+	
+	let tris = props.tris.map((majortri_id) => props.world.majortris[majortri_id]);
 	
 	//cfpd means 'current face points down' VISUALLY, before any polar rotation (fpd and ring refer to the center face)
 	const cfpd = (props.section==="center" || polar_side) ? fpd : !fpd;
@@ -56,7 +58,7 @@ const FaceSection = (props) => {
 	
 	const transform_rotate = polar_side ? `rotate(${((props.ring===0&&props.section==='left')||(props.ring===3&&props.section==='right'))?60:-60} ${props.section==='left'?b*n:0} 0)` : "";
 	
-	for (const tri of props.tris) {
+	for (const tri of tris) {
 		//calc number of triangles in row
 		tri.rn = cfpd ? 2*n-1-2*tri.ri : tri.ri*2+1;
 		
@@ -65,7 +67,7 @@ const FaceSection = (props) => {
 	}
 	
 	//filter just the relevant triangles for this view
-	const tris = props.tris.filter((tri) => { switch (props.section) {
+	tris = tris.filter((tri) => { switch (props.section) {
 		case "top_bot": return fpd ? tri.i>=n*n*4/9 : tri.i<n*n*5/9;
 		case "left": return tri.ci >= tri.rn - n*2/3;
 		case "right": return tri.ci < n*2/3;
@@ -126,10 +128,10 @@ class MapFace extends React.Component {
 						</Level>
 						<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" viewBox={`0 0 ${mw} ${mw}`}>
 							<g transform={`translate(${h_margin} ${v_margin})`}>
-								<FaceSection section="top_bot" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.top_bot].majortri_set} p={p} handleClick={this.handleClick} />
-								<FaceSection section="left" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.left].majortri_set} p={p} handleClick={this.handleClick} />
-								<FaceSection section="right" ring={face.ring} tris={this.props.world.faces[face.neighbor_ids.right].majortri_set} p={p} handleClick={this.handleClick} />
-								<FaceSection section="center" ring={face.ring} tris={face.majortri_set} p={p} handleClick={this.handleClick} />
+								<FaceSection section="top_bot" ring={face.ring} world={this.props.world} tris={this.props.world.faces[face.neighbor_ids.top_bot].majortri_set} p={p} handleClick={this.handleClick} />
+								<FaceSection section="left" ring={face.ring} world={this.props.world} tris={this.props.world.faces[face.neighbor_ids.left].majortri_set} p={p} handleClick={this.handleClick} />
+								<FaceSection section="right" ring={face.ring} world={this.props.world} tris={this.props.world.faces[face.neighbor_ids.right].majortri_set} p={p} handleClick={this.handleClick} />
+								<FaceSection section="center" ring={face.ring} world={this.props.world} tris={face.majortri_set} p={p} handleClick={this.handleClick} />
 								
 								<g transform={`translate(${b*n*2/3} ${fpd?0:h*n*4/3})`}><AdjFaceLink rotation={fpd?0:180} face_id={face.neighbor_ids.top_bot} handleClick={this.props.selectFace} /></g>
 								<g transform={`translate(${b*n/6} ${fpd?h*n:h*n/3})`}><AdjFaceLink rotation={fpd?-120:-60} face_id={face.neighbor_ids.left} handleClick={this.props.selectFace} /></g>
@@ -141,10 +143,10 @@ class MapFace extends React.Component {
 						<Content>
 							<h5>Face {face.id} ({face.ring}, {face.ring_i})</h5>
 							<h5>Selected MajorTri {this.props.currentMajorTri && this.props.currentMajorTri.id}</h5>
-							{!this.props.currentMajorTri || !this.props.currentMajorTri.neighbor_ids ? "" : (							
+							{!this.props.currentMajorTri || !this.props.currentMajorTri.cached_neighbor_ids ? "" : (							
 								<table className="table">
 									<tbody>
-									{Object.entries(this.props.currentMajorTri.neighbor_ids).map((v) => (
+									{Object.entries(this.props.currentMajorTri.cached_neighbor_ids).map((v) => (
 										<tr key={v[0]}><th>{v[0]}</th><td>{v[1]}</td></tr>
 									))}
 									</tbody>

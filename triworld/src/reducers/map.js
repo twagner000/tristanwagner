@@ -7,15 +7,13 @@ const initialState = {
 	worlds: [],
 	isFetchingWorld: false,
 	world: null,
-	isFetchingMajorTri: false,
-	majorTris: {},
 	currentFace: null,
 	currentMajorTri: null,
 	currentMinorTri: null,
 };
 
 
-const findMajorTri = (faces,majortri_id) => {
+/*const findMajorTri = (faces,majortri_id) => {
 	for (const face of faces) {
 		for (const mjtri of face.majortri_set) {
 			if (mjtri.id === majortri_id) {
@@ -24,7 +22,14 @@ const findMajorTri = (faces,majortri_id) => {
 		}
 	}
 	return null;
-};
+};*/
+
+/*const findMajorTri = (world,majortri_id) => {
+	if (world && world.majortris && getProperty(world.majortris,majortri_id) {
+		return getProperty(world.majortris,majortri_id);
+	}
+	return null;
+};*/
 
 
 export default function map(state=initialState, action) {
@@ -47,6 +52,7 @@ export default function map(state=initialState, action) {
 			newState.isFetchingWorld = false;
 			newState.world = action.world;
 			newState.currentFace = action.world.faces[action.world.home_face_id];
+			newState.currentMajorTri = null;
 			return newState;
 			
 		case SELECT_FACE:
@@ -55,7 +61,8 @@ export default function map(state=initialState, action) {
 			return newState;
 			
 		case SELECT_MAJORTRI:
-			newState.currentMajorTri = findMajorTri(Object.values(newState.world.faces),action.id);
+			//newState.currentMajorTri = findMajorTri(Object.values(newState.world.faces),action.id);
+			newState.currentMajorTri = newState.world.majortris[action.id];
 			return newState;
 			
 		case SELECT_MINORTRI:

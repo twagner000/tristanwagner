@@ -77,10 +77,10 @@ class MapMajorTri extends React.Component {
 					<Column>
 						<Content>
 							<h5>Selected MajorTri {this.props.currentMajorTri.id}</h5>
-							{!this.props.currentMajorTri || !this.props.currentMajorTri.neighbor_ids ? "" : (							
+							{!this.props.currentMajorTri || !this.props.currentMajorTri.cached_neighbor_ids ? "" : (							
 								<table className="table">
 									<tbody>
-									{Object.entries(this.props.currentMajorTri.neighbor_ids).map((v) => (
+									{Object.entries(this.props.currentMajorTri.cached_neighbor_ids).map((v) => (
 										<tr key={v[0]}><th>{v[0]}</th><td>{v[1]}</td></tr>
 									))}
 									</tbody>
