@@ -3,6 +3,22 @@ TRI_NEIGHBORS = {
     'top_bot':{'angles':(180,0),'naive':lambda r,c,fpd: ((r+1,c-1) if c%2 else (r-1,c+1)) if fpd else ((r-1,c-1) if c%2 else (r+1,c+1))},
     'left':{'angles':(300,240),'naive':lambda r,c,fpd: (r, c-1)},
     'right':{'angles':(60,120),'naive':lambda r,c,fpd: (r, c+1)},}
+    
+MJTRI_NEIGHBORS = {
+    0: lambda r,c,tpd: (r-1,0),
+    30: lambda r,c,tpd: (r-1,c+1),
+    60: lambda r,c,tpd: (r-1,c+2,) if tpd else (r,c+1),
+    90: lambda r,c,tpd: (r,c+2),
+    120: lambda r,c,tpd: (r,c+1) if tpd else (r+1,c+2),
+    150: lambda r,c,tpd: (r+1,c+1),
+    180: lambda r,c,tpd: (r+1,c),
+    210: lambda r,c,tpd: (r+1,c-1),
+    240: lambda r,c,tpd: (r,c-1) if tpd else (r+1,c-2),
+    270: lambda r,c,tpd: (r,c-2),
+    300: lambda r,c,tpd: (r-1,c-2) if tpd else (r,c-1),
+    330: lambda r,c,tpd: (r-1,c-1),
+    }
+
 CONTINENT_SEED_RATIO = 0.2 #number of land seed tris as fraction of 1 face
 CONTINENT_LAND_RATIO = 2.0 #number of faces covered
 

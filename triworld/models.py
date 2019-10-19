@@ -126,6 +126,23 @@ class Face(models.Model):
         for tri in self.majortri_set.all():
             tri.update_cache()
             
+    def neighbor(self,angle):
+        if self.fpd():
+            if angle==0:
+                return self._neigh_top_bot
+            if angle==120:
+                return self._neigh_left
+            if angle==240:
+                return self._neigh_right
+        else:
+            if angle==180:
+                return self._neigh_top_bot
+            if angle==60:
+                return self._neigh_left
+            if angle==300:
+                return self._neigh_right
+        return None
+            
     def neighbors(self):
         return {'top_bot':self._neigh_top_bot, 'left':self._neigh_left, 'right':self._neigh_right}
         
@@ -142,15 +159,7 @@ class MajorTri(models.Model):
     sea = models.BooleanField(default=True)
     ice = models.BooleanField(default=False)
     
-    #cached fields
-    _neigh_0 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_0_set')
-    _neigh_60 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_60_set')
-    _neigh_120 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_120_set')
-    _neigh_180 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_180_set')
-    _neigh_240 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_240_set')
-    _neigh_300 = models.ForeignKey('self', null=True, on_delete=models.SET_NULL, related_name='majortri_300_set')
-    _map = models.TextField(blank=True)
-
+    neighbors = models.ManyToManyField('self', through='MajorTriNeighbor')
     
     class Meta:
         ordering = ['face','i']
@@ -167,12 +176,45 @@ class MajorTri(models.Model):
         return self.face.fpd() != (self.ci%2>0)
             
     def update_cache(self):
-        self._neigh_0 = None
-        self._neigh_60 = None
-        self._neigh_120 = None
-        self._neigh_180 = None
-        self._neigh_240 = None
-        self._neigh_300 = None
+        self.majortri_from_set.all().delete()
+        
+        n = self.face.world.major_dim
+        ri,ci,tpd = self.ri, self.ci, self.tpd()
+        rows = constants.row_lists(n)
+        
+        neighbors = []
+        for angle in range(0,360,30):
+            nei_tpd = tpd
+            nei_face = self.face
+            nei_ri, nei_ci = constants.MJTRI_NEIGHBORS[angle](ri,ci,tpd)
+            if nei_ri < 0:
+                nei_face = nei_face.neighbor(0)
+                nei_ri += n
+                nei_tpd = not nei_tpd
+            if nei_ri >= n:
+                nei_face = nei_face.neighbor(180)
+                nei_ri -= n
+                nei_tpd = not nei_tpd
+            if nei_face and nei_ci < 0:
+                nei_face = nei_face.neighbor(240 if nei_tpd else 300)
+                if nei_face:
+                    nei_ci += rows[nei_face.fpd()][nei_ri]['rn']
+                nei_tpd = not nei_tpd
+            if nei_face and nei_ci >= rows[nei_face.fpd()][nei_ri]['rn']:
+                nei_ci -= rows[nei_face.fpd()][nei_ri]['rn'] #get tri in current row before updating face
+                nei_face = nei_face.neighbor(120 if nei_tpd else 60)
+                nei_tpd = not nei_tpd
+            try:
+                nei = MajorTriNeighbor(from_majortri=self, to_majortri=MajorTri.objects.get(face=nei_face, ri=nei_ri, ci=nei_ci), angle=angle)
+                neighbors.append(nei)
+            except:
+                print('no neighbor for ',self.face,ri,ci,angle,'; tried',nei_face,nei_ri,nei_ci)
+            
+        MajorTriNeighbor.objects.bulk_create(neighbors)
+                
+        """
+        for angle in range(0,360,30):
+            setattr(self, '_neigh_{}'.format(angle), None)
         self._map = ''
         
         n = self.face.world.major_dim
@@ -207,12 +249,21 @@ class MajorTri(models.Model):
             setattr(self, '_neigh_{}'.format(dirdict['angles'][1-int(tpd)]), None)
 
         self.save()
+        """
         
     def neighbors(self):
-        return dict((angle,getattr(self, '_neigh_{}'.format(angle))) for angle in range(0,360,60))
+        #return dict((angle,getattr(self, '_neigh_{}'.format(angle))) for angle in range(0,360,60))
+        return dict((nei.angle,nei.to_majortri) for nei in self.majortri_from_set.all())
             
     def neighbor_ids(self):
         return dict((k,None if not v else v.pk) for k,v in self.neighbors().items())
+        
+        
+
+class MajorTriNeighbor(models.Model):
+    from_majortri = models.ForeignKey(MajorTri, on_delete=models.CASCADE, related_name='majortri_from_set')
+    to_majortri = models.ForeignKey(MajorTri, on_delete=models.CASCADE, related_name='majortri_to_set')
+    angle = models.PositiveSmallIntegerField()
 
 
 class MinorTri(models.Model):
